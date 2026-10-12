@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+# data never lives in this repo (IMDb and TMDb terms)
+*.parquet
+*.sqlite
+*.tsv
+*.tsv.gz
+data/
+derived/
