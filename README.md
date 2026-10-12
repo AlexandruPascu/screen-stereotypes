@@ -1,2 +1,0 @@
-# Stereotype-Measure-of-IMDB-movies-and-series-using-BERT-NLP-model
-This notebook contains complete code to fine-tune the transformers language model BERT to perform categorization of movies and series into a label especially the probability of them being a Stereotype title. We will use BERT to categorize titles from IMDB datasets in stereotypes and non-stereotypes (the catergories can be easily changed for other usecases).
