@@ -1,11 +1,12 @@
 # Stereotypes on screen
 
 How film and TV cast, write about and label women and social groups, measured across IMDb's full title catalogue,
-TMDb's TV and film records and three million plot summaries, 1920–2026.
+TMDb's TV and film records and three million plot summaries (IMDb, TMDb and Wikipedia), 1920–2026.
 
 This expands [Stefano Li Pira](https://github.com/stefanolipira)'s 2022 initiative to measure stereotypes in TV
 series, which he and Alexandru Pascu first explored with a BERT classifier (kept in [`2022-bert/`](2022-bert/), tag
-`v2022`). The follow-up replaces the classifier with five measures that can be checked against the data.
+`v2022`). The follow-up replaces the classifier with measures that can be checked against the data, then rebuilds the
+classifier properly and adds the word-embedding method from the project's original reading list.
 
 *Content note: the word lists and result tables contain stereotypes about groups of people, collected in order to
 measure them. Slurs are counted but left out of every published table.*
@@ -19,6 +20,8 @@ measure them. Slurs are counted but left out of every published table.*
 | [3. What characters do in plot summaries](#3-what-characters-do-in-plot-summaries) | Women went from 28% to 46% of the people summaries talk about, but are still described by their looks 1.5 times as often as their share. |
 | [4. Do audiences care?](#4-do-audiences-care) | Hardly: none of these measures moves an episode's IMDb rating by more than 0.02 points. |
 | [5. Groups, stereotype words and slurs](#5-groups-stereotype-words-and-slurs) | Slurs in character names fell sevenfold, but pejorative stereotype words still cluster around group mentions as much as in the 1950s. |
+| [6. The language of plot summaries](#6-the-language-of-plot-summaries) | Word embeddings trained on the summaries track the census and on-screen casting; gender-coded wording has halved since the 1950s, while terrorism words moved back towards Islam after 2001. |
+| [7. A stereotype classifier, done properly](#7-a-stereotype-classifier-done-properly) | Without the 2022 length shortcut, predicting viewers' stereotype tags from a summary reaches AUC 0.71–0.76, not 0.95; the tagged share is falling slowly. |
 
 ## 1. Who plays whom
 
@@ -58,15 +61,15 @@ Tables: [`results/writers/`](results/writers/).
 
 ## 3. What characters do in plot summaries
 
-Three million English summaries (IMDb and TMDb) parsed into who-does-what. A character's gender comes from pronouns,
+Three million English summaries (IMDb, TMDb and Wikipedia) parsed into who-does-what. A character's gender comes from pronouns,
 gendered words, or the title's own cast list.
 
 ![How summaries write about women vs men](results/agency/categories_by_decade.png)
 
 ![Words most tied to women and men](results/agency/distinctive_words.png)
 
-- Women's share of the people summaries talk about rose from 28% (1950s) to 46% (2020s), and they are now the subject
-  of the action as often as their share would predict.
+- Women's share of the people summaries talk about rose from 28–29% (1950s–60s) to 46% (2020s), and they are now the
+  subject of the action as often as their share would predict.
 - Appearance is the most persistent gap: women are described by their looks ("beautiful", "pretty", "attractive",
   "sexy") 3 times as often as their share in the 1950s and still 1.5 times today.
 - Investigating, rescuing and committing violence started far below women's share (0.4–0.6) and are now close to it
@@ -83,7 +86,7 @@ This is the question the 2022 project asked with its classifier.
 
 ![Effects on ratings and votes](results/ratings/effects.png)
 
-- None of the measures changes an episode's rating by more than 0.02 points out of 10: casting more women, writing
+- No measure has a clear effect on an episode's rating larger than 0.02 points out of 10: casting more women, writing
   women as the ones who act, or pairing groups with stereotypes all leave ratings essentially unchanged.
 - Some get more attention: episodes whose summary describes a woman by her looks get 5% more votes, those with a woman
   as a victim or with a group stereotype 2–3% more.
@@ -96,7 +99,7 @@ Table: [`results/ratings/models.csv`](results/ratings/models.csv).
 Thirty groups (nationalities, ethnic groups, religions, sexual orientation and gender identity), each with a list of
 stereotype words from published stereotype datasets and curated lists, and slurs from Wikipedia and HurtLex. The
 pejorative index keeps only words rated offensive. The measures pass a check against viewers' own tags: titles tagged
-"racism" contain slurs 9 times as often as other titles, those tagged "racial slur" 17 times as often, and titles
+"racism" contain slurs 11 times as often as other titles, those tagged "racial slur" 17 times as often, and titles
 tagged "Italian stereotype" mention Italians 70 times as often.
 
 ![Slurs in character names by decade](results/groups/slurs_in_character_names.png)
@@ -106,9 +109,9 @@ tagged "Italian stereotype" mention Italians 70 times as often.
 ![Pejorative stereotype pairing by decade](results/groups_offensive/pejorative_pairing_by_decade.png)
 
 - Pejorative stereotype words have not faded from summaries that mention a group: across groups they appear about 3
-  times as often next to a group mention in every decade since the 1950s (2.9 then, 3.1 in the 2020s).
-- Native Americans are the clear decline (15 times in the 1950s, 1.6 now, as "savage" and "warpath" disappeared).
-  Germans (Nazi plots, 6 → 11) and Italians (mafia, 2 → 7) rose; Muslims have been tied to extremism words at about 5
+  times as often next to a group mention in every decade since the 1950s (2.8 then, 3.1 in the 2020s).
+- Native Americans are the clear decline (15 times in the 1950s, 1.5 now, as "savage" and "warpath" disappeared).
+  Germans (Nazi plots, 6 → 10) and Italians (mafia, 2 → 6.5) rose; Muslims have been tied to extremism words at about 5
   times since 2000 (3 times in the 1990s).
 
 ![Criminal jobs for group-labelled characters](results/groups/criminal_jobs_by_group_label.png)
@@ -118,6 +121,68 @@ tagged "Italian stereotype" mention Italians 70 times as often.
   gay-labelled characters are instead given service jobs (maid, waiter, hairdresser) about three times as often.
 
 Tables: [`results/groups/`](results/groups/), [`results/groups_offensive/`](results/groups_offensive/).
+
+## 6. The language of plot summaries
+
+The method from the project's original reading list (Garg et al. 2018, *PNAS*): word embeddings trained on the
+summaries themselves (198 million words), with Garg et al.'s published word lists for women and men, occupations,
+adjectives, surnames by group, and religion and terrorism words. Early decades are small, so one model is trained on all
+text with every job and adjective word tagged by decade ("nurse_1960s"), and the gender and group words shared across
+decades (temporal referencing); three training runs, averaged.
+
+![Job words in the summaries' language vs women's share of the job on screen](results/embeddings/language_vs_casting.png)
+
+- The measure passes the paper's own test: how close a job word sits to women's words tracks women's real share of
+  that job in the US census (correlation 0.52–0.69 by decade), and tracks women's share of that job on screen even more
+  closely (0.80–0.91). The language of summaries, the casting and the workforce tell the same story.
+
+![Gender and group bias of word sets by decade](results/embeddings/bias_by_decade.png)
+
+- Job words moved from clearly nearer men's words in the 1950s to slightly nearer women's words in the 2020s;
+  intelligence words did the same. Appearance words sit nearest women's words in every decade.
+- "Outsider" adjectives (alien, devious, inscrutable…) sat closer to Asian and Chinese surnames than ordinary
+  personality adjectives did until the 1980s; since the 1990s the gap is close to zero. Intelligence words sit further
+  from Hispanic than from White surnames in every decade.
+- Terrorism words sat nearer Islam than Christianity words in the 1950s, were almost neutral in the 1990s, and moved
+  back after 2001 to their 1950s level.
+
+![Gender-coded wording around women and men, by decade](results/embeddings/plot_gender_congruence_by_decade.png)
+
+- Per summary, using general-English word vectors (GloVe): the words used for women are more feminine-coded, and those
+  for men more masculine-coded, than the reverse. That gap has halved for films and fallen by two thirds for TV since
+  the 1950s. Westerns have the most gender-coded wording, animation the least.
+
+Tables: [`results/embeddings/`](results/embeddings/).
+
+## 7. A stereotype classifier, done properly
+
+The 2022 notebook's question, rebuilt: from a summary alone, can a model tell which titles viewers tagged with a
+stereotype or prejudice keyword ("racist remark", "Italian stereotype", "homophobia"…)? 158,004 tagged titles, 7,222 of
+them with such a keyword.
+
+![Classifier calibration and scores by decade](results/classifier/classifier.png)
+
+- The 2022 shortcut is gone: untagged comparison titles are matched on medium, decade, number of keywords and text
+  length, so a model that sees only the length scores AUC 0.50, pure chance.
+- With whole series kept on one side of each cross-validation split, word-vector and word-count models reach AUC
+  0.71 (films 0.73, TV 0.67), and 0.68–0.74 across short, medium and long summaries.
+  A 2021 sentence-embedding model (`all-mpnet-base-v2`) used as frozen features does better: AUC 0.76 (films 0.79,
+  TV 0.72). A small BERT (`MiniLM`) fine-tuned on the CPU did not converge in its one run (AUC 0.53) and is not used;
+  newer open models are the next comparison. The 2022 model's 0.95 came mostly from text length; viewer tags are
+  noisy labels, so 0.7–0.76 is what a summary can honestly tell so far.
+- Calibrated on held-out folds, the scores are real probabilities. Applied to every summary (with the word-vector
+  model; the sentence model is too slow on a CPU for three million texts), the share likely to be tagged peaks for 1970s
+  films and falls slowly after; for TV it falls from 5.4% in the 1950s to 4.2% now.
+- The words that weigh most are the expected ones ("racist", "racism", "homophobic", "discrimination", "prejudice",
+  "interracial"); words found in fewer than 20 different films or series are left out so the model cannot learn
+  which shows were tagged.
+
+Tables: [`results/classifier/`](results/classifier/).
+
+**Next: a careful reading.** Viewer tags and word lists are proxies. A labelling model will read 3,000 sampled summaries
+against a written codebook ([`labelling/`](labelling/)): 1,400 at random to estimate how common each stereotype really
+is, 1,600 drawn from what each measure flags to check its precision, and 300 labelled twice to measure how reliable the
+labels themselves are. `src/validate_labels.py` then scores every measure in this repository against that reading.
 
 ## How it was measured
 
@@ -138,6 +203,8 @@ Tables: [`results/groups/`](results/groups/), [`results/groups_offensive/`](resu
   words come from SeeGULL, StereoSet and short curated lists; the pejorative index keeps SeeGULL words its raters
   scored offensive, words in HurtLex and a short pejorative list. Slurs that are also common names or everyday words
   are dropped.
+- **Wikipedia episode summaries** come from season and episode-list pages ({{Episode list}}), traced to the series'
+  IMDb id through Wikidata and kept only for series whose episode titles agree with IMDb's.
 
 ## Caveats
 
@@ -145,14 +212,16 @@ Tables: [`results/groups/`](results/groups/), [`results/groups_offensive/`](resu
 - The full stereotype word lists mix pejorative words with neutral topic words ("mexico", "reservation"), which is why
   the pejorative index exists; both measure association, not a judgement on any single title.
 - Ratings come from IMDb's self-selected voters.
+- Garg et al.'s Black surname list overlaps heavily with common White surnames, so the embeddings give no usable
+  Black–White contrast; surnames also stand in for groups only roughly.
 
 ## Reproduce
 
-Set `STEREOTYPES_DATA` to a local folder holding the sources below, then run from `src/`: `build_roles.py`,
-`tmdb_titles.py`, `occupation_gender.py`; `tmdb_episode_credits.py`, `writer_gender.py`; `build_texts.py`,
-`parse_texts.py`, `agency.py`; `stereotype_lexicon.py`, `group_stereotypes.py` (and again with `INDEX=offensive`);
-`ratings.py`; `figures.py`. Python 3.12 with pandas, pyarrow, duckdb, statsmodels, spacy (`en_core_web_sm`),
-matplotlib, lxml and wordfreq. No raw data is stored in this repository.
+Set `STEREOTYPES_DATA` to a local folder holding the sources below and `PYTHON` to an environment with pandas, pyarrow,
+duckdb, statsmodels, scikit-learn, gensim, spacy (`en_core_web_sm`), torch, sentence-transformers, transformers,
+mwparserfromhell, matplotlib, lxml and wordfreq, then run `bash src/run_all.sh` (or `bash src/run_all.sh <step>` to
+start from a step). `src/transformer.py` runs separately (CPU, about two hours). No raw data is stored in this
+repository.
 
 ## Data and terms
 
@@ -164,6 +233,9 @@ matplotlib, lxml and wordfreq. No raw data is stored in this repository.
 
   This product uses the TMDB API but is not endorsed or certified by TMDB.
 - Plot text and keywords collected for the 2022 project, and IMDb's 2017 plot list: private copies, not republished.
+- Wikipedia episode summaries (CC BY-SA 4.0) and Wikidata links (CC0), fetched through the official APIs.
+- Garg et al. (2018) word lists and their census occupation shares by decade (from IPUMS), from the authors'
+  repository; GloVe word vectors (PDDL); `all-mpnet-base-v2` (Apache-2.0) and `MiniLM-L12-H384` (MIT).
 - SeeGULL (Google, CC BY 4.0), StereoSet (CC BY-SA 4.0), HurtLex (CC BY-NC-SA 4.0), Wikipedia lists of ethnic and
   religious slurs (CC BY-SA 4.0). The lexicon built from them is not included; it keeps their licences.
 

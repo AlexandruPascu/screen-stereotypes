@@ -6,6 +6,7 @@ Sources, keyed by IMDb title id (tconst) where possible:
           generic). Episodes of series TMDb cannot tie to IMDb are kept under a TMDb key (tmdb:<series>:<s>:<e>).
   imdb22  the 2022 IMDb scrape (plot, outline, synopsis, user keywords).
   plot17  the 2017 IMDb plot.list, matched by (series title, year, season, episode) or (film title, year).
+  wiki    Wikipedia episode summaries (CC BY-SA 4.0) from wiki_fetch.py, already matched to IMDb episodes.
 
 Each source is written to its own part file as soon as it is built (the whole set does not fit in memory as Python
 objects), then DuckDB merges them. Output: DERIVED/texts.parquet and DERIVED/series_alignment.parquet.
@@ -186,6 +187,13 @@ save("plot17", pd.concat([pe.tconst, ps.tconst, pf.tconst]), ["episode"] * len(p
      ["film"] * len(pf), pd.concat([pe.text, ps.text, pf.text]), None, "plot17")
 del pl, pe, ps, pf, sk
 gc.collect()
+
+# --- Wikipedia episode summaries ----------------------------------------------------------------------------
+wiki_path = DERIVED / "wiki_episodes.parquet"
+if wiki_path.exists():
+    wk = pd.read_parquet(wiki_path, columns=["tconst", "summary"])
+    save("wiki", wk.tconst, "episode", wk.summary, None, "wiki")
+    del wk
 
 # --- merge ---------------------------------------------------------------------------------------------------
 con.execute(f"""COPY (

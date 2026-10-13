@@ -1,0 +1,253 @@
+contrast,set,period,mean,count
+asian vs white surnames,adjective:appearance,1950,-0.0026846559424149362,19
+asian vs white surnames,adjective:appearance,1960,0.006375850110814191,23
+asian vs white surnames,adjective:appearance,1970,0.005596448504735553,21
+asian vs white surnames,adjective:appearance,1980,0.03334673968228427,22
+asian vs white surnames,adjective:appearance,1990,0.008998960256576538,24
+asian vs white surnames,adjective:appearance,2000,0.013091481526692707,25
+asian vs white surnames,adjective:appearance,2010,-0.006585745811462402,25
+asian vs white surnames,adjective:appearance,2020,0.00874897175365024,24
+asian vs white surnames,adjective:appearance,pre1950,0.014678029786972772,21
+asian vs white surnames,adjective:intelligence,1950,0.00803203154832889,13
+asian vs white surnames,adjective:intelligence,1960,0.005678784613515817,17
+asian vs white surnames,adjective:intelligence,1970,0.006218515833218894,20
+asian vs white surnames,adjective:intelligence,1980,0.037283178359743145,21
+asian vs white surnames,adjective:intelligence,1990,0.018974201546774972,24
+asian vs white surnames,adjective:intelligence,2000,-0.006175131369859745,26
+asian vs white surnames,adjective:intelligence,2010,0.0001296481968444062,27
+asian vs white surnames,adjective:intelligence,2020,0.038248743766393416,26
+asian vs white surnames,adjective:intelligence,pre1950,0.024577602451922847,17
+asian vs white surnames,adjective:otherization,1950,0.05576133728027344,13
+asian vs white surnames,adjective:otherization,1960,0.05156343181927999,12
+asian vs white surnames,adjective:otherization,1970,0.06467108991410997,15
+asian vs white surnames,adjective:otherization,1980,0.0955187976360321,16
+asian vs white surnames,adjective:otherization,1990,0.04399724801381429,18
+asian vs white surnames,adjective:otherization,2000,0.04837140551319829,18
+asian vs white surnames,adjective:otherization,2010,0.015445572358590584,18
+asian vs white surnames,adjective:otherization,2020,0.06470757722854614,18
+asian vs white surnames,adjective:otherization,pre1950,0.09107411238882278,12
+asian vs white surnames,adjective:williams-best,1950,0.02556944624777952,163
+asian vs white surnames,adjective:williams-best,1960,0.004277702395607825,196
+asian vs white surnames,adjective:williams-best,1970,0.015149709979693093,200
+asian vs white surnames,adjective:williams-best,1980,0.0654659156316246,204
+asian vs white surnames,adjective:williams-best,1990,0.04714055394017419,215
+asian vs white surnames,adjective:williams-best,2000,0.033339809094156535,224
+asian vs white surnames,adjective:williams-best,2010,0.024942547564289468,227
+asian vs white surnames,adjective:williams-best,2020,0.06000808284089372,222
+asian vs white surnames,adjective:williams-best,pre1950,0.033525299032529196,180
+black vs white surnames,adjective:appearance,1950,-0.0018964859477260659,19
+black vs white surnames,adjective:appearance,1960,5.010245502859197e-07,23
+black vs white surnames,adjective:appearance,1970,0.0006443110723344107,21
+black vs white surnames,adjective:appearance,1980,0.0008905800906094638,22
+black vs white surnames,adjective:appearance,1990,0.002018943428993225,24
+black vs white surnames,adjective:appearance,2000,0.002639777660369873,25
+black vs white surnames,adjective:appearance,2010,0.0030836280186971026,25
+black vs white surnames,adjective:appearance,2020,0.0025651868846681383,24
+black vs white surnames,adjective:appearance,pre1950,-0.0008663866255018447,21
+black vs white surnames,adjective:intelligence,1950,-0.00035040500836494635,13
+black vs white surnames,adjective:intelligence,1960,0.001599720880097034,17
+black vs white surnames,adjective:intelligence,1970,0.0028034398953119917,20
+black vs white surnames,adjective:intelligence,1980,0.002330026929340665,21
+black vs white surnames,adjective:intelligence,1990,0.0028293844726350573,24
+black vs white surnames,adjective:intelligence,2000,0.0037049039816245055,26
+black vs white surnames,adjective:intelligence,2010,0.004377637380435143,27
+black vs white surnames,adjective:intelligence,2020,0.0027837921411563186,26
+black vs white surnames,adjective:intelligence,pre1950,0.0008982455029207118,17
+black vs white surnames,adjective:otherization,1950,-0.0018515067222790841,13
+black vs white surnames,adjective:otherization,1960,-0.0016023980246649848,12
+black vs white surnames,adjective:otherization,1970,-0.0010200606452094184,15
+black vs white surnames,adjective:otherization,1980,-1.41710042953491e-05,16
+black vs white surnames,adjective:otherization,1990,0.0003912868323149505,18
+black vs white surnames,adjective:otherization,2000,0.0007387929492526583,18
+black vs white surnames,adjective:otherization,2010,0.0016382160010161224,18
+black vs white surnames,adjective:otherization,2020,-0.00040348150112010816,18
+black vs white surnames,adjective:otherization,pre1950,-0.0008296800984276665,12
+black vs white surnames,adjective:williams-best,1950,-0.0011747487971143977,163
+black vs white surnames,adjective:williams-best,1960,0.00031237446126483734,196
+black vs white surnames,adjective:williams-best,1970,0.0006925297776858013,200
+black vs white surnames,adjective:williams-best,1980,0.0008107762710720885,204
+black vs white surnames,adjective:williams-best,1990,0.0014100623685260152,215
+black vs white surnames,adjective:williams-best,2000,0.0023936998276483444,224
+black vs white surnames,adjective:williams-best,2010,0.001974217166984659,227
+black vs white surnames,adjective:williams-best,2020,0.0008806267658153454,222
+black vs white surnames,adjective:williams-best,pre1950,-0.0007481196412333735,180
+chinese vs white surnames,adjective:appearance,1950,-0.018569914918196827,19
+chinese vs white surnames,adjective:appearance,1960,-0.008989626082821169,23
+chinese vs white surnames,adjective:appearance,1970,-0.008088766582428464,21
+chinese vs white surnames,adjective:appearance,1980,0.02070532784317479,22
+chinese vs white surnames,adjective:appearance,1990,-0.003631922933790418,24
+chinese vs white surnames,adjective:appearance,2000,-0.001465174357096355,25
+chinese vs white surnames,adjective:appearance,2010,-0.026912503242492676,25
+chinese vs white surnames,adjective:appearance,2020,-0.009522446327739293,24
+chinese vs white surnames,adjective:appearance,pre1950,0.0003372468645610498,21
+chinese vs white surnames,adjective:intelligence,1950,-0.007224422234755296,13
+chinese vs white surnames,adjective:intelligence,1960,-0.00842862736945059,17
+chinese vs white surnames,adjective:intelligence,1970,-0.007319532831509909,20
+chinese vs white surnames,adjective:intelligence,1980,0.025687132562909807,21
+chinese vs white surnames,adjective:intelligence,1990,0.006535983747906155,24
+chinese vs white surnames,adjective:intelligence,2000,-0.018299578092037104,26
+chinese vs white surnames,adjective:intelligence,2010,-0.014443733074046946,27
+chinese vs white surnames,adjective:intelligence,2020,0.020884174567002516,26
+chinese vs white surnames,adjective:intelligence,pre1950,0.008290455621831555,17
+chinese vs white surnames,adjective:otherization,1950,0.0357364935752673,13
+chinese vs white surnames,adjective:otherization,1960,0.04228196541468302,12
+chinese vs white surnames,adjective:otherization,1970,0.050043678283691405,15
+chinese vs white surnames,adjective:otherization,1980,0.0852329209446907,16
+chinese vs white surnames,adjective:otherization,1990,0.031186898549397785,18
+chinese vs white surnames,adjective:otherization,2000,0.03906550230803313,18
+chinese vs white surnames,adjective:otherization,2010,0.00018039456120243753,18
+chinese vs white surnames,adjective:otherization,2020,0.04985423662044384,18
+chinese vs white surnames,adjective:otherization,pre1950,0.07636243767208524,12
+chinese vs white surnames,adjective:williams-best,1950,0.010313725910303783,163
+chinese vs white surnames,adjective:williams-best,1960,-0.009941410957550516,196
+chinese vs white surnames,adjective:williams-best,1970,0.0005741087595621749,200
+chinese vs white surnames,adjective:williams-best,1980,0.05483601977622587,204
+chinese vs white surnames,adjective:williams-best,1990,0.03670285746108654,215
+chinese vs white surnames,adjective:williams-best,2000,0.02169973598349662,224
+chinese vs white surnames,adjective:williams-best,2010,0.006556373160666131,227
+chinese vs white surnames,adjective:williams-best,2020,0.04496628421920914,222
+chinese vs white surnames,adjective:williams-best,pre1950,0.018058729061373957,180
+gender,adjective:appearance,1950,0.03115495045979818,19
+gender,adjective:appearance,1960,0.03381261186323304,23
+gender,adjective:appearance,1970,0.046847990580967495,21
+gender,adjective:appearance,1980,0.020072216337377376,22
+gender,adjective:appearance,1990,0.03548979345295164,24
+gender,adjective:appearance,2000,0.03904763221740723,25
+gender,adjective:appearance,2010,0.035718022187550866,25
+gender,adjective:appearance,2020,0.023244829641448125,24
+gender,adjective:appearance,pre1950,0.03948539968520876,21
+gender,adjective:intelligence,1950,-0.00442593067120283,13
+gender,adjective:intelligence,1960,-0.020037275903365192,17
+gender,adjective:intelligence,1970,-0.01689927875995636,20
+gender,adjective:intelligence,1980,-0.0024024730636959973,21
+gender,adjective:intelligence,1990,-0.017765896187888253,24
+gender,adjective:intelligence,2000,-0.002595678353920961,26
+gender,adjective:intelligence,2010,-0.0005613874506067343,27
+gender,adjective:intelligence,2020,0.012552134501628388,26
+gender,adjective:intelligence,pre1950,-0.005875807182461607,17
+gender,adjective:otherization,1950,-0.016775606534419917,13
+gender,adjective:otherization,1960,-0.030398458242416382,12
+gender,adjective:otherization,1970,-0.006862584749857585,15
+gender,adjective:otherization,1980,-0.02173369253675143,16
+gender,adjective:otherization,1990,-0.007590432961781819,18
+gender,adjective:otherization,2000,-0.0008743383266307694,18
+gender,adjective:otherization,2010,0.0058368201609011044,18
+gender,adjective:otherization,2020,0.002562436792585585,18
+gender,adjective:otherization,pre1950,-0.009626598821745979,12
+gender,adjective:sensitive,1950,0.0001199808385637082,12
+gender,adjective:sensitive,1960,-0.016257747014363607,15
+gender,adjective:sensitive,1970,0.01421019434928894,16
+gender,adjective:sensitive,1980,-0.004973631279141294,17
+gender,adjective:sensitive,1990,-0.009870286573443498,19
+gender,adjective:sensitive,2000,-0.0007967258754529458,19
+gender,adjective:sensitive,2010,0.00783798098564148,20
+gender,adjective:sensitive,2020,0.015406796806736997,19
+gender,adjective:sensitive,pre1950,0.0006993917318490831,13
+gender,adjective:terrorism,1950,-0.041123920016818576,42
+gender,adjective:terrorism,1960,-0.038716376730889984,44
+gender,adjective:terrorism,1970,-0.03241978309772633,45
+gender,adjective:terrorism,1980,-0.041497616664223046,46
+gender,adjective:terrorism,1990,-0.04402738059008563,45
+gender,adjective:terrorism,2000,-0.023590950862221096,46
+gender,adjective:terrorism,2010,-0.015055881030317667,46
+gender,adjective:terrorism,2020,-0.007999884909477785,46
+gender,adjective:terrorism,pre1950,-0.031870249629944794,43
+gender,adjective:williams-best,1950,-0.010384983324078207,163
+gender,adjective:williams-best,1960,-0.006664224830614466,196
+gender,adjective:williams-best,1970,0.005611106952031454,200
+gender,adjective:williams-best,1980,-0.005860172845179739,204
+gender,adjective:williams-best,1990,-0.006039581187935763,215
+gender,adjective:williams-best,2000,0.004126316291235742,224
+gender,adjective:williams-best,2010,0.009256772357811837,227
+gender,adjective:williams-best,2020,0.01649394452392876,222
+gender,adjective:williams-best,pre1950,0.0048634317186143665,180
+gender,occupation,1950,-0.032128802207713955,71
+gender,occupation,1960,-0.026731634029635673,72
+gender,occupation,1970,-0.025816358073993965,72
+gender,occupation,1980,-0.019688199500779848,74
+gender,occupation,1990,-0.022023422982957626,75
+gender,occupation,2000,-0.014439080026414659,75
+gender,occupation,2010,-0.0015575974656824479,76
+gender,occupation,2020,0.012562042342291939,75
+gender,occupation,pre1950,-0.017614790782836322,69
+hispanic vs white surnames,adjective:appearance,1950,0.004895768667522229,19
+hispanic vs white surnames,adjective:appearance,1960,-0.021517090175462807,23
+hispanic vs white surnames,adjective:appearance,1970,-0.0316548366395254,21
+hispanic vs white surnames,adjective:appearance,1980,-0.027735811291318954,22
+hispanic vs white surnames,adjective:appearance,1990,-0.02113395929336548,24
+hispanic vs white surnames,adjective:appearance,2000,-0.00010554154713948493,25
+hispanic vs white surnames,adjective:appearance,2010,-0.02274150053660075,25
+hispanic vs white surnames,adjective:appearance,2020,-0.027409785323672827,24
+hispanic vs white surnames,adjective:appearance,pre1950,-0.015162736650497192,21
+hispanic vs white surnames,adjective:intelligence,1950,-0.01763335558084341,13
+hispanic vs white surnames,adjective:intelligence,1960,-0.025849660237630207,17
+hispanic vs white surnames,adjective:intelligence,1970,-0.04322096010049184,20
+hispanic vs white surnames,adjective:intelligence,1980,-0.03983565360780746,21
+hispanic vs white surnames,adjective:intelligence,1990,-0.034011913670433894,24
+hispanic vs white surnames,adjective:intelligence,2000,-0.025977428142841045,26
+hispanic vs white surnames,adjective:intelligence,2010,-0.023597823248969182,27
+hispanic vs white surnames,adjective:intelligence,2020,-0.019892261578486517,26
+hispanic vs white surnames,adjective:intelligence,pre1950,-0.03400162037681131,17
+hispanic vs white surnames,adjective:otherization,1950,0.014610972159948103,13
+hispanic vs white surnames,adjective:otherization,1960,-0.0024176239967346196,12
+hispanic vs white surnames,adjective:otherization,1970,-0.009404185083177355,15
+hispanic vs white surnames,adjective:otherization,1980,-0.007660463452339173,16
+hispanic vs white surnames,adjective:otherization,1990,-0.009439252041004324,18
+hispanic vs white surnames,adjective:otherization,2000,0.002078422793635616,18
+hispanic vs white surnames,adjective:otherization,2010,-0.001536609949889007,18
+hispanic vs white surnames,adjective:otherization,2020,0.0024824429441381393,18
+hispanic vs white surnames,adjective:otherization,pre1950,0.016092300415039062,12
+hispanic vs white surnames,adjective:williams-best,1950,0.005242176338695066,163
+hispanic vs white surnames,adjective:williams-best,1960,-0.022545695811712823,196
+hispanic vs white surnames,adjective:williams-best,1970,-0.030188272992769875,200
+hispanic vs white surnames,adjective:williams-best,1980,-0.0207368205575382,204
+hispanic vs white surnames,adjective:williams-best,1990,-0.022988845026770302,215
+hispanic vs white surnames,adjective:williams-best,2000,-0.005984061175868625,224
+hispanic vs white surnames,adjective:williams-best,2010,-0.013631738405045607,227
+hispanic vs white surnames,adjective:williams-best,2020,-0.005446675124469104,222
+hispanic vs white surnames,adjective:williams-best,pre1950,-0.014942959171754342,180
+islam vs christianity,terrorism,1950,0.055038510806976804,42
+islam vs christianity,terrorism,1960,0.03948470498576309,44
+islam vs christianity,terrorism,1970,0.03411649200651381,45
+islam vs christianity,terrorism,1980,0.026174126327901642,46
+islam vs christianity,terrorism,1990,0.002804696118390119,45
+islam vs christianity,terrorism,2000,0.01544576278631238,46
+islam vs christianity,terrorism,2010,0.04146915846976681,46
+islam vs christianity,terrorism,2020,0.053867475278135665,46
+islam vs christianity,terrorism,pre1950,0.05034439508305039,43
+russian vs white surnames,adjective:appearance,1950,0.13957056141736213,19
+russian vs white surnames,adjective:appearance,1960,0.13460715007090912,23
+russian vs white surnames,adjective:appearance,1970,0.1204815421785627,21
+russian vs white surnames,adjective:appearance,1980,0.12399687640594714,22
+russian vs white surnames,adjective:appearance,1990,0.07474815597136815,24
+russian vs white surnames,adjective:appearance,2000,0.05835908174514771,25
+russian vs white surnames,adjective:appearance,2010,0.03859257698059082,25
+russian vs white surnames,adjective:appearance,2020,0.033262375328275896,24
+russian vs white surnames,adjective:appearance,pre1950,0.15404325912869166,21
+russian vs white surnames,adjective:intelligence,1950,0.1623909442852705,13
+russian vs white surnames,adjective:intelligence,1960,0.15404900850034228,17
+russian vs white surnames,adjective:intelligence,1970,0.14511988957722982,20
+russian vs white surnames,adjective:intelligence,1980,0.14249474661690847,21
+russian vs white surnames,adjective:intelligence,1990,0.09525750494665569,24
+russian vs white surnames,adjective:intelligence,2000,0.06288579335579506,26
+russian vs white surnames,adjective:intelligence,2010,0.05921004730978129,27
+russian vs white surnames,adjective:intelligence,2020,0.08072512501325363,26
+russian vs white surnames,adjective:intelligence,pre1950,0.1631945114509732,17
+russian vs white surnames,adjective:otherization,1950,0.18584804657178047,13
+russian vs white surnames,adjective:otherization,1960,0.15025543835428026,12
+russian vs white surnames,adjective:otherization,1970,0.17069719102647568,15
+russian vs white surnames,adjective:otherization,1980,0.1297428160905838,16
+russian vs white surnames,adjective:otherization,1990,0.10137588447994655,18
+russian vs white surnames,adjective:otherization,2000,0.0683753181386877,18
+russian vs white surnames,adjective:otherization,2010,0.05506990794782285,18
+russian vs white surnames,adjective:otherization,2020,0.06762329075071546,18
+russian vs white surnames,adjective:otherization,pre1950,0.19661680029498207,12
+russian vs white surnames,adjective:williams-best,1950,0.158018123396579,163
+russian vs white surnames,adjective:williams-best,1960,0.1355566787881916,196
+russian vs white surnames,adjective:williams-best,1970,0.13501439094543458,200
+russian vs white surnames,adjective:williams-best,1980,0.13062446267386665,204
+russian vs white surnames,adjective:williams-best,1990,0.088313206776168,215
+russian vs white surnames,adjective:williams-best,2000,0.059830542299009505,224
+russian vs white surnames,adjective:williams-best,2010,0.056794943175827,227
+russian vs white surnames,adjective:williams-best,2020,0.07295174695350029,222
+russian vs white surnames,adjective:williams-best,pre1950,0.17241884679706007,180

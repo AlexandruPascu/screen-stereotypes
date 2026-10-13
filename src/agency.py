@@ -102,6 +102,10 @@ con.execute("""CREATE TEMP TABLE g AS SELECT *, CASE WHEN year < 1950 THEN 1940 
     AS era, CASE WHEN titleType IN ('movie', 'tvMovie') THEN 'film' ELSE 'tv' END AS medium
     FROM mentions WHERE female IS NOT NULL AND year BETWEEN 1920 AND 2026""")
 
+# gendered who-does-what tuples for the embedding scores (private)
+con.execute(f"""COPY (SELECT title, role, lemma, female, year, decade, medium FROM g)
+    TO '{DERIVED / "gendered_tuples.parquet"}' (FORMAT parquet)""")
+
 # per-title measures for the ratings models (private: keyed by title, no text)
 con.execute(f"""COPY (SELECT title, COUNT(*) FILTER (WHERE female) AS women_mentions,
         COUNT(*) FILTER (WHERE NOT female) AS men_mentions,

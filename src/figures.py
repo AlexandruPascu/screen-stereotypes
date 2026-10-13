@@ -125,3 +125,128 @@ fig.tight_layout()
 fig.savefig(RESULTS / "groups/criminal_jobs_by_group_label.png")
 plt.close(fig)
 print("figures written")
+
+# ---- step 1 and step 2 figures (palette: reference categorical slots in fixed order; solid reference lines) ----
+SLOTS = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100"]
+INK, MUTED, RULE = "#0b0b0b", "#52514e", "#b9b8b3"
+PERIODS = ["pre1950"] + [str(d) for d in range(1950, 2030, 10)]
+LABELS = ["before\n1950"] + [f"{d}s" for d in range(1950, 2030, 10)]
+
+
+def end_labels(ax, series, x_end=None):
+    """Direct labels at the right end of each line, in ink colours, nudged apart so they never overlap."""
+    x_end = len(PERIODS) - 1 if x_end is None else x_end
+    lo, hi = ax.get_ylim()
+    gap = (hi - lo) * 0.055
+    placed = []
+    for name, y in sorted(series, key=lambda t: t[1]):
+        y_text = max([y] + [p + gap for p in placed])
+        placed.append(y_text)
+        ax.annotate(name, (x_end, y), xytext=(x_end + 0.15, y_text), textcoords="data", va="center", fontsize=8,
+                    color=INK)
+
+
+sb = pd.read_csv(RESULTS / "embeddings/set_bias_by_period.csv", dtype={"period": str})
+pick = lambda contrast, s: sb[(sb.contrast == contrast) & (sb.set == s)].set_index("period")["mean"].reindex(PERIODS)
+fig, axes = plt.subplots(1, 3, figsize=(15, 4.8), gridspec_kw={"width_ratios": [1.15, 1.15, 0.9]})
+x = np.arange(len(PERIODS))
+ax = axes[0]
+ends = []
+for (s, name), colour in zip([("adjective:appearance", "appearance"), ("adjective:intelligence", "intelligence"),
+                              ("adjective:williams-best", "personality (general)"), ("occupation", "occupations")], SLOTS):
+    y = pick("gender", s)
+    ax.plot(x, y, color=colour, lw=2, marker="o", ms=5, label=name)
+    ends.append((name, y.iloc[-1]))
+gender_ends = ends
+ax.axhline(0, color=RULE, lw=1)
+ax.set_title("Gender: which words sit closer to women's words", fontsize=10, color=INK)
+ax.set_ylabel("← nearer men's words      nearer women's words →", color=MUTED)
+ax = axes[1]
+ends = []
+for grp, colour in zip(["asian", "chinese", "hispanic", "russian"], SLOTS):
+    c = f"{grp} vs white surnames"
+    y = pick(c, "adjective:otherization") - pick(c, "adjective:williams-best")
+    ax.plot(x, y, color=colour, lw=2, marker="o", ms=5, label=f"{grp.title()} surnames")
+    ends.append((grp.title(), y.iloc[-1]))
+group_ends = ends
+ax.axhline(0, color=RULE, lw=1)
+ax.set_title("'Outsider' adjectives near group surnames\n(beyond ordinary personality adjectives, vs White surnames)",
+             fontsize=10, color=INK)
+ax.set_ylabel("extra closeness of outsider adjectives", color=MUTED)
+ax = axes[2]
+y = pick("islam vs christianity", "terrorism")
+ax.plot(x, y, color=SLOTS[0], lw=2, marker="o", ms=5)
+ax.axhline(0, color=RULE, lw=1)
+ax.set_title("Terrorism words: nearer Islam than\nChristianity words", fontsize=10, color=INK)
+ax.set_ylabel("← nearer Christianity      nearer Islam →", color=MUTED)
+for ax in axes:
+    ax.set_xticks(x[::2])
+    ax.set_xticklabels(LABELS[::2], fontsize=8)
+    ax.set_xlim(-0.3, len(PERIODS) - 0.3 + (1.6 if ax is not axes[2] else 0))
+axes[0].legend(fontsize=8, loc="upper center", bbox_to_anchor=(0.5, -0.13), ncol=2, frameon=False)
+axes[1].legend(fontsize=8, loc="upper center", bbox_to_anchor=(0.5, -0.13), ncol=2, frameon=False)
+end_labels(axes[0], gender_ends)
+end_labels(axes[1], group_ends)
+fig.suptitle("Word embeddings trained on plot summaries, by decade (Garg et al. 2018 word lists; 3 training runs)",
+             fontsize=12, color=INK)
+fig.tight_layout()
+fig.savefig(RESULTS / "embeddings/bias_by_decade.png")
+plt.close(fig)
+
+# language vs casting: occupation word bias against women's on-screen share of the job, 2010s
+wb = pd.read_csv(RESULTS / "embeddings/word_bias_by_period.csv", dtype={"period": str})
+wb = wb[(wb.contrast == "gender") & (wb.set == "occupation") & (wb.period == "2010")]
+cast = pd.read_csv(RESULTS / "occupations/occupation_by_decade_english.csv")
+cast = cast[cast.decade == 2010].groupby("occupation")[["roles", "women"]].sum()
+cast = cast[cast.roles >= 30]
+v = wb.merge((cast.women / cast.roles).rename("share").reset_index(), left_on="word", right_on="occupation")
+census_r = pd.read_csv(RESULTS / "embeddings/validation_census.csv", dtype={"period": str}).set_index("period").r
+r = np.corrcoef(v["mean"], np.log(v.share.clip(0.01, 0.99) / (1 - v.share.clip(0.01, 0.99))))[0, 1]
+fig, ax = plt.subplots(figsize=(8, 5.5))
+ax.scatter(v["mean"], v.share * 100, s=40, color=SLOTS[0], edgecolor="white", linewidth=1)
+SHOW = {"nurse", "librarian", "housekeeper", "dancer", "teacher", "secretary", "clerk", "doctor", "lawyer", "judge",
+        "scientist", "professor", "soldier", "mechanic", "engineer", "clergy", "dentist", "surgeon"}
+for word, bx, sy in zip(v.word, v["mean"], v.share * 100):
+    if word in SHOW:  # a selection, so labels never collide; every point is in the published table
+        ax.annotate(word, (bx, sy), xytext=(5, 3), textcoords="offset points", fontsize=8, color=INK)
+ax.axvline(0, color=RULE, lw=1)
+ax.set_xlabel("← job word sits nearer men's words      nearer women's words →  (plot-summary embeddings, 2010s)",
+              color=MUTED)
+ax.set_ylabel("% of the job's roles played by women (2010s)", color=MUTED)
+ax.set_title(f"The language of plot summaries tracks casting (r = {r:.2f}); against the census r = "
+             f"{census_r.min():.2f}–{census_r.max():.2f} by decade", fontsize=10, color=INK)
+fig.tight_layout()
+fig.savefig(RESULTS / "embeddings/language_vs_casting.png")
+plt.close(fig)
+
+# classifier: calibration and scores by decade
+cal_all = pd.read_csv(RESULTS / "classifier/calibration.csv")
+dec = pd.read_csv(RESULTS / "classifier/score_by_decade.csv")
+dec = dec[dec.decade.between(1950, 2020)]
+fig, axes = plt.subplots(1, 2, figsize=(12, 4.6))
+ax = axes[0]
+ax.plot([0, 0.7], [0, 0.7], color=RULE, lw=1)
+for (label, name), colour in zip([("raw", "model scores"), ("calibrated", "calibrated probabilities")], SLOTS):
+    c = cal_all[cal_all.scores == label]
+    ax.plot(c.predicted, c.observed, color=colour, lw=2, marker="o", ms=6, label=name)
+ax.set_xlabel("predicted probability (cross-validated, matched sample)", color=MUTED)
+ax.set_ylabel("share actually tagged by viewers", color=MUTED)
+ax.set_title("Calibration: raw scores are under-confident; calibrated\nprobabilities follow the diagonal", fontsize=10,
+             color=INK)
+ax.legend(fontsize=8, frameon=False, loc="upper left")
+ax = axes[1]
+for (medium, label), colour in zip([("film", "films"), ("tv", "TV episodes")], SLOTS):
+    d = dec[dec.medium == medium].sort_values("decade")
+    ax.plot(d.decade, d.mean_prob * 100, color=colour, lw=2, marker="o", ms=5, label=label)
+    ax.annotate(label, (d.decade.iloc[-1], d.mean_prob.iloc[-1] * 100), xytext=(6, 0), textcoords="offset points",
+                va="center", fontsize=8, color=INK)
+ax.set_xlim(1945, 2030)
+ax.set_xticks(range(1950, 2030, 10))
+ax.set_ylim(0, None)
+ax.set_ylabel("average probability of a stereotype tag (%)", color=MUTED)
+ax.set_title("Classifier score of every summary, by decade", fontsize=10, color=INK)
+ax.legend(fontsize=8, frameon=False, loc="lower left")
+fig.tight_layout()
+fig.savefig(RESULTS / "classifier/classifier.png")
+plt.close(fig)
+print("step 1-2 figures written")
