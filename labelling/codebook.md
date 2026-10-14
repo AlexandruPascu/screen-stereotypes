@@ -1,4 +1,4 @@
-# Labelling codebook (v1)
+# Labelling codebook (v1.1)
 
 Labels for a sample of film and TV plot summaries, used to check every measure in this project against a careful
 reading (studies 3, 5, 6 and 7) and to train better models later. One label record per summary.
@@ -88,3 +88,17 @@ the slur anywhere in the record.
 - One mention of a nationality as plain fact ("an Italian chef") is `neutral` unless the summary leans on the cliché.
 - Comedy is not an excuse: a caricature played for laughs is still `caricature`.
 - When unsure between `mild` and `none`, choose `none` and set `confidence` to 1.
+
+### Added in v1.1 (from the first 500 labels)
+
+- **Production and setting are not people.** A nationality, language or country that describes the production, its
+  origin or its setting ("a Thai drama", "a French co-production", "set in Vienna") is not a group entry. Add a group
+  only when the summary refers to people as members of it ("a Thai bride", "the Japanese soldiers").
+- **Individual versus group.** One character from a group doing something bad is not a group stereotype by itself.
+  Mark `stereotyped` when the summary attaches the group label to the stereotyped role or trait ("an Italian mobster",
+  "Arab terrorists", "a Mexican drug lord"), or describes the group as a whole that way. History told as events (a war,
+  colonial rule) is `neutral` unless the summary presents the trait as inherent to the people.
+- **Outdated or contested terms.** `slur_present` is `true` only for a term used as an insult, including historical
+  insults, and also when a quoted title or name contains one. An outdated or contested group name used descriptively
+  (older names for Black Americans, Native Americans, Roma or Inuit, for example) is not a slur: set `slur_present` to
+  `false` and write "outdated term" in `notes`.
