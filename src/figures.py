@@ -250,3 +250,66 @@ fig.tight_layout()
 fig.savefig(RESULTS / "classifier/classifier.png")
 plt.close(fig)
 print("step 1-2 figures written")
+
+# ---- labels: prevalence (random strata) and how each measure holds up ----
+prev = pd.read_csv(RESULTS / "labels/prevalence.csv")
+ERAS = ["before 1970", "1970-99", "2000+"]
+show = [("any_stereotype", "any stereotyped portrayal"), ("gender_any", "gender stereotype"),
+        ("group_stereotyped", "group stereotype"), ("prejudice_theme", "story about prejudice")]
+fig, axes = plt.subplots(1, 2, figsize=(12, 4.8), sharey=True)
+for ax, (medium, title) in zip(axes, [("film", "Films"), ("tv", "TV episodes")]):
+    ends = []
+    for (label, name), colour in zip(show, SLOTS):
+        d = prev[(prev.medium == medium) & (prev.label == label)].set_index("era").reindex(ERAS)
+        x = np.arange(len(ERAS))
+        ax.errorbar(x, d.share * 100, yerr=[(d.share - d.lo) * 100, (d.hi - d.share) * 100], color=colour, lw=2,
+                    marker="o", ms=6, capsize=3, label=name)
+        ends.append((name, d.share.iloc[-1] * 100))
+    ax.set_xticks(range(len(ERAS)))
+    ax.set_xticklabels(ERAS)
+    ax.set_xlim(-0.3, len(ERAS) - 0.3 + 1.1)
+    lo_, hi_ = ax.get_ylim()
+    placed = []
+    for name, y in sorted(ends, key=lambda t: t[1]):
+        y_text = max([y] + [p + (hi_ - lo_) * 0.055 for p in placed])
+        placed.append(y_text)
+        ax.annotate(name, (len(ERAS) - 1, y), xytext=(len(ERAS) - 1 + 0.12, y_text), textcoords="data", va="center",
+                    fontsize=8, color=INK)
+    ax.set_title(title, fontsize=10, color=INK)
+axes[0].set_ylabel("% of summaries (random sample, 95% intervals)", color=MUTED)
+axes[0].legend(fontsize=8, frameon=False, loc="upper right")
+fig.suptitle("How common stereotypes are in plot summaries, read by a labelling model (1,400 random summaries)",
+             fontsize=12, color=INK)
+fig.tight_layout()
+fig.savefig(RESULTS / "labels/prevalence.png")
+plt.close(fig)
+
+ms = pd.read_csv(RESULTS / "labels/measures.csv")
+ms = ms[(ms.labels_used == "all labels") & ~ms.measure.isin(["group, no stereotype words",
+                                                              "gender-coded wording (bottom 5%)"])]
+names = {"woman described by looks": "Woman described by looks → appearance stereotype",
+         "gender-coded wording (top 5%)": "Most gender-coded wording → any gender stereotype",
+         "woman as victim": "Woman as victim → damsel stereotype",
+         "group + pejorative words": "Group + pejorative words → group stereotype",
+         "slur detector": "Slur detector → slur",
+         "classifier probability (prejudice theme)": "Classifier top 2% → story about prejudice",
+         "classifier probability": "Classifier top 2% → stereotyped portrayal",
+         "viewer stereotype tag (prejudice theme)": "Viewer stereotype tag → story about prejudice",
+         "viewer stereotype tag": "Viewer stereotype tag → stereotyped portrayal"}
+ms = ms[ms.measure.isin(names)].assign(name=lambda d: d.measure.map(names)).sort_values("share_labelled_in_flagged")
+fig, ax = plt.subplots(figsize=(10, 5.2))
+y = np.arange(len(ms))
+for i, (b, p) in enumerate(zip(ms.share_in_random * 100, ms.share_labelled_in_flagged * 100)):
+    ax.plot([b, p], [i, i], color=RULE, lw=2, zorder=1)
+ax.scatter(ms.share_in_random * 100, y, color=MUTED, s=45, zorder=2, label="share in random summaries", edgecolor="white")
+ax.scatter(ms.share_labelled_in_flagged * 100, y, color=SLOTS[0], s=55, zorder=3, label="share in what the measure flags",
+           edgecolor="white")
+ax.set_yticks(y)
+ax.set_yticklabels(ms.name, fontsize=8)
+ax.set_xlabel("% of summaries the labelling model judged positive", color=MUTED)
+ax.set_title("How each measure holds up against a careful reading of 3,000 summaries", fontsize=10, color=INK)
+ax.legend(fontsize=8, frameon=False, loc="lower right")
+fig.tight_layout()
+fig.savefig(RESULTS / "labels/measures.png")
+plt.close(fig)
+print("label figures written")

@@ -18,10 +18,11 @@ measure them. Slurs are counted but left out of every published table.*
 | [1. Who plays whom](#1-who-plays-whom) | Detectives, judges and lawyers went from almost never women to 20–30% women; nurses, nannies and receptionists are still 83–90% women. |
 | [2. Who writes the episode](#2-who-writes-the-episode) | Episodes written by women cast about 3 points more women as guest stars than episodes of the same show written by men. |
 | [3. What characters do in plot summaries](#3-what-characters-do-in-plot-summaries) | Women went from 28% to 46% of the people summaries talk about, but are still described by their looks 1.5 times as often as their share. |
-| [4. Do audiences care?](#4-do-audiences-care) | Hardly: none of these measures moves an episode's IMDb rating by more than 0.02 points. |
+| [4. Do audiences care?](#4-do-audiences-care) | Hardly: no measure has a clear effect on an episode's IMDb rating larger than 0.02 points. |
 | [5. Groups, stereotype words and slurs](#5-groups-stereotype-words-and-slurs) | Slurs in character names fell sevenfold, but pejorative stereotype words still cluster around group mentions as much as in the 1950s. |
 | [6. The language of plot summaries](#6-the-language-of-plot-summaries) | Word embeddings trained on the summaries track the census and on-screen casting; gender-coded wording has halved since the 1950s, while terrorism words moved back towards Islam after 2001. |
-| [7. A stereotype classifier, done properly](#7-a-stereotype-classifier-done-properly) | Without the 2022 length shortcut, predicting viewers' stereotype tags from a summary reaches AUC 0.71–0.76, not 0.95; the tagged share is falling slowly. |
+| [7. A classifier, done properly](#7-a-classifier-done-properly) | Without the 2022 length shortcut it reaches AUC 0.71–0.76, not 0.95 — and what it detects is stories *about* prejudice, not stereotyped portrayals. |
+| [8. Checking the measures](#8-checking-the-measures) | A careful reading of 3,000 summaries confirms the measures: stereotyped portrayals fell from 25% of pre-1970 film summaries to 9% today, and from 16% to 5% on TV. |
 
 ## 1. Who plays whom
 
@@ -154,7 +155,7 @@ decades (temporal referencing); three training runs, averaged.
 
 Tables: [`results/embeddings/`](results/embeddings/).
 
-## 7. A stereotype classifier, done properly
+## 7. A classifier, done properly
 
 The 2022 notebook's question, rebuilt: from a summary alone, can a model tell which titles viewers tagged with a
 stereotype or prejudice keyword ("racist remark", "Italian stereotype", "homophobia"…)? 158,004 tagged titles, 7,222 of
@@ -163,26 +164,45 @@ them with such a keyword.
 ![Classifier calibration and scores by decade](results/classifier/classifier.png)
 
 - The 2022 shortcut is gone: untagged comparison titles are matched on medium, decade, number of keywords and text
-  length, so a model that sees only the length scores AUC 0.50, pure chance.
-- With whole series kept on one side of each cross-validation split, word-vector and word-count models reach AUC
-  0.71 (films 0.73, TV 0.67), and 0.68–0.74 across short, medium and long summaries.
-  A 2021 sentence-embedding model (`all-mpnet-base-v2`) used as frozen features does better: AUC 0.76 (films 0.79,
-  TV 0.72). A small BERT (`MiniLM`) fine-tuned on the CPU did not converge in its one run (AUC 0.53) and is not used;
-  newer open models are the next comparison. The 2022 model's 0.95 came mostly from text length; viewer tags are
-  noisy labels, so 0.7–0.76 is what a summary can honestly tell so far.
-- Calibrated on held-out folds, the scores are real probabilities. Applied to every summary (with the word-vector
-  model; the sentence model is too slow on a CPU for three million texts), the share likely to be tagged peaks for 1970s
-  films and falls slowly after; for TV it falls from 5.4% in the 1950s to 4.2% now.
-- The words that weigh most are the expected ones ("racist", "racism", "homophobic", "discrimination", "prejudice",
-  "interracial"); words found in fewer than 20 different films or series are left out so the model cannot learn
-  which shows were tagged.
+  length, so a model that sees only the length scores AUC 0.51, chance.
+- With whole series kept on one side of each cross-validation split, a word-vector model reaches AUC 0.71 (films 0.73,
+  TV 0.67), and a 2021 sentence-embedding model (`all-mpnet-base-v2`) 0.76 (films 0.79, TV 0.72). A small BERT
+  (`MiniLM`) fine-tuned on the CPU did not converge in its one run (AUC 0.53) and is not used.
+- **What it detects is stories about prejudice, not stereotyped portrayals.** Against the careful reading in study 8,
+  a third of its top 2% are stories about racism, sexism or homophobia (ten times the rate among random summaries,
+  AUC 0.75), but they are *less* likely than average to portray a stereotype. Viewer tags behave the same way: they
+  mark the theme. The 2022 model's 0.95 came mostly from text length, and the construct it chased was this theme.
+- Calibrated on held-out folds and applied to every summary (with the word-vector model), the share likely to be a
+  story about prejudice peaks for 1970s films and falls slowly after; for TV it falls from 5.4% in the 1950s to 4.2%.
+- The words that weigh most are the expected ones ("racist", "racism", "discrimination", "homophobic", "sexist",
+  "interracial", "prejudice"); words found in fewer than 20 different films or series are left out so the model cannot
+  learn which shows were tagged.
 
 Tables: [`results/classifier/`](results/classifier/).
 
-**Next: a careful reading.** Viewer tags and word lists are proxies. A labelling model will read 3,000 sampled summaries
-against a written codebook ([`labelling/`](labelling/)): 1,400 at random to estimate how common each stereotype really
-is, 1,600 drawn from what each measure flags to check its precision, and 300 labelled twice to measure how reliable the
-labels themselves are. `src/validate_labels.py` then scores every measure in this repository against that reading.
+## 8. Checking the measures
+
+A labelling model read 3,000 summaries against a written codebook ([`labelling/`](labelling/)): 1,400 drawn at random
+and 1,600 from what each measure flags. 300 were labelled twice, from scratch: the two passes agree on 97–99.7% of
+items (Cohen's kappa 0.76–0.96). Both passes came from the same model, so that is an upper bound on how reliable the
+labels are, not agreement between independent readers.
+
+![How common stereotypes are, by era](results/labels/prevalence.png)
+
+- Stereotyped portrayals fell from 25% of film summaries before 1970 to 9% since 2000, and from 16% to 5% for TV.
+  Most are gender stereotypes; group stereotypes are rarer (3–5% of summaries before 1970, under 3% since).
+- Stories about prejudice hold steady at 4–6% of film summaries in every era and 1–2% of TV episodes.
+
+![How each measure holds up](results/labels/measures.png)
+
+- The measures track what they claim, with false positives. "Woman described by looks" is right two times in three
+  (67%, against 3% among random summaries); the most gender-coded wording carries a gender stereotype about half the
+  time (48% against 12%); "woman as victim" and group-plus-pejorative-word flags are right about a quarter of the time
+  (29% and 22%, against 2–3%); the slur detector finds a slur in 37% of what it flags.
+- So the trends in studies 3, 5 and 6 are trustworthy as trends; a single flagged title is not a verdict.
+- Results hold when the labels the model was unsure about (confidence 1, 19% of them) are left out.
+
+Tables: [`results/labels/`](results/labels/).
 
 ## How it was measured
 
@@ -212,6 +232,8 @@ labels themselves are. `src/validate_labels.py` then scores every measure in thi
 - The full stereotype word lists mix pejorative words with neutral topic words ("mexico", "reservation"), which is why
   the pejorative index exists; both measure association, not a judgement on any single title.
 - Ratings come from IMDb's self-selected voters.
+- The labels in study 8 come from one language model following a written codebook; a second pass by the same model
+  agrees closely, which shows consistency but not that independent human readers would agree.
 - Garg et al.'s Black surname list overlaps heavily with common White surnames, so the embeddings give no usable
   Black–White contrast; surnames also stand in for groups only roughly.
 
