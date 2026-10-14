@@ -1,4 +1,4 @@
-# Labelling codebook (v1.1)
+# Labelling codebook (v1.2)
 
 Labels for a sample of film and TV plot summaries, used to check every measure in this project against a careful
 reading (studies 3, 5, 6 and 7) and to train better models later. One label record per summary.
@@ -102,3 +102,9 @@ the slur anywhere in the record.
   insults, and also when a quoted title or name contains one. An outdated or contested group name used descriptively
   (older names for Black Americans, Native Americans, Roma or Inuit, for example) is not a slur: set `slur_present` to
   `false` and write "outdated term" in `notes`.
+
+### Added in v1.2 (from the first 1,000 labels)
+
+- **Insults mixing race and class.** An insult that names or targets a racial or ethnic group counts as a slur even when
+  it also carries a class meaning ("white trash"). An insult about class alone ("redneck", "hillbilly", "trailer
+  trash") is not a slur for this project: set `slur_present` to `false` and write "class insult" in `notes`.

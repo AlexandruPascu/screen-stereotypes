@@ -12,6 +12,8 @@ Reports (results/labels/):
 import json
 import sys
 
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 from jsonschema import Draft202012Validator
@@ -19,7 +21,9 @@ from sklearn.metrics import cohen_kappa_score, roc_auc_score
 
 from paths import DERIVED, RESULTS
 
-OUT = RESULTS / "labels"
+import os
+
+OUT = Path(os.environ["LABELS_OUT"]) if "LABELS_OUT" in os.environ else RESULTS / "labels"  # provisional runs elsewhere
 OUT.mkdir(parents=True, exist_ok=True)
 validator = Draft202012Validator(json.load(open(RESULTS.parent / "labelling/schema.json")))
 key = pd.read_parquet(DERIVED / "labelling/key.parquet")
@@ -99,6 +103,7 @@ CHECKS = [
     ("classifier probability", "classifier top 2%", "any_stereotype", "stereotype_prob"),
     ("classifier probability (prejudice theme)", "classifier top 2%", "prejudice_theme", "stereotype_prob"),
     ("viewer stereotype tag", "viewer-tagged stereotype", "any_stereotype", "y"),
+    ("viewer stereotype tag (prejudice theme)", "viewer-tagged stereotype", "prejudice_theme", "y"),
     ("group + pejorative words", "group + pejorative words", "group_stereotyped", "group_offensive"),
     ("group, no stereotype words", "group, no stereotype words", "group_stereotyped", "group_mention_only"),
     ("slur detector", "slur detected", "slur", "slur_mask"),
@@ -109,14 +114,16 @@ CHECKS = [
 ]
 rows = []
 for name, stratum, label, score in CHECKS:
-    flagged = first[first.stratum == stratum]
-    precision = flagged[label].mean() if len(flagged) else np.nan
-    base = rand[label].mean()
-    r = rand.dropna(subset=[score])
-    x = (r[score] != 0).astype(float) if score in ("slur_mask",) else r[score].astype(float)
-    auc = roc_auc_score(r[label], x) if r[label].nunique() == 2 and x.nunique() > 1 else np.nan
-    rows.append((name, label, len(flagged), precision, base, precision / base if base else np.nan, len(r), auc))
-m = pd.DataFrame(rows, columns=["measure", "label", "flagged_items", "share_labelled_in_flagged", "share_in_random",
+    for scope, d in [("all labels", first), ("confidence 2-3", first[first.confidence >= 2])]:
+        flagged = d[d.stratum == stratum]
+        r_all = d[d.stratum.str.startswith("random")]
+        precision = flagged[label].mean() if len(flagged) else np.nan
+        base = r_all[label].mean()
+        r = r_all.dropna(subset=[score])
+        x = (r[score] != 0).astype(float) if score in ("slur_mask",) else r[score].astype(float)
+        auc = roc_auc_score(r[label], x) if r[label].nunique() == 2 and x.nunique() > 1 else np.nan
+        rows.append((name, label, scope, len(flagged), precision, base, precision / base if base else np.nan, len(r), auc))
+m = pd.DataFrame(rows, columns=["measure", "label", "labels_used", "flagged_items", "share_labelled_in_flagged", "share_in_random",
                                 "lift", "random_items", "auc_on_random"])
 m.to_csv(OUT / "measures.csv", index=False)
 print(m.round(3).to_string(index=False))
