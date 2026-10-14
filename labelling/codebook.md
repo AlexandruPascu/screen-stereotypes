@@ -1,4 +1,4 @@
-# Labelling codebook (v1.2)
+# Labelling codebook (v1.3)
 
 Labels for a sample of film and TV plot summaries, used to check every measure in this project against a careful
 reading (studies 3, 5, 6 and 7) and to train better models later. One label record per summary.
@@ -108,3 +108,10 @@ the slur anywhere in the record.
 - **Insults mixing race and class.** An insult that names or targets a racial or ethnic group counts as a slur even when
   it also carries a class meaning ("white trash"). An insult about class alone ("redneck", "hillbilly", "trailer
   trash") is not a slur for this project: set `slur_present` to `false` and write "class insult" in `notes`.
+
+### Added in v1.3 (from the first 1,500 labels)
+
+- **Which discrimination counts as a prejudice theme.** Only prejudice against the groups this project studies: gender,
+  race or ethnicity, nationality, religion, sexual orientation and gender identity. A story about age, disability or
+  class discrimination is not a `prejudice_theme` here: set `present` to `false` and `stance` to `null`, and write
+  "other discrimination: age" (or "disability", "class") in `notes` so these stories can still be found.
