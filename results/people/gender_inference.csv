@@ -1,0 +1,16 @@
+item,value
+people in IMDb,15713786.0
+gender from performer credits,3762978.0
+gender probability from first name,10011643.0
+unknown,1939165.0
+first names in the map,13362.0
+held-out performers: name known,0.8527
+held-out performers: women's share predicted,0.3655
+held-out performers: women's share actual,0.3656
+"held-out performers: hard labels correct, women",0.5534
+"held-out performers: hard labels correct, men",0.9997
+TMDb writers/directors matched,12188.0
+TMDb check: women's share predicted,0.2756
+TMDb check: women's share in TMDb,0.295
+"TMDb check: hard labels correct, women",0.5833
+"TMDb check: hard labels correct, men",1.0

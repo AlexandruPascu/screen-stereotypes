@@ -16,7 +16,7 @@ measure them. Slurs are counted but left out of every published table.*
 | Study | Main finding |
 | --- | --- |
 | [1. Who plays whom](#1-who-plays-whom) | Detectives, judges and lawyers went from almost never women to 20–30% women; nurses, nannies and receptionists are still 83–90% women. |
-| [2. Who writes the episode](#2-who-writes-the-episode) | Episodes written by women cast about 3 points more women as guest stars than episodes of the same show written by men. |
+| [2. Who writes the film or episode](#2-who-writes-the-film-or-episode) | Films written by women cast 11 points more women than comparable films written by men (8 points even for films by the same director) and far more often give a woman the first-listed role; within a TV series the gap is about 3 points. |
 | [3. What characters do in plot summaries](#3-what-characters-do-in-plot-summaries) | Women went from 28% to 46% of the people summaries talk about, but are still described by their looks 1.5 times as often as their share. |
 | [4. Do audiences care?](#4-do-audiences-care) | Hardly: no measure has a clear effect on an episode's IMDb rating larger than 0.02 points. |
 | [5. Groups, stereotype words and slurs](#5-groups-stereotype-words-and-slurs) | Slurs in character names fell sevenfold, but pejorative stereotype words still cluster around group mentions as much as in the 1950s. |
@@ -24,6 +24,7 @@ measure them. Slurs are counted but left out of every published table.*
 | [7. A classifier, done properly](#7-a-classifier-done-properly) | Without the 2022 length shortcut it reaches AUC 0.71–0.76, not 0.95 — and what it detects is stories *about* prejudice, not stereotyped portrayals. |
 | [8. Checking the measures](#8-checking-the-measures) | A careful reading of 3,000 summaries confirms the measures: stereotyped portrayals fell from 25% of pre-1970 film summaries to 9% today, and from 16% to 5% on TV. |
 | [9. A classifier trained on careful labels](#9-a-classifier-trained-on-careful-labels) | Trained on those labels, EmbeddingGemma-2 recognises stereotyped portrayals (AUC 0.86–0.90); on 37,049 fresh summaries, film portrayals fall from 22% in the 1930s to 8% now, and Westerns and romances lead. |
+| [10. Behind the camera, leads and ages](#10-behind-the-camera-leads-and-ages) | Women went from 3% to 16% of film directors and 6% to 23% of TV directors; they still hold only 38% of first-listed film roles, and the first-listed man is about 6 years older than the first-listed woman (9 in the 1940s). |
 
 ## 1. Who plays whom
 
@@ -43,7 +44,7 @@ played them. English-language film and TV: 2.5 million named fictional roles (of
 
 Tables: [`results/occupations/`](results/occupations/).
 
-## 2. Who writes the episode
+## 2. Who writes the film or episode
 
 TMDb lists writers, directors and guest cast, each with a gender, for 118,128 episodes of 8,156 scripted series.
 Guest stars are cast per episode, which is where an episode's writers have most say.
@@ -59,7 +60,23 @@ Guest stars are cast per episode, which is where an episode's writers have most 
 - Writers' gender makes no clear difference to whether guests get counter-stereotypical jobs (a woman detective, a
   male nurse).
 
-Tables: [`results/writers/`](results/writers/).
+IMDb lists the writers and directors of every film and episode too, without gender; gender then comes from performer
+credits or, for everyone else, from the first name (see [How it was measured](#how-it-was-measured)). That extends the
+study to 266,053 films and checks it on 2.4 million TV episodes.
+
+![Writer effects on casting, films and TV](results/behind_camera/writer_effects.png)
+
+- Films written by women only cast 10.7 percentage points more women than films of the same genre and decade written
+  by men only, and 8.3 points more than films by the **same director** with an all-male writing team. Their top three
+  roles are 11–14 points more often women's, and the first-listed role is a woman's 22–24 points more often.
+- A woman director adds 3 points to the cast and 9 points to the chance of a woman in the first-listed role.
+- In TV episodes the IMDb version finds 3.5 points within the same series, matching the TMDb result above (2.9) from a
+  different source and a different way of knowing gender. Film writers shape the whole story and cast; an episode's
+  writers work inside a series' fixed cast, which fits the smaller effect.
+- These are comparisons, not experiments: women writers may be hired for women-centred projects, which comparing
+  films by the same director narrows but cannot rule out.
+
+Tables: [`results/writers/`](results/writers/), [`results/behind_camera/writer_models.csv`](results/behind_camera/writer_models.csv).
 
 ## 3. What characters do in plot summaries
 
@@ -240,11 +257,47 @@ cross-validation, repeated three times, and the fair test is the 1,400 random su
 
 Tables: [`results/label_classifier/`](results/label_classifier/).
 
+## 10. Behind the camera, leads and ages
+
+IMDb's crew credits (1.3 million writing and 0.9 million directing credits on fiction titles, plus producers, editors,
+composers, cinematographers, casting directors and production designers), the order of each cast list, and the birth
+years IMDb holds for 683,000 people.
+
+![Women's share of jobs behind the camera](results/behind_camera/jobs_by_decade.png)
+
+- Women went from 3% of film directors in the 1940s to 16% in the 2020s, and from 6% to 23% in TV; from 12% of film
+  writers (falling to 8% in the 1960s) to 22%, and from 17% to 34% of TV writers; from about 5% of producers to 26%
+  (film) and 34% (TV).
+- Production design rose from 3% to 42%; cinematography and music scoring are still 10–13% women. Editing is the
+  exception that fell: a quarter of film editors were women in the 1980s, 17% now.
+- Casting is the one job women dominate: 55–65% since the 1980s.
+
+![Women in leading roles](results/behind_camera/leads_by_decade.png)
+
+- In films, women have held about a third of first-listed roles since the 1940s, and 38% in the 2020s, but 39–44% of
+  second and third places: the woman's part is the second lead. In TV series women went from a quarter of first-listed
+  roles in the 1950s to 43% now, ahead of film.
+
+![Ages of leading actors](results/behind_camera/ages_by_decade.png)
+
+- Women in the top three film roles were about ten years younger than the men in the 1940s (29 against 39). Within the
+  same film, the first-listed man was 9.4 years older than the first-listed woman in the 1940s and about 6 years older
+  since 2000.
+- Average ages for the 2010s and 2020s are likely too high: IMDb has birth years for 98% of 1940s leads but only 54%
+  of 2020s leads, mostly the better-known (older) ones. The within-film gap is less affected.
+
+Tables: [`results/behind_camera/`](results/behind_camera/).
+
 ## How it was measured
 
 - **Gender** comes from IMDb's actor/actress credit category, TMDb's gender field and, in summaries, from pronouns,
   gendered nouns and the title's own cast list (a character name that belongs only to roles played by actresses counts
   as a woman). Non-binary identities are rarely recorded in either source.
+- **Gender behind the camera** (study 10, and study 2 for films): IMDb records none. People with acting credits get
+  theirs from the credit; everyone else gets a probability from their first name, learned from 3.8 million performers.
+  Averaging that probability estimates a group's share of women without bias (held-out performers: 36.55% predicted
+  against 36.56% actual), where hard yes/no labels would undercount women; against TMDb's own gender field for 12,188
+  writers and directors it gives 27.6% women against TMDb's 29.5%, so it is slightly conservative.
 - **Jobs** are recognised in character names with a hand-checked word list: the last job word wins ("police
   detective" → detective), words that are also surnames count only when used as a job ("the baker", not "John
   Baker"), and gendered job words (waitress, policeman) are kept apart. English-language productions only, since an
@@ -270,6 +323,8 @@ Tables: [`results/label_classifier/`](results/label_classifier/).
 - Ratings come from IMDb's self-selected voters.
 - The labels in study 8 come from one language model following a written codebook; a second pass by the same model
   agrees closely, which shows consistency but not that independent human readers would agree.
+- IMDb lists casts in credits order, usually billing order but sometimes order of appearance, so "first-listed" is an
+  approximation of the lead; the top three is the steadier measure.
 - Garg et al.'s Black surname list overlaps heavily with common White surnames, so the embeddings give no usable
   Black–White contrast; surnames also stand in for groups only roughly.
 
@@ -279,7 +334,9 @@ Set `STEREOTYPES_DATA` to a local folder holding the sources below and `PYTHON` 
 duckdb, statsmodels, scikit-learn, gensim, spacy (`en_core_web_sm`), torch, sentence-transformers, transformers,
 mwparserfromhell, matplotlib, lxml and wordfreq, then run `bash src/run_all.sh` (or `bash src/run_all.sh <step>` to
 start from a step). `src/transformer.py`, `src/label_classifier.py` (about four hours on a CPU) and `src/score_sample.py` (about two
-hours) run separately; the labels themselves come from `labelling/`. No raw data is stored in this
+hours) run separately; the labels themselves come from `labelling/`.
+`src/imdb_people.py`, `src/behind_camera.py` and `src/film_writers.py` add the crew, leads and ages (studies 2 and
+10). No raw data is stored in this
 repository.
 
 ## Data and terms

@@ -387,3 +387,105 @@ fig.tight_layout()
 fig.savefig(RESULTS / "label_classifier/sample_by_genre.png")
 plt.close(fig)
 print("sample figures written")
+
+# ---- behind the camera, leads, ages, writers (IMDb crew data) ----
+BC = RESULTS / "behind_camera"
+jb = pd.read_csv(BC / "jobs_by_decade.csv")
+jb = jb.assign(w=jb.women_share * jb.with_gender).groupby(["job", "medium", "decade"])[["w", "with_gender"]].sum().reset_index()
+jb["share"] = jb.w / jb.with_gender
+JOBS = [("director", "Directors"), ("writer", "Writers"), ("producer", "Producers"), ("editor", "Editors"),
+        ("cinematographer", "Cinematographers"), ("composer", "Composers"),
+        ("production_designer", "Production designers"), ("casting_director", "Casting directors")]
+fig, axes = plt.subplots(2, 4, figsize=(14, 6.2), sharey=True, sharex=True)
+for ax, (job, title) in zip(axes.ravel(), JOBS):
+    for (medium, name), colour in zip([("film", "films"), ("tv", "TV")], SLOTS):
+        d = jb[(jb.job == job) & (jb.medium == medium) & (jb.with_gender >= 200)].sort_values("decade")
+        ax.plot(d.decade, d.share * 100, color=colour, lw=2, marker="o", ms=3, label=name)
+    ax.set_title(title, fontsize=10, color=INK)
+    ax.set_xticks([1950, 1970, 1990, 2010])
+    ax.set_xticklabels(["1950s", "1970s", "1990s", "2010s"], fontsize=8)
+for ax in axes[:, 0]:
+    ax.set_ylabel("% women", color=MUTED)
+axes[0, 0].legend(fontsize=8, frameon=False, loc="upper left")
+fig.suptitle("Women's share of jobs behind the camera, fiction film and TV (IMDb credits; gender from credits or first "
+             "name)", fontsize=12, color=INK)
+fig.tight_layout()
+fig.savefig(BC / "jobs_by_decade.png")
+plt.close(fig)
+
+ld = pd.read_csv(BC / "leads_by_decade.csv")
+ld = ld.assign(w=ld.women_share * ld.credits).groupby(["medium", "decade", "position"])[["w", "credits"]].sum().reset_index()
+ld["share"] = ld.w / ld.credits
+fig, axes = plt.subplots(1, 2, figsize=(12, 4.6), sharey=True)
+for ax, (medium, title) in zip(axes, [("film", "Films"), ("tv", "TV series")]):
+    ends = []
+    for (pos, name), colour in zip([("1st listed", "1st listed"), ("2nd-3rd listed", "2nd–3rd listed"),
+                                    ("4th or later", "4th or later")], SLOTS):
+        d = ld[(ld.medium == medium) & (ld.position == pos) & (ld.credits >= 500)].sort_values("decade")
+        ax.plot(d.decade, d.share * 100, color=colour, lw=2, marker="o", ms=4, label=name)
+        ends.append((name, d.share.iloc[-1] * 100, d.decade.iloc[-1]))
+    ax.set_ylim(15, 50)
+    placed = []
+    for name, yv, xv in sorted(ends, key=lambda t: t[1]):
+        y_text = max([yv] + [p + 1.8 for p in placed])
+        placed.append(y_text)
+        ax.annotate(name, (xv, yv), xytext=(xv + 2, y_text), textcoords="data", va="center", fontsize=8, color=INK)
+    ax.set_xlim(1935, 2048)
+    ax.set_xticks(range(1940, 2030, 20))
+    ax.set_title(title, fontsize=10, color=INK)
+axes[0].set_ylabel("% of acting credits held by women", color=MUTED)
+axes[0].legend(fontsize=8, frameon=False, loc="lower left")
+fig.suptitle("Women in leading roles: share by position in the credited cast", fontsize=12, color=INK)
+fig.tight_layout()
+fig.savefig(BC / "leads_by_decade.png")
+plt.close(fig)
+
+ag = pd.read_csv(BC / "ages_by_decade.csv")
+ag = ag.assign(a=ag.mean_age * ag.with_age).groupby(["decade", "female"])[["a", "with_age"]].sum().reset_index()
+ag["age"] = ag.a / ag.with_age
+gp = pd.read_csv(BC / "lead_age_gap_by_decade.csv")
+gp = gp.assign(g=gp.mean_gap * gp.films).groupby("decade")[["g", "films"]].sum().reset_index()
+gp["gap"] = gp.g / gp.films
+fig, axes = plt.subplots(1, 2, figsize=(12, 4.4))
+for (female, name), colour in zip([(False, "men in top-3 roles"), (True, "women in top-3 roles")], SLOTS):
+    d = ag[ag.female == female].sort_values("decade")
+    axes[0].plot(d.decade, d.age, color=colour, lw=2, marker="o", ms=4, label=name)
+    axes[0].annotate(name, (d.decade.iloc[-1], d.age.iloc[-1]), xytext=(6, 0), textcoords="offset points", va="center",
+                     fontsize=8, color=INK)
+axes[0].set_xlim(1935, 2045)
+axes[0].set_xticks(range(1940, 2030, 20))
+axes[0].set_ylabel("average age at release", color=MUTED)
+axes[0].set_title("Ages of the top-3 cast (films with 100+ votes); birth years known for\n98% of 1940s leads but 54% of "
+                  "2020s leads, so recent ages are likely too high", fontsize=10, color=INK)
+axes[0].legend(fontsize=8, frameon=False, loc="upper left")
+axes[1].plot(gp.decade, gp.gap, color=SLOTS[0], lw=2, marker="o", ms=4)
+axes[1].axhline(0, color=RULE, lw=1)
+axes[1].set_ylim(0, None)
+axes[1].set_ylabel("years", color=MUTED)
+axes[1].set_title("How much older the first-listed man is than the first-listed woman\n(same film, so less affected "
+                  "by missing birth years)", fontsize=10, color=INK)
+fig.tight_layout()
+fig.savefig(BC / "ages_by_decade.png")
+plt.close(fig)
+
+wm = pd.read_csv(BC / "writer_models.csv")
+wm = wm[wm.variable == "writers_women"]
+ONAMES = {"cast_women": "women's share of the credited cast", "top3_women": "women's share of the top-3 roles",
+          "first_woman": "first-listed role is a woman's"}
+designs = ["TV episodes: same series and year", "films: same director", "films: same genre and decade"]
+fig, ax = plt.subplots(figsize=(10, 4))
+for (outcome, name), colour, off in zip(ONAMES.items(), SLOTS, [0.22, 0, -0.22]):
+    d = wm[wm.outcome == outcome].set_index("design").reindex(designs)
+    yv = np.arange(len(designs)) + off
+    ax.errorbar(d.estimate * 100, yv, xerr=[(d.estimate - d.lo) * 100, (d.hi - d.estimate) * 100], fmt="o",
+                color=colour, ecolor=RULE, capsize=3, label=name)
+ax.axvline(0, color=RULE, lw=1)
+ax.set_yticks(range(len(designs)))
+ax.set_yticklabels(designs, fontsize=9)
+ax.set_xlabel("difference in percentage points, all-women vs all-men writing team (95% intervals)", color=MUTED)
+ax.set_title("Who writes changes who is cast — strongly in films, modestly in TV episodes", fontsize=10, color=INK)
+ax.legend(fontsize=8, frameon=False, loc="lower right")
+fig.tight_layout()
+fig.savefig(BC / "writer_effects.png")
+plt.close(fig)
+print("behind-camera figures written")
