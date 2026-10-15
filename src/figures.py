@@ -313,3 +313,77 @@ fig.tight_layout()
 fig.savefig(RESULTS / "labels/measures.png")
 plt.close(fig)
 print("label figures written")
+
+# ---- label-trained classifier: which text representation predicts the careful labels best ----
+cv = pd.read_csv(RESULTS / "label_classifier/cv_metrics.csv")
+cv = cv[cv.scope == "random items"]
+TNAMES = {"any_stereotype": "any stereotyped portrayal", "gender_any": "gender stereotype",
+          "group_stereotyped": "group stereotype", "prejudice_theme": "story about prejudice"}
+MNAMES = {"glove": "GloVe word vectors (2014)", "tf-idf": "word counts (TF-IDF)", "measures": "hand-built measures",
+          "mpnet": "mpnet sentence embeddings (2021)", "qwen3": "Qwen3-Embedding-0.6B (2025)",
+          "gemma2": "EmbeddingGemma-2 (2026)"}
+order = ["glove", "measures", "tf-idf", "mpnet", "qwen3", "gemma2"]
+fig, ax = plt.subplots(figsize=(10, 4.8))
+offsets = np.linspace(0.27, -0.27, len(TNAMES))  # first legend entry on top, as in the legend
+for (target, name), colour, off in zip(TNAMES.items(), SLOTS, offsets):
+    d = cv[cv.target == target].set_index("model").reindex(order)
+    ax.scatter(d.auc, np.arange(len(order)) + off, color=colour, s=50, edgecolor="white", linewidth=1, label=name, zorder=3)
+ax.set_yticks(range(len(order)))
+ax.set_yticklabels([MNAMES[m] for m in order], fontsize=9)
+ax.axvline(0.5, color=RULE, lw=1)
+ax.set_xlim(0.6, 0.95)
+ax.set_xlabel("AUC on the 1,400 random labelled summaries (series held out, 3 repeats)", color=MUTED)
+ax.set_title("Predicting the careful labels: newer embedding models do best", fontsize=10, color=INK)
+ax.legend(fontsize=8, frameon=False, loc="lower right")
+fig.tight_layout()
+fig.savefig(RESULTS / "label_classifier/model_comparison.png")
+plt.close(fig)
+print("label classifier figure written")
+
+# ---- label-trained classifier applied to a fresh random sample: trends by decade and genre ----
+sp = pd.read_csv(RESULTS / "label_classifier/sample_prevalence_by_decade.csv")
+fig, axes = plt.subplots(1, 2, figsize=(12, 4.8), sharey=True)
+for ax, (medium, title) in zip(axes, [("film", "Films"), ("tv", "TV episodes")]):
+    d = sp[(sp.medium == medium) & (sp.summaries >= 500)].sort_values("decade")
+    ends = []
+    for (target, name), colour in zip(TNAMES.items(), SLOTS):
+        ax.plot(d.decade, d[target] * 100, color=colour, lw=2, marker="o", ms=5, label=name)
+        ends.append((name, d[target].iloc[-1] * 100))
+    lo_, hi_ = 0, max(22, sp[["any_stereotype"]].max().iloc[0] * 100 + 2)
+    ax.set_ylim(lo_, hi_)
+    placed = []
+    for name, yv in sorted(ends, key=lambda t: t[1]):
+        y_text = max([yv] + [p + (hi_ - lo_) * 0.055 for p in placed])
+        placed.append(y_text)
+        ax.annotate(name, (d.decade.iloc[-1], yv), xytext=(d.decade.iloc[-1] + 2, y_text), textcoords="data",
+                    va="center", fontsize=8, color=INK)
+    ax.set_xlim(d.decade.min() - 4, d.decade.max() + 28)
+    ax.set_xticks(range(int(d.decade.min()), 2030, 10))
+    ax.set_xticklabels([f"{x}s" for x in range(int(d.decade.min()), 2030, 10)], fontsize=8)
+    ax.set_title(title, fontsize=10, color=INK)
+axes[0].set_ylabel("% of summaries (calibrated classifier)", color=MUTED)
+axes[0].legend(fontsize=8, frameon=False, loc="upper right")
+fig.suptitle("Stereotypes in a fresh random sample of 37,049 summaries, scored by the label-trained classifier",
+             fontsize=12, color=INK)
+fig.tight_layout()
+fig.savefig(RESULTS / "label_classifier/sample_trends.png")
+plt.close(fig)
+
+sg = pd.read_csv(RESULTS / "label_classifier/sample_prevalence_by_genre.csv").sort_values("any_stereotype")
+fig, ax = plt.subplots(figsize=(9, 6.5))
+y = np.arange(len(sg))
+ax.barh(y, sg.any_stereotype * 100, color=SLOTS[0], height=0.65, label="any stereotyped portrayal")
+# one summary can carry both kinds, so the parts are shown as marks on the bar, never stacked into a false sum
+ax.scatter(sg.group_stereotyped * 100, y, color=SLOTS[2], s=40, edgecolor="white", linewidth=1, zorder=3,
+           label="of which: group stereotype")
+for yi, total in zip(y, sg.any_stereotype * 100):
+    ax.annotate(f"{total:.0f}%", (total + 0.4, yi), va="center", fontsize=8, color=MUTED)
+ax.set_yticks(y)
+ax.set_yticklabels(sg.genre, fontsize=8)
+ax.set_xlabel("% of summaries (calibrated classifier, sample weighted to the corpus)", color=MUTED)
+ax.set_title("Stereotyped portrayals by genre, all decades", fontsize=10, color=INK)
+ax.legend(fontsize=8, frameon=False, loc="lower right")
+fig.tight_layout()
+fig.savefig(RESULTS / "label_classifier/sample_by_genre.png")
+plt.close(fig)
+print("sample figures written")

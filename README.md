@@ -23,6 +23,7 @@ measure them. Slurs are counted but left out of every published table.*
 | [6. The language of plot summaries](#6-the-language-of-plot-summaries) | Word embeddings trained on the summaries track the census and on-screen casting; gender-coded wording has halved since the 1950s, while terrorism words moved back towards Islam after 2001. |
 | [7. A classifier, done properly](#7-a-classifier-done-properly) | Without the 2022 length shortcut it reaches AUC 0.71–0.76, not 0.95 — and what it detects is stories *about* prejudice, not stereotyped portrayals. |
 | [8. Checking the measures](#8-checking-the-measures) | A careful reading of 3,000 summaries confirms the measures: stereotyped portrayals fell from 25% of pre-1970 film summaries to 9% today, and from 16% to 5% on TV. |
+| [9. A classifier trained on careful labels](#9-a-classifier-trained-on-careful-labels) | Trained on those labels, EmbeddingGemma-2 recognises stereotyped portrayals (AUC 0.86–0.90); on 37,049 fresh summaries, film portrayals fall from 22% in the 1930s to 8% now, and Westerns and romances lead. |
 
 ## 1. Who plays whom
 
@@ -167,7 +168,8 @@ them with such a keyword.
   length, so a model that sees only the length scores AUC 0.51, chance.
 - With whole series kept on one side of each cross-validation split, a word-vector model reaches AUC 0.71 (films 0.73,
   TV 0.67), and a 2021 sentence-embedding model (`all-mpnet-base-v2`) 0.76 (films 0.79, TV 0.72). A small BERT
-  (`MiniLM`) fine-tuned on the CPU did not converge in its one run (AUC 0.53) and is not used.
+  (`MiniLM`) fine-tuned on the CPU did not converge in its one run (AUC 0.53) and is not used. Trained on careful
+  labels instead of viewer tags, newer models do much better at the question that matters: see study 9.
 - **What it detects is stories about prejudice, not stereotyped portrayals.** Against the careful reading in study 8,
   a third of its top 2% are stories about racism, sexism or homophobia (ten times the rate among random summaries,
   AUC 0.75), but they are *less* likely than average to portray a stereotype. Viewer tags behave the same way: they
@@ -203,6 +205,40 @@ labels are, not agreement between independent readers.
 - Results hold when the labels the model was unsure about (confidence 1, 19% of them) are left out.
 
 Tables: [`results/labels/`](results/labels/).
+
+## 9. A classifier trained on careful labels
+
+The classifier in study 7 learned what viewers tag, which turned out to be stories about prejudice. Trained instead on
+the 3,000 careful labels from study 8, the question becomes the one the project set out to answer: does a summary
+portray a stereotype? Each text representation feeds a logistic regression; whole series are held out in 5-fold
+cross-validation, repeated three times, and the fair test is the 1,400 random summaries.
+
+![Which text representation predicts the careful labels best](results/label_classifier/model_comparison.png)
+
+- The newest open embedding models do best. EmbeddingGemma-2 (Google, 2026) recognises stereotyped portrayals with
+  AUC 0.86 and gender stereotypes with 0.89; Qwen3-Embedding-0.6B (2025) does best on group stereotypes (0.85, from
+  only 33 random positives) and both reach 0.90 on stories about prejudice. A 2021 model (mpnet) is 0.02–0.04 behind,
+  GloVe word vectors (2014) 0.09–0.18, and this project's hand-built measures add at most 0.005 once a good embedding
+  is in.
+- In practice: of the 5% of random summaries EmbeddingGemma-2 ranks highest, 79% carry a stereotyped portrayal (64% of
+  the top 10%), against 13.5% overall. Group stereotypes are rare enough (2.4%) that no model flags them precisely yet.
+
+![Stereotypes by decade in a fresh sample of 37,049 summaries](results/label_classifier/sample_trends.png)
+
+- Applied to a fresh random sample (up to 2,000 summaries per decade and medium, none of them labelled), with
+  probabilities calibrated on the random labelled items: stereotyped portrayals fall from 22% of 1930s film summaries
+  to 8% in the 2020s, and on TV from 15% in the 1950s to 5%. Almost all of the fall is in gender stereotypes; group
+  stereotypes drift down slowly (about 3% of film summaries in the 1930s–90s, 1.5% now).
+- Stories about prejudice move the other way in film: 3% of 1930s summaries, 5% since the 1990s.
+- All 24 era-level estimates fall inside the 95% intervals of the labelled sample; the classifier's trend is slightly
+  flatter than the labels', so if anything it understates the decline.
+
+![Stereotyped portrayals by genre](results/label_classifier/sample_by_genre.png)
+
+- Westerns lead (21% of summaries, with the most group stereotypes, 6%), then romance (17%, almost all gender),
+  thrillers, horror, musicals and crime (15–16%); documentaries, sport and reality TV are lowest (3–5%).
+
+Tables: [`results/label_classifier/`](results/label_classifier/).
 
 ## How it was measured
 
@@ -242,7 +278,8 @@ Tables: [`results/labels/`](results/labels/).
 Set `STEREOTYPES_DATA` to a local folder holding the sources below and `PYTHON` to an environment with pandas, pyarrow,
 duckdb, statsmodels, scikit-learn, gensim, spacy (`en_core_web_sm`), torch, sentence-transformers, transformers,
 mwparserfromhell, matplotlib, lxml and wordfreq, then run `bash src/run_all.sh` (or `bash src/run_all.sh <step>` to
-start from a step). `src/transformer.py` runs separately (CPU, about two hours). No raw data is stored in this
+start from a step). `src/transformer.py`, `src/label_classifier.py` (about four hours on a CPU) and `src/score_sample.py` (about two
+hours) run separately; the labels themselves come from `labelling/`. No raw data is stored in this
 repository.
 
 ## Data and terms
@@ -257,7 +294,8 @@ repository.
 - Plot text and keywords collected for the 2022 project, and IMDb's 2017 plot list: private copies, not republished.
 - Wikipedia episode summaries (CC BY-SA 4.0) and Wikidata links (CC0), fetched through the official APIs.
 - Garg et al. (2018) word lists and their census occupation shares by decade (from IPUMS), from the authors'
-  repository; GloVe word vectors (PDDL); `all-mpnet-base-v2` (Apache-2.0) and `MiniLM-L12-H384` (MIT).
+  repository; GloVe word vectors (PDDL); `all-mpnet-base-v2` (Apache-2.0), `MiniLM-L12-H384` (MIT),
+  `Qwen3-Embedding-0.6B` (Apache-2.0) and `EmbeddingGemma-2` (Apache-2.0), all run locally.
 - SeeGULL (Google, CC BY 4.0), StereoSet (CC BY-SA 4.0), HurtLex (CC BY-NC-SA 4.0), Wikipedia lists of ethnic and
   religious slurs (CC BY-SA 4.0). The lexicon built from them is not included; it keeps their licences.
 
