@@ -519,7 +519,8 @@ FNAMES = {"cast_women": "women's share of the credited cast (0→100%)",
           "social_stereotype": "names one of them with its stereotype words",
           "social_pejorative": "names one of them with pejorative stereotype words",
           "social_label": "calls one of them by an insulting label",
-          "social_portrayal": "one of them portrayed through a stereotype (study 11 classifier, 0→1)"}
+          "social_presence": "one of them appears (study 11 classifier, 0→1)",
+          "social_portrayal": "one of them stereotyped, presence held fixed (study 11 classifier, 0→1)"}
 FDESIGNS = {"same director": "a director's films compared with each other",
             "same franchise": "films of one franchise compared with each other",
             "same genre and language": "films of the same genre, decade and language"}

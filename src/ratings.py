@@ -91,7 +91,7 @@ ep = ep.merge(sg[["title", "social_named", "social_stereotype", "social_pejorati
     columns={"title": "t4"}), left_on="tconst", right_on="t4", how="left")
 ep["log_votes"] = np.log1p(ep.votes)
 tl = con.execute(f"""SELECT title AS tconst, max(words) AS summary_words,
-    arg_max(source, (words, text)) AS summary_source
+    arg_max(source, (words, text, source)) AS summary_source  -- one text can come from several sources
     FROM '{DERIVED / "texts.parquet"}' WHERE words >= 5 GROUP BY title""").df()
 ep = ep.merge(tl, on="tconst", how="left")
 ep["log_summary_words"] = np.log1p(ep.summary_words)

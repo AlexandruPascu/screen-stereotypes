@@ -18,7 +18,7 @@ measure them. Slurs and insulting labels are counted but left out of every publi
 | [1. Who plays whom](#1-who-plays-whom) | Detectives, judges and lawyers went from almost never women to 20–30% women; nurses, nannies and receptionists are still 83–90% women. |
 | [2. Who writes the film or episode](#2-who-writes-the-film-or-episode) | Films written by women cast 11 points more women than comparable films written by men (8 points even for films by the same director) and far more often give a woman the first-listed role; within a TV series the gap is about 3 points. |
 | [3. What characters do in plot summaries](#3-what-characters-do-in-plot-summaries) | Women went from 28% to 46% of the people summaries talk about, but are still described by their looks 1.5 times as often as their share. |
-| [4. Do audiences care?](#4-do-audiences-care) | Little: within a TV series no measure moves an episode's IMDb rating by more than 0.04 points; films with more women on screen rate slightly lower, even among a director's own films (0.12 points for an all-female against an all-male cast). |
+| [4. Do audiences care?](#4-do-audiences-care) | Within a TV series, hardly: no measure moves an episode's IMDb rating by more than 0.04 points. Films whose summary portrays a stereotype rate about 0.3 points lower than the same director's other films, and films with more women on screen slightly lower (0.12 points for an all-female against an all-male cast). |
 | [5. Groups, stereotype words and slurs](#5-groups-stereotype-words-and-slurs) | Slurs in character names fell ninefold, but pejorative stereotype words still cluster around group mentions as much as in the 1950s. |
 | [6. The language of plot summaries](#6-the-language-of-plot-summaries) | Word embeddings trained on the summaries track the census and on-screen casting; gender-coded wording has halved since the 1950s, while terrorism words moved back towards Islam after 2001. |
 | [7. A classifier, done properly](#7-a-classifier-done-properly) | Without the 2022 length shortcut it reaches AUC 0.71–0.76, not 0.95 — and what it detects is stories *about* prejudice, not stereotyped portrayals. |
@@ -130,16 +130,19 @@ one franchise (TMDb collections); and among films of the same genre combination,
   not say who rated, so this cannot separate how the films differ from who votes on them.
 - Who wrote or directed the film barely matters for its rating: 0.03 points at most for an all-women writing team,
   nothing measurable for a woman director.
-- Summaries that study 9's classifier reads as a stereotyped portrayal go with lower ratings: 0.25 points below the
-  director's other films where it is sure (0.55 below similar films), across the 4,000 films in its scored sample.
-  Stories about prejudice rate slightly higher (0.07 points) and draw 18% more votes.
-- Films whose summaries name one of study 11's six groups (immigrants, disability, mental illness, old age, poverty,
-  homelessness) also rate higher, among a director's own films too (0.13 points). Pairing the group with stereotype
-  words adds nothing beyond naming it, insulting labels make no clear difference, and study 11's classifier finds no
-  clear link with stereotyped portrayals of them (4,000 films). Within a TV series, none of these moves an episode's
-  rating by more than 0.03 points.
+- Films whose summary study 9's classifier reads as a stereotyped portrayal rate lower. Scored on all 188,049 films
+  with a summary, a film the classifier is sure about rates 0.31 points below the same director's other films of the
+  same genres (0.56 below similar films; 0.08 within a franchise, too few films to be sure) and draws 6% fewer
+  votes. Stories about prejudice rate slightly higher (0.07 points) and draw 17% more votes.
+- Films that feature one of study 11's six groups (immigrants, disability, mental illness, old age, poverty,
+  homelessness) rate higher, among a director's own films too: 0.13 points when the summary names the group, 0.22
+  when study 11's classifier reads one as present. Portraying them through a stereotype pulls the other way: with
+  their presence held fixed, a stereotyped portrayal goes with 0.26 points less across similar films and 0.06 less
+  among a director's own films. Stereotype words next to a mention add nothing beyond naming the group, and insulting
+  labels make no clear difference. Within a TV series, none of these moves an episode's rating by more than 0.03
+  points.
 - Group stereotype words show no consistent link with ratings among a director's own films. Across similar films
-  they go with 20–30% more votes, a gap that looked like 70% before summary length was held fixed. Slurs are too rare
+  they go with 18–29% more votes, a gap that looked like 70% before summary length was held fixed. Slurs are too rare
   in film summaries to tell.
 
 Tables: [`results/ratings/models.csv`](results/ratings/models.csv) (episodes),
@@ -465,7 +468,8 @@ on a CPU) and `src/score_sample.py` (about two hours) run separately; the labels
 `src/imdb_people.py`, `src/behind_camera.py`, `src/film_writers.py` and `src/ratings_films.py` add the crew, leads and
 ages (studies 2 and 10) and the films half of study 4; `src/label_sample_social.py`,
 `src/validate_labels_social.py` and `src/social_classifier.py` (about 50 minutes on a CPU) draw, score and model
-study 11's labelling sample. No raw data is stored in this repository.
+study 11's labelling sample; `src/score_films.py` (about ten hours on a CPU, resumable) scores every rated film with
+both label-trained classifiers for study 4. No raw data is stored in this repository.
 
 ## Data and terms
 
