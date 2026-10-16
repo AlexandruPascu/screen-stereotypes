@@ -13,6 +13,11 @@ Measures (each model uses the episodes where that measure exists):
   group_stereotype        the summary mentions a group together with that group's stereotype words (0/1)
   offensive_stereotype    the same with only the pejorative stereotype words (0/1)
   slur                    the summary contains a slur (0/1)
+  social_named            the summary names one of study 11's six groups (immigrants, disability, mental illness,
+                          older people, poverty, homelessness) (0/1)
+  social_stereotype       it names one of them together with that group's stereotype words (0/1)
+  social_pejorative       the same with only the pejorative stereotype words (0/1)
+  social_label            it calls one of them by an insulting label (0/1)
 The summary measures come from each episode's longest summary, and popular episodes have longer, more detailed ones, so
 their models also hold the summary's length (log words) and source fixed.
 Writes results/ratings/models.csv. Correlational: the 2022 null result used a measure that did not measure stereotypes.
@@ -75,8 +80,18 @@ off = pd.read_parquet(DERIVED / "title_groups_offensive.parquet")
 off["offensive_stereotype"] = ((off.mention_mask & off.stereotype_mask) != 0).astype(float)
 ep = ep.merge(off[["title", "offensive_stereotype"]].rename(columns={"title": "t3"}), left_on="tconst", right_on="t3",
               how="left")
+sg = pd.read_parquet(DERIVED / "title_groups_social.parquet")
+sg["social_named"] = (sg.mention_mask != 0).astype(float)
+sg["social_stereotype"] = ((sg.mention_mask & sg.stereotype_mask) != 0).astype(float)
+sg["social_label"] = (sg.slur_mask != 0).astype(float)
+so = pd.read_parquet(DERIVED / "title_groups_social_offensive.parquet")
+so["social_pejorative"] = ((so.mention_mask & so.stereotype_mask) != 0).astype(float)
+sg = sg.merge(so[["title", "social_pejorative"]], on="title", how="left")
+ep = ep.merge(sg[["title", "social_named", "social_stereotype", "social_pejorative", "social_label"]].rename(
+    columns={"title": "t4"}), left_on="tconst", right_on="t4", how="left")
 ep["log_votes"] = np.log1p(ep.votes)
-tl = con.execute(f"""SELECT title AS tconst, max(words) AS summary_words, arg_max(source, words) AS summary_source
+tl = con.execute(f"""SELECT title AS tconst, max(words) AS summary_words,
+    arg_max(source, (words, text)) AS summary_source
     FROM '{DERIVED / "texts.parquet"}' WHERE words >= 5 GROUP BY title""").df()
 ep = ep.merge(tl, on="tconst", how="left")
 ep["log_summary_words"] = np.log1p(ep.summary_words)
@@ -84,7 +99,7 @@ SOURCES = pd.get_dummies(ep.summary_source, prefix="source", drop_first=True, dt
 ep = pd.concat([ep, SOURCES], axis=1)
 LENGTH = ["log_summary_words"] + list(SOURCES.columns)
 FROM_SUMMARY = {"summary_women_active", "summary_women_looks", "summary_women_victim", "group_stereotype",
-                "offensive_stereotype", "slur"}
+                "offensive_stereotype", "slur", "social_named", "social_stereotype", "social_pejorative", "social_label"}
 
 
 def within(d, y, x, controls=()):
@@ -104,7 +119,8 @@ def within(d, y, x, controls=()):
 
 rows = []
 for x in ["cast_women_share", "guest_women_share", "summary_women_active", "summary_women_looks",
-          "summary_women_victim", "group_stereotype", "offensive_stereotype", "slur"]:
+          "summary_women_victim", "group_stereotype", "offensive_stereotype", "slur", "social_named",
+          "social_stereotype", "social_pejorative", "social_label"]:
     for y in ["rating", "log_votes"]:
         if ep[x].notna().sum() > 1000:
             rows.append(within(ep, y, x, LENGTH if x in FROM_SUMMARY else ()))

@@ -1,0 +1,31 @@
+target,model,scope,items,positives,auc,auc_sd
+any_group,measures,all items,2685,1269,0.9254713477551758,0.00040456712547075373
+any_group,measures,random items,1400,199,0.7506077431286323,0.001226485513645891
+any_group,gemma2,all items,2685,1269,0.8894442886208722,0.00134534961150964
+any_group,gemma2,random items,1400,199,0.8727456321295626,0.00047712807830371123
+any_group,gemma2 + measures,all items,2685,1269,0.9394768260667608,0.0006616836574969741
+any_group,gemma2 + measures,random items,1400,199,0.885780554172472,0.001698900731344881
+any_stereotyped,measures,all items,2685,558,0.8353713336917,0.0025176566708755943
+any_stereotyped,measures,random items,1400,66,0.731677721745188,0.02261234887617093
+any_stereotyped,gemma2,all items,2685,558,0.8193651740522238,0.0019824541848443393
+any_stereotyped,gemma2,random items,1400,66,0.8600283191737464,0.004404352988322118
+any_stereotyped,gemma2 + measures,all items,2685,558,0.8511292204287032,0.0011776067892800886
+any_stereotyped,gemma2 + measures,random items,1400,66,0.8669756031075372,0.004956860368719635
+discrimination,measures,all items,2685,209,0.7881953838186302,0.004186930169422009
+discrimination,measures,random items,1400,22,0.7204611426309541,0.004211893727121048
+discrimination,gemma2,all items,2685,209,0.8496475253341167,0.000529374466490381
+discrimination,gemma2,random items,1400,22,0.8215683687381802,0.002410353033363219
+discrimination,gemma2 + measures,all items,2685,209,0.8577843308520973,0.0005500967688785174
+discrimination,gemma2 + measures,random items,1400,22,0.8277257333861107,0.0029000491815125854
+m_immigrant_refugee,gemma2 + measures,all items,2685,249,0.9672730330187745,0.0
+m_immigrant_refugee,gemma2 + measures,random items,1400,32,0.9343932748538012,0.0
+m_disability,gemma2 + measures,all items,2685,264,0.9672671573229193,0.0
+m_disability,gemma2 + measures,random items,1400,48,0.9635416666666667,0.0
+m_mental_illness,gemma2 + measures,all items,2685,216,0.969072048962693,0.0
+m_mental_illness,gemma2 + measures,random items,1400,21,0.9177112469353224,0.0
+m_older_people,gemma2 + measures,all items,2685,261,0.9694261092775944,0.0
+m_older_people,gemma2 + measures,random items,1400,37,0.9384703852788958,0.0
+m_poverty_class,gemma2 + measures,all items,2685,329,0.9380782945696431,0.0
+m_poverty_class,gemma2 + measures,random items,1400,70,0.9430290010741139,0.0
+m_homelessness,gemma2 + measures,all items,2685,197,0.9685515856823412,0.0
+m_homelessness,gemma2 + measures,random items,1400,13,0.8477621873440186,0.0

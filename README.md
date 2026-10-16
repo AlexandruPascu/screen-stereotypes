@@ -25,7 +25,7 @@ measure them. Slurs and insulting labels are counted but left out of every publi
 | [8. Checking the measures](#8-checking-the-measures) | A careful reading of 3,000 summaries confirms the measures: stereotyped portrayals fell from 25% of pre-1970 film summaries to 9% today, and from 16% to 5% on TV. |
 | [9. A classifier trained on careful labels](#9-a-classifier-trained-on-careful-labels) | Trained on those labels, EmbeddingGemma-2 recognises stereotyped portrayals (AUC 0.86–0.90); on 37,049 fresh summaries, film portrayals fall from 22% in the 1930s to 8% now, and Westerns and romances lead. |
 | [10. Behind the camera, leads and ages](#10-behind-the-camera-leads-and-ages) | Women went from 3% to 16% of film directors and 6% to 23% of TV directors; they still hold only 38% of first-listed film roles, and the first-listed man is about 6 years older than the first-listed woman (9 in the 1940s). |
-| [11. Six more groups](#11-six-more-groups-immigrants-disability-mental-illness-age-class-and-homelessness) | Films name immigrants, disabled people and people with a mental illness two to three times as often as a century ago, and stereotype these six groups as often as ever (5–8% of film summaries, unlike gender and ethnicity); insulting labels for mental illness peaked in the 1990s. |
+| [11. Six more groups](#11-six-more-groups-immigrants-disability-mental-illness-age-class-and-homelessness) | Films stereotype immigrants, disabled and mentally ill, older, poor and homeless people in a steady 5–6% of summaries since the 1930s, unlike gender and ethnicity; mental illness appears three times as often as then, and horror stereotypes these groups most. |
 
 ## 1. Who plays whom
 
@@ -132,7 +132,12 @@ one franchise (TMDb collections); and among films of the same genre combination,
   nothing measurable for a woman director.
 - Summaries that study 9's classifier reads as a stereotyped portrayal go with lower ratings: 0.25 points below the
   director's other films where it is sure (0.55 below similar films), across the 4,000 films in its scored sample.
-  Stories about prejudice rate slightly higher (0.07 points) and draw 15% more votes.
+  Stories about prejudice rate slightly higher (0.07 points) and draw 18% more votes.
+- Films whose summaries name one of study 11's six groups (immigrants, disability, mental illness, old age, poverty,
+  homelessness) also rate higher, among a director's own films too (0.13 points). Pairing the group with stereotype
+  words adds nothing beyond naming it, insulting labels make no clear difference, and study 11's classifier finds no
+  clear link with stereotyped portrayals of them (4,000 films). Within a TV series, none of these moves an episode's
+  rating by more than 0.03 points.
 - Group stereotype words show no consistent link with ratings among a director's own films. Across similar films
   they go with 20–30% more votes, a gap that looked like 70% before summary length was held fixed. Slurs are too rare
   in film summaries to tell.
@@ -210,7 +215,7 @@ them with such a keyword.
 ![Classifier calibration and scores by decade](results/classifier/classifier.png)
 
 - The 2022 shortcut is gone: untagged comparison titles are matched on medium, decade, number of keywords and text
-  length, so a model that sees only the length scores AUC 0.51, chance.
+  length, so a model that sees only the length scores AUC 0.50, chance.
 - With whole series kept on one side of each cross-validation split, a word-vector model reaches AUC 0.71 (films 0.73,
   TV 0.67), and a 2021 sentence-embedding model (`all-mpnet-base-v2`) 0.76 (films 0.79, TV 0.72). A small BERT
   (`MiniLM`) fine-tuned on the CPU did not converge in its one run (AUC 0.53) and is not used. Trained on careful
@@ -220,7 +225,7 @@ them with such a keyword.
   AUC 0.75), but they are *less* likely than average to portray a stereotype. Viewer tags behave the same way: they
   mark the theme. The 2022 model's 0.95 came mostly from text length, and the construct it chased was this theme.
 - Calibrated on held-out folds and applied to every summary (with the word-vector model), the share likely to be a
-  story about prejudice peaks for 1970s films and falls slowly after; for TV it falls from 5.4% in the 1950s to 4.2%.
+  story about prejudice peaks for 1970s films and falls slowly after; for TV it falls from 5.3% in the 1950s to 4.1%.
 - The words that weigh most are the expected ones ("racist", "racism", "discrimination", "homophobic", "sexist",
   "interracial", "prejudice"); words found in fewer than 20 different films or series are left out so the model cannot
   learn which shows were tagged.
@@ -347,10 +352,11 @@ same 1,400 random summaries as study 8.
 
 ![How often the six groups are named, and how tightly stereotype words cling to them](results/groups_social/by_decade.png)
 
-- Films name these groups more than they used to: immigrants and refugees three times as often as in the 1920s (4 →
-  13 per 1,000 film summaries), people with a mental illness about three times (3 → 8–10) and disabled people almost
-  twice (8 → 12–17); older people steadily (12–17). Poor and working-class people are the exception, named a quarter
-  as often (23 → 6). TV episodes name all six less over time (older people from 20 to 4 per 1,000 since the 1950s).
+- Films name these groups explicitly more than they used to: immigrants and refugees three times as often as in the
+  1920s (4 → 13 per 1,000 film summaries), people with a mental illness about three times (3 → 8–10) and disabled
+  people almost twice (8 → 12–17); older people steadily (12–17). Poor and working-class people are the exception,
+  named a quarter as often (23 → 6). TV episodes name all six less over time (older people from 20 to 4 per 1,000
+  since the 1950s).
 - Where they are named, stereotype words cling more tightly to immigrants (1.7 → 2.7 times as often as elsewhere in
   film summaries), homeless people (1.5 → 2.5), poor people (0.7 → 2.1) and older people (about 2.5 → 4 since the
   1950s), and less tightly to disabled people (2.3 → 1.5) and people with a mental illness (4.0 in the 1950s → 2.2),
@@ -365,8 +371,29 @@ same 1,400 random summaries as study 8.
   estimate); titles viewers tagged with a theme name its group 38–168 times as often as other titles. The two
   labelling passes agree closely (kappa 0.81–1.00), but the second was a reread in the same session.
 
+**Reading whole summaries.** A classifier trained on the 2,685 labels (EmbeddingGemma-2 and the measures above, as
+in study 9) also counts people who are described rather than named. On the 1,400 random labelled summaries it scores
+AUC 0.89 for whether one of the six groups appears, 0.87 for a stereotyped portrayal and 0.83 for a story about
+discrimination (0.85–0.96 for each group's presence); on study 9's fresh sample, 17 of its 18 era estimates fall
+inside the labels' 95% intervals.
+
+![The six groups in a fresh sample of 37,016 summaries](results/label_classifier_social/sample_trends.png)
+
+- Films portray these groups through a stereotype in a steady 5–6% of summaries from the 1930s to the 2010s, and
+  4.5% in the 2020s; on TV the share fell from 5% in the 1950s to under 2%. The labels' 8% for films since 2000 is the
+  one era estimate the classifier puts lower (5.2%).
+
+![How often each group appears, named or not](results/label_classifier_social/groups_by_decade.png)
+
+- Read whole, the trends are gentler than explicit naming suggests: immigrants and refugees appear in 3% of film
+  summaries in the 1930s and about 4% since 2000, people with a mental illness three times as often as in the 1930s
+  (0.9% → 2.9%), poor people half as often (8.8% → 4.0%) and older people steadily (about 3%). TV episodes feature
+  older people a fifth as often as in the 1940s (4.4% → 0.9%).
+- Horror (8.5% of summaries), Westerns (7.4%), thrillers and mysteries stereotype these groups most; sport, reality
+  TV, music and documentaries least (under 3%) ([chart](results/label_classifier_social/sample_by_genre.png)).
+
 Tables: [`results/groups_social/`](results/groups_social/), [`results/groups_offensive_social/`](results/groups_offensive_social/),
-[`results/labels_social/`](results/labels_social/).
+[`results/labels_social/`](results/labels_social/), [`results/label_classifier_social/`](results/label_classifier_social/).
 
 ## How it was measured
 
@@ -436,8 +463,9 @@ transformers, mwparserfromhell, matplotlib, lxml, jsonschema and wordfreq, then 
 `bash src/run_all.sh <step>` to start from a step). `src/transformer.py`, `src/label_classifier.py` (about four hours
 on a CPU) and `src/score_sample.py` (about two hours) run separately; the labels themselves come from `labelling/`.
 `src/imdb_people.py`, `src/behind_camera.py`, `src/film_writers.py` and `src/ratings_films.py` add the crew, leads and
-ages (studies 2 and 10) and the films half of study 4; `src/label_sample_social.py` and
-`src/validate_labels_social.py` draw and score study 11's labelling sample. No raw data is stored in this repository.
+ages (studies 2 and 10) and the films half of study 4; `src/label_sample_social.py`,
+`src/validate_labels_social.py` and `src/social_classifier.py` (about 50 minutes on a CPU) draw, score and model
+study 11's labelling sample. No raw data is stored in this repository.
 
 ## Data and terms
 

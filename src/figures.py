@@ -51,9 +51,13 @@ labels = {"cast_women_share": "women's share of the credited cast (0→100%)",
           "summary_women_victim": "summary has a woman as a victim of violence",
           "group_stereotype": "summary pairs a group with its stereotype words",
           "offensive_stereotype": "same, pejorative stereotype words only",
-          "slur": "summary contains a slur"}
+          "slur": "summary contains a slur",
+          "social_named": "summary names one of study 11's six groups",
+          "social_stereotype": "names one of them with its stereotype words",
+          "social_pejorative": "names one of them with pejorative stereotype words",
+          "social_label": "calls one of them by an insulting label"}
 order = list(labels)
-fig, axes = plt.subplots(1, 2, figsize=(12, 4.6), sharey=True)
+fig, axes = plt.subplots(1, 2, figsize=(12, 6), sharey=True)
 for ax, (outcome, title, scale) in zip(axes, [("rating", "change in IMDb rating (points out of 10)", 1),
                                               ("log_votes", "change in number of votes (%)", None)]):
     d = m[m.outcome == outcome].set_index("measure").reindex(order[::-1]).dropna(subset=["estimate"])
@@ -510,12 +514,17 @@ FNAMES = {"cast_women": "women's share of the credited cast (0→100%)",
           "group_stereotype": "summary pairs a group with its stereotype words",
           "offensive_stereotype": "same, pejorative stereotype words only",
           "prejudice_story": "a story about prejudice (study 7 classifier, top 2%)",
-          "stereotyped_portrayal": "a stereotyped portrayal (study 9 classifier, 0→1)"}
+          "stereotyped_portrayal": "a stereotyped portrayal (study 9 classifier, 0→1)",
+          "social_named": "summary names one of study 11's six groups",
+          "social_stereotype": "names one of them with its stereotype words",
+          "social_pejorative": "names one of them with pejorative stereotype words",
+          "social_label": "calls one of them by an insulting label",
+          "social_portrayal": "one of them portrayed through a stereotype (study 11 classifier, 0→1)"}
 FDESIGNS = {"same director": "a director's films compared with each other",
             "same franchise": "films of one franchise compared with each other",
             "same genre and language": "films of the same genre, decade and language"}
 order = [m for m in FNAMES if m in set(fm.measure)][::-1]
-fig, axes = plt.subplots(1, 2, figsize=(12, 7), sharey=True)
+fig, axes = plt.subplots(1, 2, figsize=(12, 9), sharey=True)
 for ax, (outcome, title) in zip(axes, [("rating", "change in IMDb rating (points out of 10)"),
                                        ("log_votes", "change in number of votes (%)")]):
     for design, colour, off in zip(FDESIGNS, SLOTS, [0.24, 0, -0.24]):
@@ -596,3 +605,63 @@ fig.tight_layout(rect=(0, 0.04, 1, 1))
 fig.savefig(SG / "by_decade.png")
 plt.close(fig)
 print("social-group figures written")
+
+# ---- study 11, step 2: the classifier trained on the social labels, on study 9's fresh sample ----
+LC = RESULTS / "label_classifier_social"
+cs = pd.read_csv(LC / "sample_prevalence_by_decade.csv")
+SHOW = {"any_group": "one of the six groups appears", "any_stereotyped": "one of them portrayed through a stereotype"}
+
+
+def decade_axis(ax, d):
+    ax.set_xticks(range(int(d.decade.min()), 2030, 20))
+    ax.set_xticklabels([f"{x}s" for x in range(int(d.decade.min()), 2030, 20)], fontsize=8)
+
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 4.8), sharey=True)
+for ax, (medium, title) in zip(axes, [("film", "Films"), ("tv", "TV episodes")]):
+    d = cs[(cs.medium == medium) & (cs.summaries >= 500)].sort_values("decade")
+    for (target, name), colour in zip(SHOW.items(), SLOTS):
+        ax.plot(d.decade, d[target] * 100, color=colour, lw=2, marker="o", ms=5, label=name)
+    ax.set_ylim(0, None)
+    decade_axis(ax, d)
+    ax.set_title(title, fontsize=10, color=INK)
+axes[0].set_ylabel("% of summaries (calibrated classifier)", color=MUTED)
+fig.legend(*axes[0].get_legend_handles_labels(), loc="lower center", ncol=2, frameon=False, fontsize=9)
+fig.suptitle(f"The six groups of study 11 in a fresh sample of {int(cs.summaries.sum()):,} summaries, read by a "
+             "classifier trained on the labels", fontsize=11, color=INK)
+fig.tight_layout(rect=(0, 0.06, 1, 1))
+fig.savefig(LC / "sample_trends.png")
+plt.close(fig)
+
+fig, axes = plt.subplots(1, 6, figsize=(16, 3.8), sharex=True)
+for ax, (grp, name) in zip(axes, SNAMES.items()):
+    for medium, colour, label in [("film", SLOTS[0], "films"), ("tv", SLOTS[1], "TV episodes")]:
+        d = cs[(cs.medium == medium) & (cs.summaries >= 500)].sort_values("decade")
+        ax.plot(d.decade, d[f"m_{grp}"] * 100, color=colour, lw=2, marker="o", ms=3, label=label)
+    ax.set_ylim(0, None)
+    decade_axis(ax, cs[cs.summaries >= 500])
+    ax.set_title(name, fontsize=9, color=INK)
+axes[0].set_ylabel("% of summaries where\nthe group appears", color=MUTED)
+fig.legend(*axes[0].get_legend_handles_labels(), loc="lower center", ncol=2, frameon=False, fontsize=9)
+fig.suptitle("How often each group appears in plot summaries, named or not (calibrated classifier)", fontsize=11,
+             color=INK)
+fig.tight_layout(rect=(0, 0.08, 1, 1))
+fig.savefig(LC / "groups_by_decade.png")
+plt.close(fig)
+
+cg = pd.read_csv(LC / "sample_prevalence_by_genre.csv").sort_values("any_stereotyped")
+fig, ax = plt.subplots(figsize=(9, 6.5))
+y = np.arange(len(cg))
+ax.barh(y, cg.any_stereotyped * 100, color=SLOTS[0], height=0.65)
+for yi, total in zip(y, cg.any_stereotyped * 100):
+    ax.annotate(f"{total:.1f}%", (total + 0.1, yi), va="center", fontsize=8, color=MUTED)
+ax.set_yticks(y)
+ax.set_yticklabels(cg.genre, fontsize=8)
+ax.set_xlabel("% of summaries portraying one of the six groups through a stereotype (calibrated classifier, "
+              "weighted to the corpus)", color=MUTED, fontsize=8)
+ax.set_title("Stereotypes of immigrants, disability, mental illness, age, class and homelessness by genre",
+             fontsize=10, color=INK)
+fig.tight_layout()
+fig.savefig(LC / "sample_by_genre.png")
+plt.close(fig)
+print("social classifier figures written")

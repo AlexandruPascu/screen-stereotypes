@@ -39,11 +39,11 @@ ON_TOPIC = re.compile(r"stereotyp|racis|racial|sexis|homophob|discriminat|hetero
 OFF_TOPIC = re.compile(r"\bage\b|age-|disab|class|weight|fat|caste")
 rng = np.random.default_rng(0)
 con = duckdb.connect()
-con.execute("SET memory_limit = '6GB'")
+con.execute("SET memory_limit = '10GB'")  # the longest-summary pick holds each text twice while grouping
 
-texts = con.execute(f"""SELECT title, arg_max(text, words) AS text, max(words) AS words,
+texts = con.execute(f"""SELECT title, arg_max(text, (words, text)) AS text, max(words) AS words,
         string_agg(lower(keywords), '|') FILTER (WHERE keywords <> '' AND source IN ('imdb22', 'tmdb')) AS kw,
-        arg_max(kind, words) AS kind
+        arg_max(kind, (words, text)) AS kind
     FROM '{DERIVED / "texts.parquet"}' GROUP BY title""").df()
 extra = pd.read_parquet(DATA / "gcp-2022/bigquery/extra_titles.parquet").rename(
     columns={"string_field_0": "title", "string_field_1": "kw_extra"})

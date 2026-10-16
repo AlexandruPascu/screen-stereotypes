@@ -50,7 +50,7 @@ def period(year):
 con = duckdb.connect()
 con.execute("SET memory_limit = '6GB'")
 texts = con.execute(f"""
-    WITH t AS (SELECT title, arg_max(text, words) AS text, arg_max(kind, words) AS kind
+    WITH t AS (SELECT title, arg_max(text, (words, text)) AS text, arg_max(kind, (words, text)) AS kind
                FROM '{DERIVED / "texts.parquet"}' WHERE words >= 5 GROUP BY title),
     y AS (SELECT tconst AS title, TRY_CAST(startYear AS INT) AS year FROM read_csv('{IMDB / "title.basics.tsv.gz"}',
           delim='\\t', header=true, quote='', escape='', nullstr='\\N', columns={{'tconst':'VARCHAR','titleType':'VARCHAR',

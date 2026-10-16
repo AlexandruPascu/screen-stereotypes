@@ -22,6 +22,11 @@ Measures (each model uses the films where that measure exists):
   slur                    the summary contains a slur (0/1)
   prejudice_story         study 7's classifier puts the summary in its top 2% (mostly stories about prejudice)
   stereotyped_portrayal   study 9's label-trained classifier: probability of a stereotyped portrayal (scored sample)
+  social_named, social_stereotype, social_pejorative, social_label
+                          study 11's six groups: named; named with their stereotype words; with pejorative ones; an
+                          insulting label (0/1)
+  social_portrayal        study 11's label-trained classifier: probability that one of the six groups is portrayed
+                          through a stereotype (scored sample)
 The summary measures come from each film's longest summary, and well-known films have long, detailed ones, so their
 models also hold the summary's length (log words) and source fixed; otherwise "the summary mentions X" partly
 measures how much has been written about the film.
@@ -96,12 +101,23 @@ off["offensive_stereotype"] = ((off.mention_mask & off.stereotype_mask) != 0).as
 tc = pd.read_parquet(DERIVED / "title_classifier_scores.parquet", columns=["title", "stereotype_prob"])
 tc["prejudice_story"] = (tc.stereotype_prob >= tc.stereotype_prob.quantile(0.98)).astype(float)
 ls = pd.read_parquet(DERIVED / "label_classifier_sample_scores.parquet", columns=["title", "any_stereotype"])
+sg = pd.read_parquet(DERIVED / "title_groups_social.parquet")
+sg["social_named"] = (sg.mention_mask != 0).astype(float)
+sg["social_stereotype"] = ((sg.mention_mask & sg.stereotype_mask) != 0).astype(float)
+sg["social_label"] = (sg.slur_mask != 0).astype(float)
+so = pd.read_parquet(DERIVED / "title_groups_social_offensive.parquet")
+so["social_pejorative"] = ((so.mention_mask & so.stereotype_mask) != 0).astype(float)
+sg = sg.merge(so[["title", "social_pejorative"]], on="title", how="left")
+ss = pd.read_parquet(DERIVED / "label_classifier_social_sample_scores.parquet", columns=["title", "any_stereotyped"])
 for table, cols in [(tg, ["summary_women_active", "summary_women_looks", "summary_women_victim"]),
                     (gm, ["group_stereotype", "slur"]), (off, ["offensive_stereotype"]), (tc, ["prejudice_story"]),
-                    (ls.rename(columns={"any_stereotype": "stereotyped_portrayal"}), ["stereotyped_portrayal"])]:
+                    (ls.rename(columns={"any_stereotype": "stereotyped_portrayal"}), ["stereotyped_portrayal"]),
+                    (sg, ["social_named", "social_stereotype", "social_pejorative", "social_label"]),
+                    (ss.rename(columns={"any_stereotyped": "social_portrayal"}), ["social_portrayal"])]:
     f = f.merge(table[["title"] + cols].drop_duplicates("title").rename(columns={"title": "tconst"}), on="tconst",
                 how="left")
-tl = con.execute(f"""SELECT title AS tconst, max(words) AS summary_words, arg_max(source, words) AS summary_source
+tl = con.execute(f"""SELECT title AS tconst, max(words) AS summary_words,
+    arg_max(source, (words, text)) AS summary_source
     FROM '{DERIVED / "texts.parquet"}' WHERE words >= 5 GROUP BY title""").df()
 f = f.merge(tl, on="tconst", how="left")
 f["log_summary_words"] = np.log1p(f.summary_words)
@@ -149,9 +165,11 @@ DESIGNS = [("same genre and language", ["genre_decade_language"], "director_clus
            ("same franchise", ["collection", "year"], "collection", GENRES)]
 MEASURES = ["cast_women", "top3_women", "first_woman", "writers_women", "director_women", "summary_women_active",
             "summary_women_looks", "summary_women_victim", "group_stereotype", "offensive_stereotype", "slur",
-            "prejudice_story", "stereotyped_portrayal"]
+            "prejudice_story", "stereotyped_portrayal", "social_named", "social_stereotype", "social_pejorative",
+            "social_label", "social_portrayal"]
 FROM_SUMMARY = {"summary_women_active", "summary_women_looks", "summary_women_victim", "group_stereotype",
-                "offensive_stereotype", "slur", "prejudice_story", "stereotyped_portrayal"}
+                "offensive_stereotype", "slur", "prejudice_story", "stereotyped_portrayal", "social_named",
+                "social_stereotype", "social_pejorative", "social_label", "social_portrayal"}
 rows = []
 for x in MEASURES:
     for y in ["rating", "log_votes"]:

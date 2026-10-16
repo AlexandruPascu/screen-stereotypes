@@ -89,7 +89,7 @@ print(by_genre.round(4).to_string(index=False), flush=True)
 lex = json.load(open(DERIVED / "lexicon.json"))
 groups = json.load(open(DERIVED / "title_groups_bits.json"))
 tg = pd.read_parquet(DERIVED / "title_groups_offensive.parquet", columns=["title", "mention_mask"])
-texts = con.execute(f"""SELECT title, arg_max(text, words) AS text FROM '{DERIVED / "texts.parquet"}' WHERE words >= 5
+texts = con.execute(f"""SELECT title, arg_max(text, (words, text)) AS text FROM '{DERIVED / "texts.parquet"}' WHERE words >= 5
     GROUP BY title""").df().merge(tg, on="title").merge(t[["title", "decade"]], on="title", how="left")
 TOKEN = re.compile(r"[a-z]+")
 STOP = set("""the a an and or of to in on at for with his her he she they their is are was be by from as it its this

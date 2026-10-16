@@ -131,8 +131,8 @@ def names_scan(names):
 if __name__ == "__main__":
     con = duckdb.connect()
     con.execute("SET memory_limit = '5GB'")
-    texts = con.execute(f"""SELECT title, arg_max(text, words) AS text, max(words) AS words, any_value(kind) AS kind
-        FROM '{DERIVED / "texts.parquet"}' WHERE words >= 5 GROUP BY title""").df()
+    texts = con.execute(f"""SELECT title, arg_max(text, (words, text)) AS text, max(words) AS words,
+        any_value(kind) AS kind FROM '{DERIVED / "texts.parquet"}' WHERE words >= 5 GROUP BY title""").df()
     limit = int(sys.argv[1]) if len(sys.argv) > 1 else None
     if limit:
         texts = texts.sample(limit, random_state=1)
