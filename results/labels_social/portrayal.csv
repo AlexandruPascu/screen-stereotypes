@@ -1,0 +1,7 @@
+group,flagged_summaries,group_present,stereotyped,counter_stereotyped,type_danger_threat,type_criminality,type_illegitimacy,type_burden_dependence,type_pity_tragedy,type_inspiration,type_cure_or_death,type_villain_marker,type_decline_incompetence,type_moral_failing,type_comic_figure,type_wise_or_noble,type_victim_only,type_other
+immigrant_refugee,100,89,15,11,1,2,1,1,0,0,0,0,0,0,3,0,7,4
+disability,100,74,35,18,3,0,0,8,6,7,3,4,0,0,2,4,6,0
+mental_illness,100,92,43,7,17,1,0,8,10,5,0,5,0,0,5,1,3,1
+older_people,100,95,34,9,0,0,0,4,2,1,1,0,4,0,10,5,10,1
+poverty_class,100,93,25,13,1,5,0,0,5,4,0,0,0,5,4,5,1,1
+homelessness,100,93,37,12,1,3,0,0,5,3,0,0,0,7,5,3,16,0

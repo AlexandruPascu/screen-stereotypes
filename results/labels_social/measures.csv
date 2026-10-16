@@ -1,0 +1,71 @@
+labels_used,group,measure,label,items,share
+all labels,immigrant_refugee,mention list,group present,100,0.89
+all labels,immigrant_refugee,mention list,group stereotyped,100,0.15
+all labels,immigrant_refugee,group + pejorative words,group stereotyped,50,0.36
+all labels,immigrant_refugee,pejorative label,pejorative label,35,0.8857142857142857
+all labels,immigrant_refugee,mention list (recall on random),group present,32,0.1875
+all labels,disability,mention list,group present,100,0.74
+all labels,disability,mention list,group stereotyped,100,0.35
+all labels,disability,group + pejorative words,group stereotyped,50,0.46
+all labels,disability,pejorative label,pejorative label,35,0.45714285714285713
+all labels,disability,mention list (recall on random),group present,48,0.3541666666666667
+all labels,mental_illness,mention list,group present,100,0.92
+all labels,mental_illness,mention list,group stereotyped,100,0.43
+all labels,mental_illness,group + pejorative words,group stereotyped,50,0.64
+all labels,mental_illness,pejorative label,pejorative label,35,0.6857142857142857
+all labels,mental_illness,mention list (recall on random),group present,21,0.19047619047619047
+all labels,older_people,mention list,group present,100,0.95
+all labels,older_people,mention list,group stereotyped,100,0.34
+all labels,older_people,group + pejorative words,group stereotyped,50,0.76
+all labels,older_people,pejorative label,pejorative label,35,0.7714285714285715
+all labels,older_people,mention list (recall on random),group present,37,0.43243243243243246
+all labels,poverty_class,mention list,group present,100,0.93
+all labels,poverty_class,mention list,group stereotyped,100,0.25
+all labels,poverty_class,group + pejorative words,group stereotyped,50,0.58
+all labels,poverty_class,pejorative label,pejorative label,35,0.7142857142857143
+all labels,poverty_class,mention list (recall on random),group present,70,0.2
+all labels,homelessness,mention list,group present,100,0.93
+all labels,homelessness,mention list,group stereotyped,100,0.37
+all labels,homelessness,group + pejorative words,group stereotyped,50,0.46
+all labels,homelessness,pejorative label,pejorative label,35,0.5428571428571428
+all labels,homelessness,mention list (recall on random),group present,13,0.5384615384615384
+all labels,any,viewer-tagged social theme,group present,150,0.62
+all labels,any,viewer-tagged social theme,group stereotyped,150,0.22
+all labels,any,viewer-tagged social theme,discrimination theme,150,0.12
+all labels,any,first pass: other discrimination,discrimination theme,25,0.6
+all labels,any,mention list (recall on random),group present,199,0.31155778894472363
+confidence 2-3,immigrant_refugee,mention list,group present,84,0.9523809523809523
+confidence 2-3,immigrant_refugee,mention list,group stereotyped,84,0.17857142857142858
+confidence 2-3,immigrant_refugee,group + pejorative words,group stereotyped,42,0.40476190476190477
+confidence 2-3,immigrant_refugee,pejorative label,pejorative label,27,1.0
+confidence 2-3,immigrant_refugee,mention list (recall on random),group present,30,0.16666666666666666
+confidence 2-3,disability,mention list,group present,84,0.8214285714285714
+confidence 2-3,disability,mention list,group stereotyped,84,0.4166666666666667
+confidence 2-3,disability,group + pejorative words,group stereotyped,42,0.5238095238095238
+confidence 2-3,disability,pejorative label,pejorative label,28,0.39285714285714285
+confidence 2-3,disability,mention list (recall on random),group present,44,0.3409090909090909
+confidence 2-3,mental_illness,mention list,group present,90,0.9444444444444444
+confidence 2-3,mental_illness,mention list,group stereotyped,90,0.4666666666666667
+confidence 2-3,mental_illness,group + pejorative words,group stereotyped,42,0.7619047619047619
+confidence 2-3,mental_illness,pejorative label,pejorative label,25,0.6
+confidence 2-3,mental_illness,mention list (recall on random),group present,17,0.23529411764705882
+confidence 2-3,older_people,mention list,group present,89,0.9550561797752809
+confidence 2-3,older_people,mention list,group stereotyped,89,0.3258426966292135
+confidence 2-3,older_people,group + pejorative words,group stereotyped,46,0.7608695652173914
+confidence 2-3,older_people,pejorative label,pejorative label,27,0.7407407407407407
+confidence 2-3,older_people,mention list (recall on random),group present,35,0.45714285714285713
+confidence 2-3,poverty_class,mention list,group present,90,0.9555555555555556
+confidence 2-3,poverty_class,mention list,group stereotyped,90,0.2777777777777778
+confidence 2-3,poverty_class,group + pejorative words,group stereotyped,48,0.6041666666666666
+confidence 2-3,poverty_class,pejorative label,pejorative label,31,0.7419354838709677
+confidence 2-3,poverty_class,mention list (recall on random),group present,64,0.203125
+confidence 2-3,homelessness,mention list,group present,92,0.967391304347826
+confidence 2-3,homelessness,mention list,group stereotyped,92,0.40217391304347827
+confidence 2-3,homelessness,group + pejorative words,group stereotyped,39,0.5128205128205128
+confidence 2-3,homelessness,pejorative label,pejorative label,28,0.5357142857142857
+confidence 2-3,homelessness,mention list (recall on random),group present,13,0.5384615384615384
+confidence 2-3,any,viewer-tagged social theme,group present,119,0.6890756302521008
+confidence 2-3,any,viewer-tagged social theme,group stereotyped,119,0.2689075630252101
+confidence 2-3,any,viewer-tagged social theme,discrimination theme,119,0.14285714285714285
+confidence 2-3,any,first pass: other discrimination,discrimination theme,21,0.7142857142857143
+confidence 2-3,any,mention list (recall on random),group present,182,0.31868131868131866

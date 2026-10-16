@@ -131,7 +131,7 @@ def names_scan(names):
 if __name__ == "__main__":
     con = duckdb.connect()
     con.execute("SET memory_limit = '5GB'")
-    texts = con.execute(f"""SELECT title, arg_max(text, words) AS text, any_value(kind) AS kind
+    texts = con.execute(f"""SELECT title, arg_max(text, words) AS text, max(words) AS words, any_value(kind) AS kind
         FROM '{DERIVED / "texts.parquet"}' WHERE words >= 5 GROUP BY title""").df()
     limit = int(sys.argv[1]) if len(sys.argv) > 1 else None
     if limit:
@@ -147,6 +147,7 @@ if __name__ == "__main__":
     texts = texts.merge(years, on="title", how="left")
     texts["medium"] = np.where(texts.kind == "film", "film", "tv")
     texts["decade"] = (texts.year // 10 * 10).where(texts.year.between(1920, 2026))
+    texts["length_bin"] = pd.qcut(texts.words.rank(method="first"), 10, labels=False).astype("int8")
     print(f"summaries: {len(texts):,} (with a year {texts.decade.notna().sum():,})", flush=True)
 
     batches = [texts.text.iloc[i:i + 20000].tolist() for i in range(0, len(texts), 20000)]
@@ -168,15 +169,38 @@ if __name__ == "__main__":
     def has(col, grp):
         return (masks[:, col] & BIT[grp]) > 0
 
-    long = pd.concat([pd.DataFrame({"group": grp, "decade": texts.decade, "medium": texts.medium,
-                                    "mention": has(0, grp), "attr": has(1, grp), "slur": has(2, grp)})
-                      for grp in GROUPS])
+    base = pd.DataFrame({"decade": texts.decade, "medium": texts.medium, "length_bin": texts.length_bin})
+
+    def per_group(by, need_decade=False):
+        """The lift table for each group in turn (one group's rows at a time keeps memory down)."""
+        out = []
+        for grp in GROUPS:
+            d = base.assign(group=grp, mention=has(0, grp), attr=has(1, grp), slur=has(2, grp))
+            out.append(lift_table(d.dropna(subset=["decade"]) if need_decade else d, by))
+        return pd.concat(out, ignore_index=True)
+
+    def length_adjusted(d, by):
+        """The lift with summary length held fixed: a Mantel-Haenszel ratio over summary-length deciles, since longer
+        summaries are likelier both to mention a group and to contain any given word. Greenland-Robins 95% interval."""
+        t = d.groupby(by + ["length_bin", "mention"], dropna=False).agg(n=("attr", "size"), a=("attr", "sum"))
+        t = t.unstack("mention", fill_value=0)
+        n1, n0, a1, a0 = (t[(c, m)] if (c, m) in t.columns else 0 for c, m in
+                          [("n", True), ("n", False), ("a", True), ("a", False)])
+        N = n1 + n0
+        parts = pd.DataFrame({"r": a1 * n0 / N, "s": a0 * n1 / N,
+                              "v": (n1 * n0 * (a1 + a0) - a1 * a0 * N) / N ** 2}).groupby(level=by, dropna=False).sum()
+        ok = (parts.r > 0) & (parts.s > 0)
+        rr = (parts.r / parts.s).where(ok)
+        se = np.sqrt(parts.v / (parts.r * parts.s)).where(ok)
+        return pd.DataFrame({"lift_length_adjusted": rr, "lift_adj_lo": np.exp(np.log(rr) - 1.96 * se),
+                             "lift_adj_hi": np.exp(np.log(rr) + 1.96 * se)}).reset_index()
 
     def lift_table(d, by):
         t = d.groupby(by + ["mention"], dropna=False).agg(n=("attr", "size"), attr=("attr", "sum"),
                                                          slur=("slur", "sum")).reset_index()
         w = t.pivot_table(index=by, columns="mention", values=["n", "attr", "slur"], aggfunc="sum").fillna(0)
         w.columns = [f"{a}_{'in' if b else 'out'}" for a, b in w.columns]
+        w = w.reindex(columns=[f"{a}_{b}" for a in ("attr", "n", "slur") for b in ("in", "out")], fill_value=0)
         w = w.reset_index()
         w["share_mentioning"] = w.n_in / (w.n_in + w.n_out)
         p_in = (w.attr_in + 0.5) / (w.n_in + 1)
@@ -187,13 +211,16 @@ if __name__ == "__main__":
         none = (w.attr_in + w.attr_out) == 0  # no stereotype word for this group ever appears: lift is undefined
         w.loc[none, ["stereotype_lift", "lift_lo", "lift_hi"]] = np.nan
         w["slur_rate_per_100k"] = (w.slur_in + w.slur_out) / (w.n_in + w.n_out) * 1e5
-        return w
+        return w.merge(length_adjusted(d, by), on=by, how="left")
 
-    overall = lift_table(long, ["group"])
+    overall = per_group(["group"])
     overall.to_csv(OUT / "group_lift_overall.csv", index=False)
-    by_decade = lift_table(long.dropna(subset=["decade"]), ["group", "decade"])
+    by_decade = per_group(["group", "decade"], need_decade=True)
     by_decade.to_csv(OUT / "group_lift_by_decade.csv", index=False)
-    lift_table(long, ["group", "medium"]).to_csv(OUT / "group_lift_by_medium.csv", index=False)
+    per_group(["group", "medium"]).to_csv(OUT / "group_lift_by_medium.csv", index=False)
+    # films and TV episodes apart: recent decades are mostly short TV overviews, which moves the pooled rates
+    per_group(["group", "decade", "medium"], need_decade=True).to_csv(OUT / "group_lift_by_decade_medium.csv",
+                                                                     index=False)
     pd.set_option("display.width", 200)
     print(overall[["group", "n_in", "share_mentioning", "attr_in", "stereotype_lift", "lift_lo", "lift_hi",
                    "slur_rate_per_100k"]].sort_values("stereotype_lift", ascending=False).round(4).to_string(index=False))

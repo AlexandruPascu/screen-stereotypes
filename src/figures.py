@@ -85,23 +85,24 @@ plt.close(fig)
 
 # 5b. pejorative stereotype pairing over time
 g = pd.read_csv(RESULTS / "groups_offensive/group_lift_by_decade.csv")
-g = g[g.decade.between(1950, 2020) & g.stereotype_lift.notna()]
+g = g[g.decade.between(1950, 2020) & g.lift_length_adjusted.notna()]  # summary length held fixed
 names = {"native_american": "Native American", "german": "German", "italian": "Italian", "russian": "Russian",
          "muslim": "Muslim", "arab": "Arab", "mexican": "Mexican", "chinese": "Chinese", "black": "Black"}
 fig, ax = plt.subplots(figsize=(10, 5.5))
 for grp, label in names.items():
     d = g[(g.group == grp) & (g.n_in >= 100)].sort_values("decade")
-    ax.plot(d.decade, d.stereotype_lift, marker="o", ms=3, label=label)
-pooled = g[g.n_in >= 50].groupby("decade").apply(lambda x: np.exp(np.average(np.log(x.stereotype_lift), weights=x.n_in)),
-                                                  include_groups=False)
+    ax.plot(d.decade, d.lift_length_adjusted, marker="o", ms=3, label=label)
+pooled = g[g.n_in >= 50].groupby("decade").apply(
+    lambda x: np.exp(np.average(np.log(x.lift_length_adjusted), weights=x.n_in)), include_groups=False)
 ax.plot(pooled.index, pooled.values, color="black", lw=3, label="all groups (weighted)")
-ax.axhline(1, color=GREY, lw=0.8, ls="--")
+ax.axhline(1, color=GREY, lw=0.8)
 ax.set_yscale("log")
-ax.set_yticks([1, 2, 5, 10])
-ax.set_yticklabels(["1×", "2×", "5×", "10×"])
-ax.set_ylabel("how much more often pejorative stereotype words appear\nwhen the summary mentions the group")
+ax.set_yticks([0.5, 1, 2, 5, 10])
+ax.set_yticklabels(["0.5×", "1×", "2×", "5×", "10×"])
+ax.set_ylabel("how much more often pejorative stereotype words appear\nwhen the summary mentions the group "
+              "(same summary length)")
 ax.set_title("Pejorative stereotype words next to group mentions in plot summaries")
-ax.legend(ncol=2, fontsize=8)
+ax.legend(ncol=5, fontsize=8, frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.08))
 fig.tight_layout()
 fig.savefig(RESULTS / "groups_offensive/pejorative_pairing_by_decade.png")
 plt.close(fig)
@@ -536,3 +537,62 @@ fig.tight_layout(rect=(0, 0.04, 1, 1))
 fig.savefig(RESULTS / "ratings/film_effects.png")
 plt.close(fig)
 print("film ratings figure written")
+
+# ---- study 11: six social groups ----
+SG = RESULTS / "groups_social"
+SNAMES = {"immigrant_refugee": "Immigrants and refugees", "disability": "Disabled people",
+          "mental_illness": "People with a mental illness", "older_people": "Older people",
+          "poverty_class": "Poor and working-class people", "homelessness": "Homeless people"}
+sprev = pd.read_csv(RESULTS / "labels_social/prevalence.csv")
+sprev = sprev[sprev.labels_used == "all labels"]
+show = [("any_group", "one of the six groups appears"), ("any_stereotyped", "portrayed through a stereotype"),
+        ("discrimination", "a story about discrimination against them"), ("pejorative_label", "an insulting label")]
+fig, axes = plt.subplots(1, 2, figsize=(12, 4.8), sharey=True)
+for ax, (medium, title) in zip(axes, [("film", "Films"), ("tv", "TV episodes")]):
+    ends = []
+    for (label, name), colour in zip(show, SLOTS):
+        d = sprev[(sprev.medium == medium) & (sprev.label == label)].set_index("era").reindex(ERAS)
+        x = np.arange(len(ERAS))
+        ax.errorbar(x, d.share * 100, yerr=[(d.share - d.lo) * 100, (d.hi - d.share) * 100], color=colour, lw=2,
+                    marker="o", ms=6, capsize=3, label=name)
+    ax.set_xticks(range(len(ERAS)))
+    ax.set_xticklabels(ERAS)
+    ax.set_xlim(-0.3, len(ERAS) - 0.7)
+    ax.set_title(title, fontsize=10, color=INK)
+axes[0].set_ylabel("% of summaries (random sample, 95% intervals)", color=MUTED)
+# one legend below both panels: on TV several series end at 0%, where labels at the line ends would collide
+fig.legend(*axes[0].get_legend_handles_labels(), loc="lower center", ncol=4, frameon=False, fontsize=9)
+fig.suptitle("Immigrants, disability, mental illness, age, class and homelessness in plot summaries, read by a "
+             "labelling model (1,400 random summaries)", fontsize=11, color=INK)
+fig.tight_layout(rect=(0, 0.06, 1, 1))
+fig.savefig(RESULTS / "labels_social/prevalence.png")
+plt.close(fig)
+
+# naming and stereotype pairing by decade, films and TV apart (recent decades are mostly short TV overviews), one
+# panel per group; cells with too few summaries or mentions are left out
+sl = pd.read_csv(SG / "group_lift_by_decade_medium.csv")
+sl = sl[sl.decade.between(1920, 2020)].sort_values("decade")
+fig, axes = plt.subplots(2, 6, figsize=(16, 6.4), sharex=True)
+for col, (grp, name) in enumerate(SNAMES.items()):
+    for medium, colour, label in [("film", SLOTS[0], "films"), ("tv", SLOTS[1], "TV episodes")]:
+        d = sl[(sl.group == grp) & (sl.medium == medium)]
+        d = d[(d.n_in + d.n_out) >= 2000]
+        axes[0, col].plot(d.decade, d.share_mentioning * 1000, color=colour, lw=2, marker="o", ms=3, label=label)
+        d = d[d.n_in >= 30]
+        axes[1, col].fill_between(d.decade, d.lift_adj_lo, d.lift_adj_hi, color=colour, alpha=0.15, lw=0)
+        axes[1, col].plot(d.decade, d.lift_length_adjusted, color=colour, lw=2, marker="o", ms=3, label=label)
+    axes[0, col].set_ylim(0, None)
+    axes[0, col].set_title(name, fontsize=9, color=INK)
+    axes[1, col].axhline(1, color=RULE, lw=1)
+    axes[1, col].set_ylim(0, None)
+    axes[1, col].set_xticks([1920, 1970, 2020])
+    axes[1, col].set_xticklabels(["1920s", "1970s", "2020s"], fontsize=8)
+axes[0, 0].set_ylabel("summaries naming the group\n(per 1,000)", color=MUTED)
+axes[1, 0].set_ylabel("stereotype words next to a mention\n(× as often, same summary length)", color=MUTED)
+fig.legend(*axes[0, 0].get_legend_handles_labels(), loc="lower center", ncol=2, frameon=False, fontsize=9)
+fig.suptitle("Six groups across a century of plot summaries: how often they are named, and how tightly stereotype "
+             "words cling to them", fontsize=11, color=INK)
+fig.tight_layout(rect=(0, 0.04, 1, 1))
+fig.savefig(SG / "by_decade.png")
+plt.close(fig)
+print("social-group figures written")

@@ -1,0 +1,299 @@
+group,word,texts_with_group,texts_without_group,lift,source
+immigrant_refugee,gang,229,35181,1.2521892167587132,curated
+immigrant_refugee,criminals,64,6846,1.8083926112374165,curated
+immigrant_refugee,criminal,160,16679,1.8471137057585045,curated
+immigrant_refugee,crime,272,30478,1.7162262448815166,curated
+immigrant_refugee,poor,229,14775,2.9815501965684184,curated
+immigrant_refugee,steal,90,14809,1.1730318519740717,curated
+immigrant_refugee,threat,115,11829,1.874205540520883,curated
+immigrant_refugee,smugglers,70,1181,11.453995622500715,curated
+immigrant_refugee,illegal,994,7709,24.761685110671102,curated
+immigrant_refugee,trafficking,80,2614,5.910290885407269,curated
+immigrant_refugee,invasion,96,5544,3.3409236228618697,curated
+immigrant_refugee,smuggling,131,3118,8.094343417877862,curated
+immigrant_refugee,illegally,139,1826,14.660748810392711,curated
+immigrant_refugee,border,803,7744,19.915633190675464,curated
+immigrant_refugee,drugs,111,12267,1.744698639888054,curated
+immigrant_refugee,terrorists,49,2301,4.128533771439455,curated
+immigrant_refugee,poverty,167,4416,7.280114307605087,curated
+immigrant_refugee,jobs,179,8033,4.289051654924145,curated
+immigrant_refugee,smuggler,54,1022,10.231393956894143,curated
+immigrant_refugee,culture clash,12,113,21.140525241329392,curated
+immigrant_refugee,cartel,21,1598,2.581828800508179,curated
+immigrant_refugee,deported,169,753,43.18053985125469,curated
+immigrant_refugee,welfare,29,1698,3.3339423556917813,curated
+immigrant_refugee,exploitation,82,1569,10.090071652296812,curated
+immigrant_refugee,arranged marriage,21,899,4.588163799457837,curated
+immigrant_refugee,marriage of convenience,10,244,8.243507879379731,curated
+immigrant_refugee,accent,18,884,4.014907213158294,curated
+immigrant_refugee,gangs,70,2473,5.47115254820481,curated
+immigrant_refugee,exploited,45,872,10.01031128733848,curated
+immigrant_refugee,smuggled,44,876,9.745625361108447,curated
+immigrant_refugee,deportation,207,599,66.44013946153245,curated
+immigrant_refugee,broken english,5,31,33.51612160482507,curated
+immigrant_refugee,assimilate,20,137,28.618889952153108,curated
+immigrant_refugee,green card,24,150,31.24864614741619,curated
+immigrant_refugee,language barrier,11,199,11.06513105613842,curated
+immigrant_refugee,cheap labor,7,35,40.55407799815582,curated
+immigrant_refugee,trafficked,8,234,6.957892273457579,curated
+immigrant_refugee,deport,22,75,57.20542128216681,curated
+immigrant_refugee,sweatshop,12,86,27.739301906253015,curated
+immigrant_refugee,assimilation,30,179,32.616473873725695,curated
+immigrant_refugee,cheap labour,7,18,77.81998750997468,curated
+immigrant_refugee,sham marriage,2,53,8.969905102395835,curated
+disability,triumph,47,2692,2.2086669259402782,curated
+disability,weird,117,6414,2.2933344093802885,bbq
+disability,inspiration,115,6661,2.1707123751324535,curated
+disability,incapable,25,614,5.195299911829115,bbq
+disability,hideous,24,628,4.880374311545714,curated
+disability,withdrawn,29,855,4.317122103879636,bbq
+disability,unemployed,61,3179,2.4216346193644696,bbq
+disability,isolated,174,6466,3.3784576520038505,bbq
+disability,suffers,326,9602,4.256877963091313,curated
+disability,strange,470,32021,1.8395444481484533,bbq
+disability,cure,194,6172,3.945034787676482,curated
+disability,unable,498,16503,3.781650904034657,bbq
+disability,bitter,135,5176,3.277143109667735,curated
+disability,inspiring,146,4184,4.383150497868953,curated
+disability,miraculous,35,1213,3.6625275697932307,curated
+disability,tragic,270,11612,2.916311245974924,curated
+disability,monster,141,13811,1.2826492816327035,curated
+disability,lonely,243,11047,2.7594802205518034,bbq
+disability,pitiful,3,242,1.8069603857475591,curated
+disability,childlike,15,316,6.131268201244539,curated
+disability,tragedy,192,11033,2.1842873199717285,curated
+disability,awkward,79,5922,1.6805614200919377,bbq
+disability,unhappy,73,4564,2.0159811073325544,bbq
+disability,stricken,31,880,4.478922250873421,curated
+disability,overcomes,45,1243,4.5809751637066185,curated
+disability,brave,84,5905,1.791399155965972,curated
+disability,overcoming,62,1531,5.109228738675704,curated
+disability,monstrous,25,1518,2.1024114559229443,curated
+disability,overcome,292,11275,3.247748503051662,curated
+disability,confined,101,1677,7.575230350384328,curated
+disability,burden,76,2158,4.437125498011106,curated
+disability,miracle,104,3406,3.8406101675641384,curated
+disability,freaks,59,1576,4.7251469649504045,curated
+disability,miserable,49,2366,2.6187317896130224,bbq
+disability,heal,111,3481,4.009597679992763,curated
+disability,invalid,37,477,9.83218908475205,curated
+disability,freak,89,2140,5.234800476813639,curated
+disability,courageous,26,1554,2.134260750615311,curated
+disability,pity,77,1082,8.963262751472962,curated
+disability,sheltered,24,682,4.494234805577261,curated
+disability,resentful,10,558,2.353739804174305,curated
+disability,inspirational,87,1517,7.218910931528551,curated
+disability,helpless,69,2021,4.304308483981898,bbq
+disability,dependent,61,1006,7.649863161718163,bbq
+disability,healed,59,757,9.833919723094802,curated
+disability,grotesque,21,884,3.0432172207676125,curated
+disability,afflicted,28,504,7.072549888714607,curated
+disability,institutionalized,20,269,9.523299038057305,curated
+disability,savant,44,101,54.88912389218394,curated
+disability,cured,70,1016,8.683085235004343,curated
+disability,simple-minded,12,195,8.004893926631038,curated
+disability,friendless,3,116,3.761269472478825,bbq
+disability,freak show,11,118,12.149875288133828,curated
+disability,pitied,3,32,13.482704416731787,curated
+disability,institutionalised,3,29,14.853826899789256,curated
+mental_illness,murder,656,51183,3.0171448170998802,curated
+mental_illness,killing,401,18339,5.149789344569912,curated
+mental_illness,escaped,246,6326,9.16526057998084,curated
+mental_illness,obsession,116,6409,4.275561711944433,curated
+mental_illness,menace,6,1170,1.306271177554077,curated
+mental_illness,violent,275,13474,4.809504664041782,bbq
+mental_illness,escapes,301,11736,6.042826417495776,curated
+mental_illness,murderer,141,7275,4.574935764092918,curated
+mental_illness,killer,538,28098,4.508104525572073,curated
+mental_illness,murders,212,9485,5.269751204583472,curated
+mental_illness,dangerous,263,27197,2.2789932553850503,bbq
+mental_illness,violence,162,14260,2.6804642427107166,bbq
+mental_illness,tormented,62,2478,5.931745369124653,curated
+mental_illness,obsessed,159,7462,5.027681400348698,curated
+mental_illness,deranged,84,1246,15.946149517249586,curated
+mental_illness,insane,453,3031,35.18934025774576,curated
+mental_illness,insanity,124,1240,23.608260497841112,curated
+mental_illness,unhinged,15,619,5.885478712750786,curated
+mental_illness,murderous,68,2607,6.179561520047362,curated
+mental_illness,rampage,52,2039,6.055179187935954,curated
+mental_illness,paranoid,159,1818,20.631879268684163,curated
+mental_illness,paranoia,69,1896,8.620319513778805,curated
+mental_illness,unpredictable,29,2644,2.6240363711708126,bbq
+mental_illness,stalker,46,1921,5.69251219757863,curated
+mental_illness,possessed,63,3047,4.901414336910077,curated
+mental_illness,crazed,35,1000,8.346466716351081,curated
+mental_illness,hallucinations,115,1171,23.191620570507755,curated
+mental_illness,unstable,93,2096,10.490788944657131,bbq
+mental_illness,voices,114,6676,4.034112814197832,curated
+mental_illness,slasher,8,563,3.5482679716824514,curated
+mental_illness,madness,190,4222,10.612476157537094,curated
+mental_illness,berserk,9,458,4.8738894141789935,curated
+mental_illness,asylum,730,1958,87.73806460481198,curated
+mental_illness,delusional,75,659,26.929206556526985,curated
+mental_illness,stalks,24,1279,4.504195163556997,curated
+mental_illness,hysterical,17,731,5.627495080335102,curated
+mental_illness,terrorizes,12,777,3.7818214527010814,curated
+mental_illness,sedated,10,157,15.681952957200483,curated
+mental_illness,hysteria,20,516,9.336303067452368,curated
+mental_illness,escapee,31,317,23.337709518983395,curated
+mental_illness,delusions,68,569,28.293602569839326,curated
+mental_illness,lobotomy,14,48,70.32628388022896,curated
+mental_illness,institutionalized,73,216,79.85844404301862,curated
+mental_illness,homicidal,34,430,18.851128119282805,curated
+mental_illness,padded cell,11,13,200.38051000867284,curated
+mental_illness,hearing voices,17,83,49.299552709762,curated
+mental_illness,terrorises,2,81,7.215622526319241,curated
+mental_illness,shock therapy,12,54,53.95167301789157,curated
+mental_illness,electroshock,26,45,137.00167693378444,curated
+mental_illness,mad genius,1,21,16.411346118000505,curated
+mental_illness,straitjacket,9,44,50.217489806765585,curated
+mental_illness,institutionalised,1,31,11.201394969428916,curated
+older_people,slow,117,4958,2.5459475279564097,bbq
+older_people,forgets,50,2638,2.0563459453583115,bbq
+older_people,frail,73,312,25.269649431879667,bbq
+older_people,decline,63,2096,3.25417390444302,curated
+older_people,stubborn,85,1842,4.985635427744652,bbq
+older_people,widowed,158,2640,6.449187362333663,curated
+older_people,confused,185,6801,2.9302259565677526,bbq
+older_people,eccentric,260,5354,5.226978386325073,curated
+older_people,lonely,608,10682,6.1199740497200334,curated
+older_people,senile,89,244,39.32838126109842,bbq
+older_people,lecherous,15,332,5.008433918906127,curated
+older_people,nursing home,280,859,35.06298485534941,curated
+older_people,wise,102,2585,4.259329349129936,curated
+older_people,dying,446,9917,4.837056426116769,curated
+older_people,wisdom,113,2859,4.2644954973431775,curated
+older_people,burden,62,2172,3.090879910234767,curated
+older_people,ailing,86,1729,5.373502319340435,curated
+older_people,technology,109,11522,1.0210083690113927,bbq
+older_people,cane,39,1095,3.8738840112738835,curated
+older_people,loneliness,249,4058,6.604909924134592,curated
+older_people,old-fashioned,40,1438,3.0248723809734446,bbq
+older_people,feeble,13,229,6.319940334103559,bbq
+older_people,inheritance,126,3497,3.885927573549593,curated
+older_people,care home,83,308,29.079919948978933,curated
+older_people,dementia,258,1156,24.014680327036825,bbq
+older_people,grumpy,143,1295,11.900806209992767,curated
+older_people,retirement home,191,557,36.905050686411,curated
+older_people,alzheimer's,142,878,17.427496254258248,bbq
+older_people,feisty,58,1030,6.099156392300815,curated
+older_people,pension,67,745,9.727875966980326,curated
+older_people,curmudgeonly,10,75,14.941845690562717,curated
+older_people,irascible,14,140,11.088009198267098,curated
+older_people,cranky,32,453,7.699596548163652,curated
+older_people,forgetful,16,262,6.753307671299231,bbq
+older_people,old folks home,55,0,11925.727410453415,curated
+older_people,sickly,28,476,6.426046362797847,curated
+older_people,spunky,16,302,5.860308309805117,curated
+older_people,out of touch,5,195,3.022580159788659,bbq
+older_people,infirm,16,54,32.52739933423941,curated
+older_people,crotchety,31,60,55.9393065935943,curated
+older_people,sprightly,18,55,35.81299522658683,curated
+older_people,senility,13,41,34.95003148618715,bbq
+older_people,cantankerous,44,209,22.821168795939577,curated
+older_people,decrepit,27,329,8.966834920162105,curated
+older_people,spry,8,24,37.274750133794456,curated
+older_people,curmudgeon,8,62,14.611702052447427,curated
+older_people,hard of hearing,6,55,12.582944268800777,bbq
+older_people,doddering,6,11,60.72638321029941,curated
+poverty_class,gang,280,35130,1.5450356583054434,curated
+poverty_class,addiction,109,5495,3.8556435714483506,curated
+poverty_class,criminals,77,6833,2.1945651397534465,curated
+poverty_class,criminal,213,16626,2.484774692879405,curated
+poverty_class,crime,393,30357,2.508237782454051,curated
+poverty_class,robbery,60,8757,1.336796196280148,curated
+poverty_class,steal,149,14750,1.9612114641795841,curated
+poverty_class,violent,160,13589,2.2853963595157847,curated
+poverty_class,dirty,74,6778,2.126731407884294,curated
+poverty_class,thieves,61,4798,2.4800451600105364,curated
+poverty_class,lazy,34,2295,2.9082502255966642,bbq
+poverty_class,humble,118,3441,6.6628578670285865,curated
+poverty_class,thief,99,7787,2.472378700869698,curated
+poverty_class,violence,398,14024,5.49833138705727,curated
+poverty_class,slums,110,762,28.042220666598787,curated
+poverty_class,drunk,107,9213,2.2577393199240334,curated
+poverty_class,abusive,84,3866,4.228912184718821,bbq
+poverty_class,addicted,39,2380,3.2108416088187193,curated
+poverty_class,housing project,15,219,13.66429237585893,curated
+poverty_class,drugs,200,12178,3.185741617040382,bbq
+poverty_class,noble,87,2785,6.078478189329316,curated
+poverty_class,drug dealer,34,2265,2.946761594728379,bbq
+poverty_class,alcoholic,103,3305,6.058891295892128,curated
+poverty_class,ignorant,21,636,6.536270612449358,bbq
+poverty_class,stealing,105,8667,2.3553127431607446,curated
+poverty_class,stupid,31,2283,2.6693130539503622,bbq
+poverty_class,illiterate,41,483,16.608927554430792,bbq
+poverty_class,hardworking,26,815,6.287990560097897,curated
+poverty_class,hard-working,34,750,8.89525435424003,curated
+poverty_class,honest,109,6568,3.22580334123383,curated
+poverty_class,incompetent,11,997,2.2308733142379755,bbq
+poverty_class,crude,12,664,3.6400303120233928,curated
+poverty_class,tenement,25,351,14.037986601344725,curated
+poverty_class,neglect,44,1144,7.523747056993254,bbq
+poverty_class,welfare,120,1607,14.505277369924237,curated
+poverty_class,vulgar,10,285,7.116609875885175,curated
+poverty_class,drunken,60,3710,3.1550984204078687,curated
+poverty_class,uncouth,6,105,11.922048094943726,curated
+poverty_class,ghetto,40,812,9.645430721452461,curated
+poverty_class,gangs,57,2486,4.474755944002374,curated
+poverty_class,the projects,16,244,13.058552915698156,curated
+poverty_class,laziness,4,281,3.093314569244178,bbq
+poverty_class,filthy,21,819,5.07667632071265,curated
+poverty_class,addict,38,2518,2.958072042249671,curated
+poverty_class,squalor,14,115,24.29271138626729,curated
+poverty_class,trashy,4,210,4.136665326566442,curated
+poverty_class,uneducated,28,215,25.59101774725829,bbq
+poverty_class,neglectful,3,190,3.5551918102628477,bbq
+poverty_class,slum,84,677,24.134448652716337,curated
+poverty_class,dropout,16,453,7.040388506919953,bbq
+poverty_class,trailer park,9,361,5.085167657477327,curated
+poverty_class,squalid,18,121,29.463573750308857,curated
+poverty_class,council estate,13,107,24.300503755597287,curated
+poverty_class,freeloader,2,82,5.863757920823138,curated
+poverty_class,scrounging,1,34,8.413217886398416,curated
+poverty_class,food stamps,4,34,25.23965365919525,curated
+poverty_class,simple folk,1,16,17.591273762469413,curated
+poverty_class,teen pregnancy,1,50,5.747643902589016,curated
+homelessness,criminal,102,16737,2.075067375591336,curated
+homelessness,crime,223,30527,2.4807626500592406,curated
+homelessness,steal,115,14784,2.6471239031516216,curated
+homelessness,violent,112,13637,2.7952244464969698,curated
+homelessness,dirty,62,6790,3.118725784314886,curated
+homelessness,threat,58,11886,1.6676342205302872,curated
+homelessness,crazy,97,12268,2.692849460316156,curated
+homelessness,lazy,18,2311,2.7119192739621494,curated
+homelessness,dangerous,115,27345,1.4311825838308003,curated
+homelessness,thief,71,7815,3.0999036926003996,curated
+homelessness,insane,37,3447,3.6857503881172273,curated
+homelessness,drunk,114,9206,4.214148702235476,curated
+homelessness,wise,17,2670,2.2204673592021216,curated
+homelessness,drunkard,6,400,5.499329771766752,curated
+homelessness,alley,51,2197,7.941037965521526,curated
+homelessness,drugs,154,12224,4.282489491406655,curated
+homelessness,alcoholic,105,3303,10.821241155139312,curated
+homelessness,stealing,97,8675,3.808106000102445,curated
+homelessness,shelter,474,5386,29.84891021484427,curated
+homelessness,begs,43,5035,2.9271540814456563,curated
+homelessness,invisible,48,4431,3.708428516798109,curated
+homelessness,ragged,6,317,6.936949838086879,curated
+homelessness,smelly,2,392,2.158237700727667,curated
+homelessness,cardboard,25,900,9.595230022057985,curated
+homelessness,booze,27,1203,7.742576878181722,curated
+homelessness,mentally ill,25,649,13.30331737469317,curated
+homelessness,down and out,13,289,15.800983788228981,curated
+homelessness,pity,28,1131,8.53471903836142,curated
+homelessness,drunken,45,3725,4.138336066339576,curated
+homelessness,beg,19,1063,6.212924043984722,curated
+homelessness,filthy,13,827,5.52795747032301,curated
+homelessness,addict,93,2463,12.86050348196947,curated
+homelessness,rags,4,435,3.501251287173586,curated
+homelessness,alleyway,15,232,22.589554600949583,curated
+homelessness,panhandling,13,20,223.1407222776727,curated
+homelessness,begging,52,1183,15.031072453103334,curated
+homelessness,disheveled,4,230,6.615162410256385,curated
+homelessness,skid row,44,130,115.54427353359269,curated
+homelessness,stench,3,234,5.057362970361847,curated
+homelessness,unkempt,3,124,9.52571579558115,curated
+homelessness,down-and-out,7,261,9.718259627559572,curated
+homelessness,dishevelled,1,63,8.004172890100246,curated
+homelessness,soup kitchen,35,100,119.69092363189704,curated

@@ -9,7 +9,7 @@ series, which he and Alexandru Pascu first explored with a BERT classifier (kept
 classifier properly and adds the word-embedding method from the project's original reading list.
 
 *Content note: the word lists and result tables contain stereotypes about groups of people, collected in order to
-measure them. Slurs are counted but left out of every published table.*
+measure them. Slurs and insulting labels are counted but left out of every published table.*
 
 ## At a glance
 
@@ -25,6 +25,7 @@ measure them. Slurs are counted but left out of every published table.*
 | [8. Checking the measures](#8-checking-the-measures) | A careful reading of 3,000 summaries confirms the measures: stereotyped portrayals fell from 25% of pre-1970 film summaries to 9% today, and from 16% to 5% on TV. |
 | [9. A classifier trained on careful labels](#9-a-classifier-trained-on-careful-labels) | Trained on those labels, EmbeddingGemma-2 recognises stereotyped portrayals (AUC 0.86–0.90); on 37,049 fresh summaries, film portrayals fall from 22% in the 1930s to 8% now, and Westerns and romances lead. |
 | [10. Behind the camera, leads and ages](#10-behind-the-camera-leads-and-ages) | Women went from 3% to 16% of film directors and 6% to 23% of TV directors; they still hold only 38% of first-listed film roles, and the first-listed man is about 6 years older than the first-listed woman (9 in the 1940s). |
+| [11. Six more groups](#11-six-more-groups-immigrants-disability-mental-illness-age-class-and-homelessness) | Films name immigrants, disabled people and people with a mental illness two to three times as often as a century ago, and stereotype these six groups as often as ever (5–8% of film summaries, unlike gender and ethnicity); insulting labels for mental illness peaked in the 1990s. |
 
 ## 1. Who plays whom
 
@@ -153,11 +154,12 @@ tagged "Italian stereotype" mention Italians 68 times as often.
 
 ![Pejorative stereotype pairing by decade](results/groups_offensive/pejorative_pairing_by_decade.png)
 
-- Pejorative stereotype words have not faded from summaries that mention a group: across groups they appear about 3
-  times as often next to a group mention in every decade since the 1950s (2.7 then, 3.1 in the 2020s).
-- Native Americans are the clear decline (15 times in the 1950s, 1.5 now, as "savage" and "warpath" disappeared).
-  Germans (Nazi plots, 6 → 10) and Italians (mafia, 2 → 6.5) rose; Muslims have been tied to extremism words at about 5
-  times since 2000 (3 times in the 1990s).
+- Pejorative stereotype words have not faded from summaries that mention a group: comparing summaries of the same
+  length, across groups they appear about twice as often next to a group mention in every decade since the 1950s
+  (2.1 then and now).
+- Native Americans are the clear decline (9 times in the 1950s, about even now, as "savage" and "warpath"
+  disappeared). Germans (Nazi plots, 5 → 7) and Italians (mafia, 1.4 → 5) rose; Muslims have been tied to extremism
+  words at about 3.5 times since 2000 (2 times in the 1990s).
 
 ![Criminal jobs for group-labelled characters](results/groups/criminal_jobs_by_group_label.png)
 
@@ -318,6 +320,54 @@ years IMDb holds for 683,000 people.
 
 Tables: [`results/behind_camera/`](results/behind_camera/).
 
+## 11. Six more groups: immigrants, disability, mental illness, age, class and homelessness
+
+Immigrants and refugees, disabled people, people with a mental illness, older people, poor and working-class people,
+and homeless people, measured like the groups of study 5: words that name them, the stereotype words documented for
+them (BBQ's age, disability and class stereotypes, curated lists for the rest) and insulting labels. A second careful
+reading of 2,685 summaries ([`labelling/codebook_social.md`](labelling/codebook_social.md)) checks them, including the
+same 1,400 random summaries as study 8.
+
+![How often summaries stereotype the six groups](results/labels_social/prevalence.png)
+
+- One of the six groups appears in 17–22% of film summaries in every era and in 6–12% of TV episodes. In films they
+  are portrayed through a stereotype about as often now as before 1970 (5–8% of summaries), unlike gender and the
+  groups of study 5; on TV it fell from 6% to 2%.
+- Where a summary names the group, it portrays people with a mental illness and disabled people through a stereotype
+  almost half the time (47%), homeless people 40%, older people 36%, poor people 27% and immigrants 17%.
+
+| Group | Stereotyped when named | Most common stereotypes |
+| --- | --- | --- |
+| People with a mental illness | 47% | dangerous (17 of 43), pitiable, a burden |
+| Disabled people | 47% | a burden (8 of 35), an inspiration, pitiable, only a victim |
+| Homeless people | 40% | only a victim (16 of 37), a moral failing, pitiable, comic |
+| Older people | 36% | comic (10 of 34), only a victim, the wise elder, declining |
+| Poor and working-class people | 27% | criminal, a moral failing, the noble poor, pitiable (5 each of 25) |
+| Immigrants and refugees | 17% | only a victim (7 of 15) |
+
+![How often the six groups are named, and how tightly stereotype words cling to them](results/groups_social/by_decade.png)
+
+- Films name these groups more than they used to: immigrants and refugees three times as often as in the 1920s (4 →
+  13 per 1,000 film summaries), people with a mental illness about three times (3 → 8–10) and disabled people almost
+  twice (8 → 12–17); older people steadily (12–17). Poor and working-class people are the exception, named a quarter
+  as often (23 → 6). TV episodes name all six less over time (older people from 20 to 4 per 1,000 since the 1950s).
+- Where they are named, stereotype words cling more tightly to immigrants (1.7 → 2.7 times as often as elsewhere in
+  film summaries), homeless people (1.5 → 2.5), poor people (0.7 → 2.1) and older people (about 2.5 → 4 since the
+  1950s), and less tightly to disabled people (2.3 → 1.5) and people with a mental illness (4.0 in the 1950s → 2.2),
+  comparing summaries of the same length. TV shows the same directions.
+- Insulting labels faded for homeless and poor people (in films from 513 and 187–283 per 100,000 summaries in the
+  1920s–30s to 14 and 27) and for disabled people (about 100–150 → 11). Labels for mental illness are the exception:
+  in films they rose from about 130 per 100,000 summaries in the 1920s to 600 in the 1990s, and are still 200.
+- Checking the measures: the mention lists are right 89–95% of the time (disability 74%) but catch only about a
+  third of the people the labelling model finds, so the decade chart follows explicit naming while the labels above
+  give prevalence. A group named next to a pejorative stereotype word is stereotyped 36–76% of the time, against
+  15–43% for a plain mention; insulting labels are right about 80% of the time after pruning (out-of-sample
+  estimate); titles viewers tagged with a theme name its group 38–168 times as often as other titles. The two
+  labelling passes agree closely (kappa 0.81–1.00), but the second was a reread in the same session.
+
+Tables: [`results/groups_social/`](results/groups_social/), [`results/groups_offensive_social/`](results/groups_offensive_social/),
+[`results/labels_social/`](results/labels_social/).
+
 ## How it was measured
 
 - **Gender** comes from IMDb's actor/actress credit category, TMDb's gender field and, in summaries, from pronouns,
@@ -348,6 +398,15 @@ Tables: [`results/behind_camera/`](results/behind_camera/).
   words are dropped; the list was then pruned against the labelled summaries of study 8, removing 41 terms the labels
   never confirmed that, read in context, were names, places, foods, objects or plain descriptions, and cutting a few
   everyday idioms that contain a slur before matching.
+- **Stereotype pairing** (studies 5 and 11) compares how often a group's stereotype words appear in summaries that
+  mention the group with summaries that do not, within bands of summary length (a Mantel–Haenszel ratio over
+  length deciles): longer summaries are likelier both to mention a group and to contain any given word, which
+  inflates the plain ratio.
+- **The six groups of study 11** are named by identity terms cross-checked against HolisticBias's descriptors
+  (numeric ages count from 65), with idioms removed ("blind date", "fell on deaf ears", "disabled the alarm"). Their
+  insulting labels, like the slur lists, are kept out of the repository; the labels pruned 12 that were mostly
+  surnames, other uses or outdated descriptions, and the pruned list is right about 80% of the time (out-of-sample
+  estimate).
 - **Wikipedia episode summaries** come from season and episode-list pages ({{Episode list}}), traced to the series'
   IMDb id through Wikidata and kept only for series whose episode titles agree with IMDb's.
 
@@ -361,6 +420,11 @@ Tables: [`results/behind_camera/`](results/behind_camera/).
   agrees closely, which shows consistency but not that independent human readers would agree.
 - IMDb lists casts in credits order, usually billing order but sometimes order of appearance, so "first-listed" is an
   approximation of the lead; the top three is the steadier measure.
+- Study 11's word lists catch about a third of the members of the six groups that a careful reader finds: people are
+  often described rather than named ("a widow in her seventies", "a family that cannot pay the rent"). Its decade
+  trends therefore follow explicit naming; the labels give the prevalence.
+- The second labelling pass of study 11 was a reread in the same session, so its agreement (kappa 0.81–1.00) is an
+  even looser upper bound than study 8's.
 - Garg et al.'s Black surname list overlaps heavily with common White surnames, so the embeddings give no usable
   Black–White contrast; surnames also stand in for groups only roughly.
 
@@ -372,7 +436,8 @@ transformers, mwparserfromhell, matplotlib, lxml, jsonschema and wordfreq, then 
 `bash src/run_all.sh <step>` to start from a step). `src/transformer.py`, `src/label_classifier.py` (about four hours
 on a CPU) and `src/score_sample.py` (about two hours) run separately; the labels themselves come from `labelling/`.
 `src/imdb_people.py`, `src/behind_camera.py`, `src/film_writers.py` and `src/ratings_films.py` add the crew, leads and
-ages (studies 2 and 10) and the films half of study 4. No raw data is stored in this repository.
+ages (studies 2 and 10) and the films half of study 4; `src/label_sample_social.py` and
+`src/validate_labels_social.py` draw and score study 11's labelling sample. No raw data is stored in this repository.
 
 ## Data and terms
 
@@ -390,6 +455,8 @@ ages (studies 2 and 10) and the films half of study 4. No raw data is stored in 
   `Qwen3-Embedding-0.6B` (Apache-2.0) and `EmbeddingGemma-2` (Apache-2.0), all run locally.
 - SeeGULL (Google, CC BY 4.0), StereoSet (CC BY-SA 4.0), HurtLex (CC BY-NC-SA 4.0), Wikipedia lists of ethnic and
   religious slurs (CC BY-SA 4.0). The lexicon built from them is not included; it keeps their licences.
+- BBQ (Parrish et al. 2022, CC BY 4.0) for the age, disability and class stereotypes of study 11, and HolisticBias
+  (Smith et al. 2022, dataset CC BY-SA 4.0) for its identity terms.
 
 ## Licence
 
