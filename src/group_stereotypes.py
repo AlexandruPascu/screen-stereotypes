@@ -8,6 +8,9 @@
   5. Validation: titles that viewers tagged "racism", "<group> stereotype", "antisemitism"... should score higher.
 
 Aggregates only (no text) go to results/groups/. Words are matched as whole words or 2-3 word phrases.
+GROUP_SET=social scans the social groups of social_groups.py (immigrants and refugees, disability, mental illness,
+older people, poverty and class, homelessness) into files of their own (results/groups_social/...); there the
+pejorative labels take the place of slurs, and mentions, being common nouns, are matched in lower case.
 """
 import json
 import os
@@ -21,23 +24,29 @@ import numpy as np
 import pandas as pd
 
 from groups import GROUPS as GROUP_DEFS, NOT_A_MENTION, cased_variants
+from social_groups import AGE_TOKEN, NOT_A_MENTION as SOCIAL_NOT_A_MENTION
 from occupations import GROUP as OCC_GROUP, occupation
 from publish import without_slurs
 from paths import DERIVED, IMDB, LEXICONS, RESULTS
 
 # INDEX=offensive uses only the pejorative stereotype words (SeeGULL offensiveness >= 1, HurtLex, pejorative list)
 INDEX = os.environ.get("INDEX", "all")
-OUT = RESULTS / ("groups" if INDEX == "all" else "groups_offensive")
+GROUP_SET = os.environ.get("GROUP_SET", "core")
+SOCIAL = GROUP_SET == "social"
+SUFFIX = "_social" if SOCIAL else ""
+OUT = RESULTS / (("groups" if INDEX == "all" else "groups_offensive") + SUFFIX)
 OUT.mkdir(parents=True, exist_ok=True)
-lex = json.load(open(DERIVED / "lexicon.json"))
+lex = json.load(open(DERIVED / f"lexicon{SUFFIX}.json"))
 GROUPS = list(lex)
 MENTION = {t: g for g, v in lex.items() for t in v["mentions"]}
 PROPER_CATEGORIES = {"nationality", "ethnicity", "religion"}
 CASED = {}
-for g, d in GROUP_DEFS.items():
+for g, d in ({} if SOCIAL else GROUP_DEFS).items():
     for t in d[1]:
         for v in cased_variants(t, d[0] in PROPER_CATEGORIES):
             CASED[v] = g
+if SOCIAL:
+    CASED = dict(MENTION)  # common nouns: matched in lower case
 CASED_WORD = re.compile(r"[A-Za-z][A-Za-z'\-]*")
 ATTR = {g: set(v["attributes"] if INDEX == "all" else v["offensive_attributes"]) - set(v["mentions"])
         for g, v in lex.items()}
@@ -49,19 +58,27 @@ for g, v in lex.items():
 # exclusions file next to the source lexicons.
 _ex = LEXICONS / "slur_exclusions.json"
 SLUR_PHRASES = json.load(open(_ex))["remove_phrases"] if _ex.exists() else []
-NOT_RE = re.compile(r"\b(" + "|".join(NOT_A_MENTION + SLUR_PHRASES) + r")\b", re.I)
+NOT_RE = re.compile(r"\b(" + "|".join(SOCIAL_NOT_A_MENTION if SOCIAL else NOT_A_MENTION + SLUR_PHRASES) + r")\b",
+                    re.I)
+# "a 72-year-old widow": numeric ages of 65 and over become one word that the older-people mentions include
+AGE_RE = re.compile(r"\b(?:6[5-9]|[7-9][0-9]|1[01][0-9])[- ]years?[- ]old\b", re.I)
 WORD = re.compile(r"[a-z][a-z'\-]*")
+
+
+def clean(text):
+    text = NOT_RE.sub(" ", text)
+    return AGE_RE.sub(f" {AGE_TOKEN} ", text) if SOCIAL else text
 
 
 def cased_grams(text):
     """Mention matching keeps the case of the text, so "Polish" counts and "polish the silver" does not."""
-    words = CASED_WORD.findall(NOT_RE.sub(" ", text))
+    words = CASED_WORD.findall(clean(text))
     return set(words) | {" ".join(words[i:i + 2]) for i in range(len(words) - 1)} | \
         {" ".join(words[i:i + 3]) for i in range(len(words) - 2)}
 
 
 def grams(text):
-    words = WORD.findall(NOT_RE.sub(" ", text.lower()))
+    words = WORD.findall(clean(text.lower()))
     return set(words) | {" ".join(words[i:i + 2]) for i in range(len(words) - 1)} | \
         {" ".join(words[i:i + 3]) for i in range(len(words) - 2)}
 
@@ -74,7 +91,7 @@ def scan(text):
     (group, word) stereotype hits."""
     g = grams(text)
     mentioned = 0
-    for t in cased_grams(text) & CASED.keys():
+    for t in (g if SOCIAL else cased_grams(text)) & CASED.keys():
         mentioned |= BIT[CASED[t]]
     attr_mask, hits = 0, []
     for grp in GROUPS:
@@ -104,7 +121,7 @@ def names_scan(names):
     out = {}
     for n in names:
         g = grams(n)
-        m = {CASED[t] for t in cased_grams(n) & CASED.keys()}
+        m = {CASED[t] for t in (g if SOCIAL else cased_grams(n)) & CASED.keys()}
         s = {grp for t in g & SLUR.keys() for grp in SLUR[t]}
         if m or s:
             out[n] = (m, s)
@@ -145,8 +162,8 @@ if __name__ == "__main__":
     # per-title bitmasks for the ratings models (private: keyed by title, no text); bit order = GROUPS
     pd.DataFrame({"title": texts.title, "mention_mask": masks[:, 0], "stereotype_mask": masks[:, 1],
                   "slur_mask": masks[:, 2]}).to_parquet(
-        DERIVED / ("title_groups.parquet" if INDEX == "all" else "title_groups_offensive.parquet"), index=False)
-    json.dump(GROUPS, open(DERIVED / "title_groups_bits.json", "w"))
+        DERIVED / f"title_groups{SUFFIX}{'' if INDEX == 'all' else '_offensive'}.parquet", index=False)
+    json.dump(GROUPS, open(DERIVED / f"title_groups_bits{SUFFIX}.json", "w"))
 
     def has(col, grp):
         return (masks[:, col] & BIT[grp]) > 0
@@ -211,13 +228,24 @@ if __name__ == "__main__":
             checks.append((f"{grp} stereotype tag", t.sum(), m[t].mean(), m[~t].mean(), a[t].mean(), a[~t].mean(),
                            s[t].mean(), s[~t].mean()))
     any_slur = masks[:, 2] > 0
-    for label, pat in [("racism tag", r"racis"), ("antisemitism tag", r"antisemit|anti-semit"),
-                       ("homophobia tag", r"homophob"), ("islamophobia tag", r"islamophob"),
-                       ("racial/ethnic slur tag", r"racial[- ]slur|ethnic[- ]slur|racist[- ]slur")]:
+    # (tag, pattern, group whose mentions and labels it should go with; None = any group)
+    TAGS = [("racism tag", r"racis", None), ("antisemitism tag", r"antisemit|anti-semit", None),
+            ("homophobia tag", r"homophob", None), ("islamophobia tag", r"islamophob", None),
+            ("racial/ethnic slur tag", r"racial[- ]slur|ethnic[- ]slur|racist[- ]slur", None)]
+    if SOCIAL:
+        TAGS = [("immigration tag", r"immigra|refugee|asylum seeker|deportation", "immigrant_refugee"),
+                ("disability tag", r"disabilit|wheelchair|blindness|deafness|paraplegi|amputee|autism|down syndrome",
+                 "disability"),
+                ("mental illness tag", r"mental illness|schizophreni|bipolar|psychiatric|mental hospital|"
+                 r"mental patient|insanity", "mental_illness"),
+                ("old age tag", r"old age|elderly|retirement home|nursing home|ageism|senior citizen", "older_people"),
+                ("poverty tag", r"poverty|working class|slum", "poverty_class"),
+                ("homelessness tag", r"homeless", "homelessness")]
+    for label, pat, grp in TAGS:
         t = tagged.str.contains(pat, regex=True).to_numpy()
-        anym = masks[:, 0] > 0
-        checks.append((label, t.sum(), anym[t].mean(), anym[~t].mean(), np.nan, np.nan, any_slur[t].mean(),
-                       any_slur[~t].mean()))
+        anym = masks[:, 0] > 0 if grp is None else has(0, grp)
+        sl = any_slur if grp is None else has(2, grp)
+        checks.append((label, t.sum(), anym[t].mean(), anym[~t].mean(), np.nan, np.nan, sl[t].mean(), sl[~t].mean()))
     val = pd.DataFrame(checks, columns=["tag", "tagged_titles", "mention_if_tagged", "mention_if_not",
                                         "stereotype_word_with_mention_if_tagged", "same_if_not", "slur_if_tagged",
                                         "slur_if_not"])

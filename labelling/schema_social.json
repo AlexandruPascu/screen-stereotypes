@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Social-group stereotype label for one plot summary (codebook_social v2)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "social_groups", "pejorative_label", "discrimination_theme", "confidence", "notes"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^S[0-9]{5}$"},
+    "social_groups": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["group", "portrayal", "types", "evidence"],
+        "properties": {
+          "group": {"enum": ["immigrant_refugee", "disability", "mental_illness", "older_people", "poverty_class",
+                             "homelessness"]},
+          "portrayal": {"enum": ["neutral", "stereotyped", "counter_stereotyped"]},
+          "types": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {"enum": ["danger_threat", "criminality", "illegitimacy", "burden_dependence", "pity_tragedy",
+                               "inspiration", "cure_or_death", "villain_marker", "decline_incompetence",
+                               "moral_failing", "comic_figure", "wise_or_noble", "victim_only", "other"]}
+          },
+          "evidence": {"type": "string", "maxLength": 160}
+        }
+      }
+    },
+    "pejorative_label": {"type": "boolean"},
+    "discrimination_theme": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["present", "stance"],
+      "properties": {
+        "present": {"type": "boolean"},
+        "stance": {"enum": ["critical", "neutral", "endorsing", null]}
+      }
+    },
+    "confidence": {"enum": [1, 2, 3]},
+    "notes": {"type": "string", "maxLength": 200}
+  }
+}

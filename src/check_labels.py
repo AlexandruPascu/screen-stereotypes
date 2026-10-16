@@ -1,7 +1,8 @@
 """Format and coverage check for a labels file, for the labelling model to run on its own output (writes nothing).
 
-Usage: check_labels.py labels.jsonl [--double]
+Usage: check_labels.py labels.jsonl [--double] [--social]
   --double  check a second-pass file: it should cover exactly the items marked "double"
+  --social  check against the social-groups pass (labelling/schema_social.json, DERIVED/labelling_social/)
 """
 import json
 import sys
@@ -10,8 +11,9 @@ from jsonschema import Draft202012Validator
 
 from paths import DERIVED, RESULTS
 
-validator = Draft202012Validator(json.load(open(RESULTS.parent / "labelling/schema.json")))
-items = [json.loads(line) for line in open(DERIVED / "labelling/items.jsonl")]
+KIT = "_social" if "--social" in sys.argv else ""
+validator = Draft202012Validator(json.load(open(RESULTS.parent / f"labelling/schema{KIT}.json")))
+items = [json.loads(line) for line in open(DERIVED / f"labelling{KIT}/items.jsonl")]
 expected = [i["id"] for i in items if i["double"]] if "--double" in sys.argv else [i["id"] for i in items]
 seen, problems = [], []
 for n, line in enumerate(open(sys.argv[1]), 1):
