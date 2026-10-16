@@ -13,6 +13,8 @@ Measures (each model uses the episodes where that measure exists):
   group_stereotype        the summary mentions a group together with that group's stereotype words (0/1)
   offensive_stereotype    the same with only the pejorative stereotype words (0/1)
   slur                    the summary contains a slur (0/1)
+The summary measures come from each episode's longest summary, and popular episodes have longer, more detailed ones, so
+their models also hold the summary's length (log words) and source fixed.
 Writes results/ratings/models.csv. Correlational: the 2022 null result used a measure that did not measure stereotypes.
 """
 import duckdb
@@ -74,12 +76,23 @@ off["offensive_stereotype"] = ((off.mention_mask & off.stereotype_mask) != 0).as
 ep = ep.merge(off[["title", "offensive_stereotype"]].rename(columns={"title": "t3"}), left_on="tconst", right_on="t3",
               how="left")
 ep["log_votes"] = np.log1p(ep.votes)
+tl = con.execute(f"""SELECT title AS tconst, max(words) AS summary_words, arg_max(source, words) AS summary_source
+    FROM '{DERIVED / "texts.parquet"}' WHERE words >= 5 GROUP BY title""").df()
+ep = ep.merge(tl, on="tconst", how="left")
+ep["log_summary_words"] = np.log1p(ep.summary_words)
+SOURCES = pd.get_dummies(ep.summary_source, prefix="source", drop_first=True, dtype=float)
+ep = pd.concat([ep, SOURCES], axis=1)
+LENGTH = ["log_summary_words"] + list(SOURCES.columns)
+FROM_SUMMARY = {"summary_women_active", "summary_women_looks", "summary_women_victim", "group_stereotype",
+                "offensive_stereotype", "slur"}
 
 
-def within(d, y, x):
-    d = d.dropna(subset=[y, x, "year"])
+def within(d, y, x, controls=()):
+    d = d.dropna(subset=[y, x, "year"] + list(controls))
     d = d[d.groupby("series")[x].transform("std") > 0]  # only series where the measure varies
     Z = pd.get_dummies(d.year.astype(int), prefix="y", drop_first=True).astype(float)
+    for c in controls:
+        Z[c] = d[c].to_numpy()
     Z[x], Z[y] = d[x].to_numpy(), d[y].to_numpy()
     for _ in range(8):
         Z = Z - Z.groupby(d.series.to_numpy()).transform("mean")
@@ -94,7 +107,7 @@ for x in ["cast_women_share", "guest_women_share", "summary_women_active", "summ
           "summary_women_victim", "group_stereotype", "offensive_stereotype", "slur"]:
     for y in ["rating", "log_votes"]:
         if ep[x].notna().sum() > 1000:
-            rows.append(within(ep, y, x))
+            rows.append(within(ep, y, x, LENGTH if x in FROM_SUMMARY else ()))
             print(rows[-1], flush=True)
 models = pd.DataFrame(rows)
 models.to_csv(OUT / "models.csv", index=False)

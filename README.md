@@ -18,8 +18,8 @@ measure them. Slurs are counted but left out of every published table.*
 | [1. Who plays whom](#1-who-plays-whom) | Detectives, judges and lawyers went from almost never women to 20–30% women; nurses, nannies and receptionists are still 83–90% women. |
 | [2. Who writes the film or episode](#2-who-writes-the-film-or-episode) | Films written by women cast 11 points more women than comparable films written by men (8 points even for films by the same director) and far more often give a woman the first-listed role; within a TV series the gap is about 3 points. |
 | [3. What characters do in plot summaries](#3-what-characters-do-in-plot-summaries) | Women went from 28% to 46% of the people summaries talk about, but are still described by their looks 1.5 times as often as their share. |
-| [4. Do audiences care?](#4-do-audiences-care) | Hardly: no measure has a clear effect on an episode's IMDb rating larger than 0.02 points. |
-| [5. Groups, stereotype words and slurs](#5-groups-stereotype-words-and-slurs) | Slurs in character names fell sevenfold, but pejorative stereotype words still cluster around group mentions as much as in the 1950s. |
+| [4. Do audiences care?](#4-do-audiences-care) | Little: within a TV series no measure moves an episode's IMDb rating by more than 0.04 points; films with more women on screen rate slightly lower, even among a director's own films (0.12 points for an all-female against an all-male cast). |
+| [5. Groups, stereotype words and slurs](#5-groups-stereotype-words-and-slurs) | Slurs in character names fell ninefold, but pejorative stereotype words still cluster around group mentions as much as in the 1950s. |
 | [6. The language of plot summaries](#6-the-language-of-plot-summaries) | Word embeddings trained on the summaries track the census and on-screen casting; gender-coded wording has halved since the 1950s, while terrorism words moved back towards Islam after 2001. |
 | [7. A classifier, done properly](#7-a-classifier-done-properly) | Without the 2022 length shortcut it reaches AUC 0.71–0.76, not 0.95 — and what it detects is stories *about* prejudice, not stereotyped portrayals. |
 | [8. Checking the measures](#8-checking-the-measures) | A careful reading of 3,000 summaries confirms the measures: stereotyped portrayals fell from 25% of pre-1970 film summaries to 9% today, and from 16% to 5% on TV. |
@@ -100,35 +100,61 @@ Tables: [`results/agency/`](results/agency/).
 
 ## 4. Do audiences care?
 
-Each measure compared across episodes of the same series, with air-year effects, for 887,000 rated IMDb episodes.
-This is the question the 2022 project asked with its classifier.
+The 2022 project asked this of TV episodes with its classifier; it is asked here of episodes and of films. Measures
+taken from plot summaries are compared at the same summary length and source, because well-known titles get longer,
+more detailed summaries, in which any word is more likely to turn up.
+
+**TV episodes.** Each measure compared across episodes of the same series, with air-year effects, for 887,000 rated
+IMDb episodes.
 
 ![Effects on ratings and votes](results/ratings/effects.png)
 
-- No measure has a clear effect on an episode's rating larger than 0.02 points out of 10: casting more women, writing
-  women as the ones who act, or pairing groups with stereotypes all leave ratings essentially unchanged.
-- Some get more attention: episodes whose summary describes a woman by her looks get 5% more votes, those with a woman
-  as a victim or with a group stereotype 2–3% more.
+- Ratings barely move: no measure shifts an episode's rating by more than 0.04 points out of 10. The largest is for
+  summaries that pair a group with pejorative stereotype words, 0.04 points below other episodes of the same series;
+  casting more women, or writing women as the ones who act, moves ratings by 0.02 points at most.
+- Some get more attention: episodes whose summary describes a woman by her looks get 4% more votes, those with a woman
+  as a victim 1% more. Without the length control, group stereotypes also seemed to draw 3% more votes; that came
+  from popular episodes having longer summaries.
 - The 2022 null result therefore stands, now with measures that do capture what they claim to.
 
-Table: [`results/ratings/models.csv`](results/ratings/models.csv).
+**Films.** A film has no other episodes of the same show, so each measure is compared three ways across 210,000 rated
+feature films (1950–2026): among a director's own films, with release year and genres held fixed; among the films of
+one franchise (TMDb collections); and among films of the same genre combination, decade and original language.
+
+![Effects on film ratings and votes](results/ratings/film_effects.png)
+
+- Films with more women on screen are rated a little lower, also among a director's own films: an all-female
+  credited cast rates 0.12 points below an all-male one and gets 9% fewer votes, and a woman in the first-listed role
+  0.06 points lower with 6% fewer votes. Franchises offer too few comparisons to confirm or rule this out. IMDb does
+  not say who rated, so this cannot separate how the films differ from who votes on them.
+- Who wrote or directed the film barely matters for its rating: 0.03 points at most for an all-women writing team,
+  nothing measurable for a woman director.
+- Summaries that study 9's classifier reads as a stereotyped portrayal go with lower ratings: 0.25 points below the
+  director's other films where it is sure (0.55 below similar films), across the 4,000 films in its scored sample.
+  Stories about prejudice rate slightly higher (0.07 points) and draw 15% more votes.
+- Group stereotype words show no consistent link with ratings among a director's own films. Across similar films
+  they go with 20–30% more votes, a gap that looked like 70% before summary length was held fixed. Slurs are too rare
+  in film summaries to tell.
+
+Tables: [`results/ratings/models.csv`](results/ratings/models.csv) (episodes),
+[`results/ratings/film_models.csv`](results/ratings/film_models.csv) (films).
 
 ## 5. Groups, stereotype words and slurs
 
 Thirty groups (nationalities, ethnic groups, religions, sexual orientation and gender identity), each with a list of
 stereotype words from published stereotype datasets and curated lists, and slurs from Wikipedia and HurtLex. The
 pejorative index keeps only words rated offensive. The measures pass a check against viewers' own tags: titles tagged
-"racism" contain slurs 11 times as often as other titles, those tagged "racial slur" 17 times as often, and titles
-tagged "Italian stereotype" mention Italians 70 times as often.
+"racism" contain slurs 15 times as often as other titles, those tagged "racial slur" 32 times as often, and titles
+tagged "Italian stereotype" mention Italians 68 times as often.
 
 ![Slurs in character names by decade](results/groups/slurs_in_character_names.png)
 
-- Characters credited with a slur in their name fell from 42 per 100,000 roles in the 1920s to 6 in the 2020s.
+- Characters credited with a slur in their name fell from 38 per 100,000 roles in the 1920s to 4 in the 2020s.
 
 ![Pejorative stereotype pairing by decade](results/groups_offensive/pejorative_pairing_by_decade.png)
 
 - Pejorative stereotype words have not faded from summaries that mention a group: across groups they appear about 3
-  times as often next to a group mention in every decade since the 1950s (2.8 then, 3.1 in the 2020s).
+  times as often next to a group mention in every decade since the 1950s (2.7 then, 3.1 in the 2020s).
 - Native Americans are the clear decline (15 times in the 1950s, 1.5 now, as "savage" and "warpath" disappeared).
   Germans (Nazi plots, 6 → 10) and Italians (mafia, 2 → 6.5) rose; Muslims have been tied to extremism words at about 5
   times since 2000 (3 times in the 1990s).
@@ -217,7 +243,11 @@ labels are, not agreement between independent readers.
 - The measures track what they claim, with false positives. "Woman described by looks" is right two times in three
   (67%, against 3% among random summaries); the most gender-coded wording carries a gender stereotype about half the
   time (48% against 12%); "woman as victim" and group-plus-pejorative-word flags are right about a quarter of the time
-  (29% and 22%, against 2–3%); the slur detector finds a slur in 37% of what it flags.
+  (29% and 22%, against 2–3%).
+- The slur detector as first built found a slur in only 37% of what it flagged: most misfires were names, places,
+  foods and everyday idioms. Pruning those with these labels loses none of its true hits and lifts precision to
+  77% on the same summaries, but that figure is flattering, since the same summaries chose the pruning. Choosing what
+  to drop on half of them and scoring the other half gives about 51% (40–62%), the better guide for new text.
 - So the trends in studies 3, 5 and 6 are trustworthy as trends; a single flagged title is not a verdict.
 - Results hold when the labels the model was unsure about (confidence 1, 19% of them) are left out.
 
@@ -305,13 +335,19 @@ Tables: [`results/behind_camera/`](results/behind_camera/).
 - **Casting skew** compares women's share in a job with women's share of all named fictional roles in the same period,
   so the general rise in women's roles is not mistaken for a change in a job's image.
 - **Within-series comparisons** (studies 2 and 4) use series and year fixed effects with standard errors clustered by
-  series.
+  series. **Film comparisons** use the director, the franchise (TMDb collection) or the genre combination and decade
+  as fixed effects; in study 4 the director and franchise comparisons add release-year effects and genre dummies, the
+  genre comparison also holds the original language fixed, and standard errors are clustered by director or
+  franchise. Measures from summaries are compared at the same summary length and source.
 - **Summaries** are joined to IMDb episodes through TMDb only for series whose season and episode numbering lines up
   with IMDb's (episode titles or air years agree); 15,107 series that do not are kept apart.
 - **Group mentions** are matched with their capitalisation ("Polish" counts, "polish the silver" does not). Stereotype
   words come from SeeGULL, StereoSet and short curated lists; the pejorative index keeps SeeGULL words its raters
-  scored offensive, words in HurtLex and a short pejorative list. Slurs that are also common names or everyday words
-  are dropped.
+  scored offensive, words in HurtLex and a short pejorative list. Phrases that name a thing rather than people
+  ("French toast", "German shepherd", "White House") are not mentions. Slurs that are also common names or everyday
+  words are dropped; the list was then pruned against the labelled summaries of study 8, removing 41 terms the labels
+  never confirmed that, read in context, were names, places, foods, objects or plain descriptions, and cutting a few
+  everyday idioms that contain a slur before matching.
 - **Wikipedia episode summaries** come from season and episode-list pages ({{Episode list}}), traced to the series'
   IMDb id through Wikidata and kept only for series whose episode titles agree with IMDb's.
 
@@ -331,13 +367,12 @@ Tables: [`results/behind_camera/`](results/behind_camera/).
 ## Reproduce
 
 Set `STEREOTYPES_DATA` to a local folder holding the sources below and `PYTHON` to an environment with pandas, pyarrow,
-duckdb, statsmodels, scikit-learn, gensim, spacy (`en_core_web_sm`), torch, sentence-transformers, transformers,
-mwparserfromhell, matplotlib, lxml and wordfreq, then run `bash src/run_all.sh` (or `bash src/run_all.sh <step>` to
-start from a step). `src/transformer.py`, `src/label_classifier.py` (about four hours on a CPU) and `src/score_sample.py` (about two
-hours) run separately; the labels themselves come from `labelling/`.
-`src/imdb_people.py`, `src/behind_camera.py` and `src/film_writers.py` add the crew, leads and ages (studies 2 and
-10). No raw data is stored in this
-repository.
+duckdb, statsmodels, scikit-learn, gensim, spacy (`en_core_web_sm`), torch, torchvision, sentence-transformers,
+transformers, mwparserfromhell, matplotlib, lxml, jsonschema and wordfreq, then run `bash src/run_all.sh` (or
+`bash src/run_all.sh <step>` to start from a step). `src/transformer.py`, `src/label_classifier.py` (about four hours
+on a CPU) and `src/score_sample.py` (about two hours) run separately; the labels themselves come from `labelling/`.
+`src/imdb_people.py`, `src/behind_camera.py`, `src/film_writers.py` and `src/ratings_films.py` add the crew, leads and
+ages (studies 2 and 10) and the films half of study 4. No raw data is stored in this repository.
 
 ## Data and terms
 

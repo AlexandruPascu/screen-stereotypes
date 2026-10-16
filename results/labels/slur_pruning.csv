@@ -1,0 +1,4 @@
+slur_list,flagged_items,share_with_slur,lo,hi,labelled_slurs_still_found
+full list,150.0,0.37333333333333335,0.2999970542949877,0.45299563428859446,1.0
+pruned list (in-sample),73.0,0.7671232876712328,0.6583251745764003,0.8492124092323698,1.0
+pruning rule on held-out halves,,0.510313221548578,0.4,0.62,

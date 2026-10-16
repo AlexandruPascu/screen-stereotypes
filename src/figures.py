@@ -291,11 +291,17 @@ names = {"woman described by looks": "Woman described by looks → appearance st
          "gender-coded wording (top 5%)": "Most gender-coded wording → any gender stereotype",
          "woman as victim": "Woman as victim → damsel stereotype",
          "group + pejorative words": "Group + pejorative words → group stereotype",
-         "slur detector": "Slur detector → slur",
+         "slur detector": "Slur detector, first list → slur",
+         "slur detector, pruned": "Slur detector, pruned list (held-out estimate) → slur",
          "classifier probability (prejudice theme)": "Classifier top 2% → story about prejudice",
          "classifier probability": "Classifier top 2% → stereotyped portrayal",
          "viewer stereotype tag (prejudice theme)": "Viewer stereotype tag → story about prejudice",
          "viewer stereotype tag": "Viewer stereotype tag → stereotyped portrayal"}
+# the slur list was pruned with these labels; its out-of-sample precision stands in for the in-sample one
+sp = pd.read_csv(RESULTS / "labels/slur_pruning.csv").set_index("slur_list")
+ms = pd.concat([ms, pd.DataFrame([{
+    "measure": "slur detector, pruned", "share_labelled_in_flagged": sp.share_with_slur["pruning rule on held-out halves"],
+    "share_in_random": ms.loc[ms.measure == "slur detector", "share_in_random"].iloc[0]}])])
 ms = ms[ms.measure.isin(names)].assign(name=lambda d: d.measure.map(names)).sort_values("share_labelled_in_flagged")
 fig, ax = plt.subplots(figsize=(10, 5.2))
 y = np.arange(len(ms))
@@ -489,3 +495,44 @@ fig.tight_layout()
 fig.savefig(BC / "writer_effects.png")
 plt.close(fig)
 print("behind-camera figures written")
+
+# ---- study 4 for films: the same question asked three ways ----
+fm = pd.read_csv(RESULTS / "ratings/film_models.csv")
+FNAMES = {"cast_women": "women's share of the credited cast (0→100%)",
+          "top3_women": "women's share of the top-3 roles (0→100%)",
+          "first_woman": "a woman in the first-listed role",
+          "writers_women": "women's share of the writers (0→100%)",
+          "director_women": "a woman director",
+          "summary_women_active": "women's share of who acts in the summary (0→100%)",
+          "summary_women_looks": "summary describes a woman by her looks",
+          "summary_women_victim": "summary has a woman as a victim of violence",
+          "group_stereotype": "summary pairs a group with its stereotype words",
+          "offensive_stereotype": "same, pejorative stereotype words only",
+          "prejudice_story": "a story about prejudice (study 7 classifier, top 2%)",
+          "stereotyped_portrayal": "a stereotyped portrayal (study 9 classifier, 0→1)"}
+FDESIGNS = {"same director": "a director's films compared with each other",
+            "same franchise": "films of one franchise compared with each other",
+            "same genre and language": "films of the same genre, decade and language"}
+order = [m for m in FNAMES if m in set(fm.measure)][::-1]
+fig, axes = plt.subplots(1, 2, figsize=(12, 7), sharey=True)
+for ax, (outcome, title) in zip(axes, [("rating", "change in IMDb rating (points out of 10)"),
+                                       ("log_votes", "change in number of votes (%)")]):
+    for design, colour, off in zip(FDESIGNS, SLOTS, [0.24, 0, -0.24]):
+        d = fm[(fm.outcome == outcome) & (fm.design == design)].set_index("measure").reindex(order)
+        est, lo, hi = d.estimate, d.lo, d.hi
+        if outcome == "log_votes":
+            est, lo, hi = (np.exp(est) - 1) * 100, (np.exp(lo) - 1) * 100, (np.exp(hi) - 1) * 100
+        yv = np.arange(len(order)) + off
+        ax.errorbar(est, yv, xerr=[est - lo, hi - est], fmt="o", ms=4, color=colour, ecolor=RULE, capsize=2,
+                    label=FDESIGNS[design])
+    ax.axvline(0, color=RULE, lw=1)
+    ax.set_title(title, fontsize=10, color=INK)
+axes[0].set_yticks(range(len(order)))
+axes[0].set_yticklabels([FNAMES[m] for m in order], fontsize=8)  # slurs are too rare in film summaries to chart
+fig.legend(*axes[0].get_legend_handles_labels(), loc="lower center", ncol=3, frameon=False, fontsize=8)
+fig.suptitle("Feature films, 1950–2026: what goes with higher or lower ratings and more votes (95% intervals)",
+             fontsize=12, color=INK)
+fig.tight_layout(rect=(0, 0.04, 1, 1))
+fig.savefig(RESULTS / "ratings/film_effects.png")
+plt.close(fig)
+print("film ratings figure written")

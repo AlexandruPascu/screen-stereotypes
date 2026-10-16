@@ -23,7 +23,7 @@ import pandas as pd
 from groups import GROUPS as GROUP_DEFS, NOT_A_MENTION, cased_variants
 from occupations import GROUP as OCC_GROUP, occupation
 from publish import without_slurs
-from paths import DERIVED, IMDB, RESULTS
+from paths import DERIVED, IMDB, LEXICONS, RESULTS
 
 # INDEX=offensive uses only the pejorative stereotype words (SeeGULL offensiveness >= 1, HurtLex, pejorative list)
 INDEX = os.environ.get("INDEX", "all")
@@ -45,7 +45,11 @@ SLUR = {}
 for g, v in lex.items():
     for t in v["slurs"]:
         SLUR.setdefault(t, set()).add(g)
-NOT_RE = re.compile(r"\b(" + "|".join(NOT_A_MENTION) + r")\b")
+# Everyday idioms that contain a slur ("spick and span") are removed before matching; the phrases live in the private
+# exclusions file next to the source lexicons.
+_ex = LEXICONS / "slur_exclusions.json"
+SLUR_PHRASES = json.load(open(_ex))["remove_phrases"] if _ex.exists() else []
+NOT_RE = re.compile(r"\b(" + "|".join(NOT_A_MENTION + SLUR_PHRASES) + r")\b", re.I)
 WORD = re.compile(r"[a-z][a-z'\-]*")
 
 

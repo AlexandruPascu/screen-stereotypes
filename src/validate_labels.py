@@ -19,9 +19,11 @@ import pandas as pd
 from jsonschema import Draft202012Validator
 from sklearn.metrics import cohen_kappa_score, roc_auc_score
 
-from paths import DERIVED, RESULTS
+from group_stereotypes import NOT_A_MENTION, SLUR, WORD, grams
+from paths import DERIVED, LEXICONS, RESULTS
 
 import os
+import re
 
 OUT = Path(os.environ["LABELS_OUT"]) if "LABELS_OUT" in os.environ else RESULTS / "labels"  # provisional runs elsewhere
 OUT.mkdir(parents=True, exist_ok=True)
@@ -68,6 +70,10 @@ first = load(sys.argv[1]).merge(key, on="id")
 first[["women_appearance", "women_victim"]] = first[["women_appearance", "women_victim"]].fillna(0)  # no women: none
 missing = set(key.id) - set(first.id)
 print(f"labelled {len(first):,} of {len(key):,} items; missing {len(missing):,}", flush=True)
+# The slur list was pruned with these labels after the sample was drawn (stereotype_lexicon.py); key.parquet keeps the
+# flags of the full list, so the detector as it is now is run again on the summaries themselves.
+texts = {r["id"]: r["text"] for r in map(json.loads, open(DERIVED / "labelling/items.jsonl"))}
+first["slur_now"] = first.id.map(lambda i: len(grams(texts[i]) & SLUR.keys()) > 0)
 
 if len(sys.argv) > 2:
     second = load(sys.argv[2])
@@ -107,6 +113,7 @@ CHECKS = [
     ("group + pejorative words", "group + pejorative words", "group_stereotyped", "group_offensive"),
     ("group, no stereotype words", "group, no stereotype words", "group_stereotyped", "group_mention_only"),
     ("slur detector", "slur detected", "slur", "slur_mask"),
+    ("slur detector, pruned list (in-sample)", "slur detected", "slur", "slur_now"),
     ("woman described by looks", "woman described by looks", "appearance", "women_appearance"),
     ("woman as victim", "woman as victim", "damsel_victim", "women_victim"),
     ("gender-coded wording (top 5%)", "most gender-coded wording (top 5%)", "gender_any", "gender_congruence"),
@@ -116,6 +123,8 @@ rows = []
 for name, stratum, label, score in CHECKS:
     for scope, d in [("all labels", first), ("confidence 2-3", first[first.confidence >= 2])]:
         flagged = d[d.stratum == stratum]
+        if score == "slur_now":
+            flagged = flagged[flagged.slur_now]  # the stratum was drawn with the full list
         r_all = d[d.stratum.str.startswith("random")]
         precision = flagged[label].mean() if len(flagged) else np.nan
         base = r_all[label].mean()
@@ -127,3 +136,36 @@ m = pd.DataFrame(rows, columns=["measure", "label", "labels_used", "flagged_item
                                 "lift", "random_items", "auc_on_random"])
 m.to_csv(OUT / "measures.csv", index=False)
 print(m.round(3).to_string(index=False))
+
+# The pruned list's precision is in-sample: its terms were dropped by looking at these same items. The rule behind it
+# (drop the terms the labels never confirm) is scored out of sample instead: chosen on a random half of the flagged
+# items, then scored on the other half, where terms it has not seen keep firing as they would on new summaries.
+NOT_FULL = re.compile(r"\b(" + "|".join(NOT_A_MENTION) + r")\b")  # without the idioms removed during pruning
+full_list = SLUR.keys() | set(json.load(open(LEXICONS / "slur_exclusions.json"))["drop_terms"])
+
+
+def full_hits(text):
+    w = WORD.findall(NOT_FULL.sub(" ", text.lower()))
+    return (set(w) | {" ".join(w[i:i + n]) for n in (2, 3) for i in range(len(w) - n + 1)}) & full_list
+
+
+flagged = first[first.stratum == "slur detected"]
+hits, slur = [full_hits(texts[i]) for i in flagged.id], flagged.slur.to_numpy()
+rng, held_out = np.random.default_rng(0), []
+for _ in range(1000):
+    half = rng.permutation(len(flagged)) < len(flagged) // 2
+    seen = set().union(*(h for h, a in zip(hits, half) if a))
+    confirmed = set().union(*(h for h, a, s in zip(hits, half, slur) if a and s))
+    keep = [s for h, a, s in zip(hits, half, slur) if not a and h - (seen - confirmed)]
+    if keep:
+        held_out.append(np.mean(keep))
+now = flagged.slur_now.to_numpy()
+n_now = int(now.sum())
+print(f"slur stratum: {len(flagged)} items, {sum(map(bool, hits))} flagged by the full list, {n_now} by the pruned list")
+pr = pd.DataFrame([
+    ("full list", len(flagged), slur.mean(), *wilson(slur.sum(), len(flagged)), 1.0),
+    ("pruned list (in-sample)", n_now, slur[now].mean(), *wilson(slur[now].sum(), n_now), slur[now].sum() / slur.sum()),
+    ("pruning rule on held-out halves", np.nan, np.mean(held_out), *np.percentile(held_out, [2.5, 97.5]), np.nan)],
+    columns=["slur_list", "flagged_items", "share_with_slur", "lo", "hi", "labelled_slurs_still_found"])
+pr.to_csv(OUT / "slur_pruning.csv", index=False)
+print(pr.round(3).to_string(index=False))

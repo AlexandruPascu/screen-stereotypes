@@ -123,8 +123,14 @@ name_tokens = dict(duckdb.connect().execute(f"""SELECT token, COUNT(*) FROM (
     GROUP BY token HAVING COUNT(*) >= {NAME_TOKEN_MAX}""").fetchall())
 
 
+# Terms pruned with the labelled sample (names, places, foods, descriptive terms in this corpus); kept in a private
+# file next to the source lexicons because it holds the terms themselves.
+_pruned = LEXICONS / "slur_exclusions.json"
+PRUNED = set(json.load(open(_pruned))["drop_terms"]) if _pruned.exists() else set()
+
+
 def keep_slur(term):
-    if term in EXCLUDE_SLURS:
+    if term in EXCLUDE_SLURS or term in PRUNED:
         return False
     words = term.split()
     if len(words) > 1:
