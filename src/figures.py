@@ -666,3 +666,59 @@ fig.tight_layout()
 fig.savefig(LC / "sample_by_genre.png")
 plt.close(fig)
 print("social classifier figures written")
+
+# ---- study 12: money, critics and awards ----
+RC = RESULTS / "reception"
+cva = pd.read_csv(RC / "critics_vs_audiences.csv")
+RNAMES = {"rating": "IMDb rating (audience)", "rt_audience": "Rotten Tomatoes audience score",
+          "mc_user": "Metacritic user score", "tomatometer": "Tomatometer (critics)",
+          "rt_average": "critics' average rating", "metascore": "Metascore (critics)"}
+fig, axes = plt.subplots(1, 2, figsize=(12, 4), sharex=True)
+for ax, site in zip(axes, ["Rotten Tomatoes", "Metacritic"]):
+    d = cva[cva.site == site]
+    order = [r for r in RNAMES if r in set(d.rating)]
+    for design, colour, off in [("same director", SLOTS[0], 0.15), ("same genre and language", SLOTS[2], -0.15)]:
+        e = d[d.design == design].set_index("rating").reindex(order)
+        yv = np.arange(len(order))[::-1] + off
+        ax.errorbar(e.estimate, yv, xerr=[e.estimate - e.lo, e.hi - e.estimate], fmt="o", ms=5, color=colour,
+                    ecolor=RULE, capsize=3, label={"same director": "a director's films compared with each other",
+                                                   "same genre and language": "films of the same genre, decade and language"}[design])
+    ax.axvline(0, color=RULE, lw=1)
+    ax.set_yticks(np.arange(len(order))[::-1])
+    ax.set_yticklabels([RNAMES[r] for r in order], fontsize=9)
+    ax.set_title(f"Films with a {site} score ({int(d.films.max()):,})", fontsize=10, color=INK)
+    ax.set_xlabel("change in the rating, in standard deviations (95% intervals)", color=MUTED)
+fig.legend(*axes[0].get_legend_handles_labels(), loc="lower center", ncol=2, frameon=False, fontsize=9)
+fig.suptitle("A summary the classifier reads as a stereotyped portrayal: how critics and audiences rate the film",
+             fontsize=11, color=INK)
+fig.tight_layout(rect=(0, 0.08, 1, 1))
+fig.savefig(RC / "critics_vs_audiences.png")
+plt.close(fig)
+
+mo = pd.read_csv(RC / "models.csv")
+mo = mo[mo.design == "same director"]
+MNAMES = {"stereotyped_portrayal": "a stereotyped portrayal (study 9 classifier, 0→1)",
+          "social_presence": "one of study 11's six groups appears (0→1)",
+          "social_portrayal": "one of them stereotyped, presence held fixed (0→1)",
+          "prejudice_story": "a story about prejudice (study 7 classifier, top 2%)",
+          "cast_women": "women's share of the credited cast (0→100%)",
+          "first_woman": "a woman in the first-listed role"}
+order = list(MNAMES)[::-1]
+fig, axes = plt.subplots(1, 2, figsize=(12, 4.6), sharey=True)
+for ax, (outcome, title, scale) in zip(axes, [("log_box_office", "change in worldwide box office at the same budget (%)", "pct"),
+                                              ("oscar_nominated", "change in the chance of an Oscar nomination (points)", "pp")]):
+    d = mo[mo.outcome == outcome].set_index("measure").reindex(order)
+    est, lo, hi = d.estimate, d.lo, d.hi
+    est, lo, hi = ((np.exp(est) - 1) * 100, (np.exp(lo) - 1) * 100, (np.exp(hi) - 1) * 100) if scale == "pct" else \
+        (est * 100, lo * 100, hi * 100)
+    ax.errorbar(est, range(len(order)), xerr=[est - lo, hi - est], fmt="o", ms=5, color=SLOTS[0], ecolor=RULE, capsize=3)
+    ax.axvline(0, color=RULE, lw=1)
+    ax.set_title(title, fontsize=10, color=INK)
+axes[0].set_yticks(range(len(order)))
+axes[0].set_yticklabels([MNAMES[m] for m in order], fontsize=8)
+fig.suptitle("A director's own films compared with each other (genres and release year held fixed; 95% intervals)",
+             fontsize=11, color=INK)
+fig.tight_layout()
+fig.savefig(RC / "money_and_oscars.png")
+plt.close(fig)
+print("study 12 figures written")

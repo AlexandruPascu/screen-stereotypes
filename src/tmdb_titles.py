@@ -1,5 +1,6 @@
-"""TMDb facts that IMDb lacks, per IMDb title: original language, origin country, TMDb genres and type, and the
-franchise a film belongs to (TMDb collection).
+"""TMDb facts that IMDb lacks, per IMDb title: original language, origin country, TMDb genres and type, and for films
+the franchise (TMDb collection), budget and worldwide box office (US dollars as entered, 0 = unknown), release date
+and runtime.
 
 Series get their IMDb id from external_ids or, failing that, from the /find lookups. Output: DERIVED/tmdb_titles.parquet.
 """
@@ -23,9 +24,12 @@ for path, body in db.execute("SELECT path, body FROM responses WHERE status = 20
                  countries[0] if countries else None, "|".join(countries),
                  "|".join(g["name"] for g in d.get("genres") or []), d.get("type") if series else None,
                  d.get("popularity"), d.get("vote_count"),
-                 None if series else (d.get("belongs_to_collection") or {}).get("id")))
+                 None if series else (d.get("belongs_to_collection") or {}).get("id"),
+                 None if series else d.get("budget"), None if series else d.get("revenue"),
+                 None if series else d.get("release_date"), None if series else d.get("runtime")))
 t = pd.DataFrame(rows, columns=["kind", "tmdb_id", "imdb", "language", "country", "countries", "tmdb_genres", "tv_type",
-                                "popularity", "tmdb_votes", "collection"])
+                                "popularity", "tmdb_votes", "collection", "budget", "revenue", "release_date",
+                                "runtime"])
 found = []
 for path, body in db.execute("SELECT path, body FROM responses WHERE path LIKE '/find/%' AND status = 200"):
     hits = json.loads(zlib.decompress(body)).get("tv_results") or []

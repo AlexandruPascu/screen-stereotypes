@@ -2,7 +2,8 @@
 
 Unit: a rated IMDb episode (2026 ratings). Each measure is compared within its own series (series and air-year fixed
 effects, standard errors clustered by series), so the estimate says: among episodes of the same show, is an episode
-with more of X rated higher or lower? Outcomes: average rating (1-10) and log(1 + number of votes).
+with more of X rated higher or lower? Outcomes: average rating (1-10), log(1 + number of votes), and for episodes
+whose Wikipedia episode table gives one, log viewers (millions; Nielsen for US series, BARB for British ones).
 
 Measures (each model uses the episodes where that measure exists):
   cast_women_share        women's share of the episode's credited cast (IMDb principals, actor/actress)
@@ -90,6 +91,11 @@ sg = sg.merge(so[["title", "social_pejorative"]], on="title", how="left")
 ep = ep.merge(sg[["title", "social_named", "social_stereotype", "social_pejorative", "social_label"]].rename(
     columns={"title": "t4"}), left_on="tconst", right_on="t4", how="left")
 ep["log_votes"] = np.log1p(ep.votes)
+viewers = DERIVED / "wiki_viewers.parquet"
+if viewers.exists():
+    wv = pd.read_parquet(viewers, columns=["tconst", "viewers"]).drop_duplicates("tconst")
+    ep = ep.merge(wv, on="tconst", how="left")
+    ep["log_viewers"] = np.log(ep.viewers)
 tl = con.execute(f"""SELECT title AS tconst, max(words) AS summary_words,
     arg_max(source, (words, text, source)) AS summary_source  -- one text can come from several sources
     FROM '{DERIVED / "texts.parquet"}' WHERE words >= 5 GROUP BY title""").df()
@@ -103,17 +109,23 @@ FROM_SUMMARY = {"summary_women_active", "summary_women_looks", "summary_women_vi
 
 
 def within(d, y, x, controls=()):
+    """y on x within series, with air-year dummies and controls partialled out by least squares (Frisch-Waugh), which
+    copes with dummies that are collinear in a small sample; None with fewer than 50 series."""
     d = d.dropna(subset=[y, x, "year"] + list(controls))
     d = d[d.groupby("series")[x].transform("std") > 0]  # only series where the measure varies
+    if d.series.nunique() < 50:
+        return None
     Z = pd.get_dummies(d.year.astype(int), prefix="y", drop_first=True).astype(float)
     for c in controls:
         Z[c] = d[c].to_numpy()
     Z[x], Z[y] = d[x].to_numpy(), d[y].to_numpy()
-    for _ in range(8):
-        Z = Z - Z.groupby(d.series.to_numpy()).transform("mean")
-    res = sm.OLS(Z[y], Z.drop(columns=[y])).fit(cov_type="cluster", cov_kwds={"groups": d.series.to_numpy()})
-    lo, hi = res.conf_int().loc[x]
-    return dict(measure=x, outcome=y, estimate=res.params[x], lo=lo, hi=hi, p=res.pvalues[x], episodes=len(d),
+    Z = Z - Z.groupby(d.series.to_numpy()).transform("mean")
+    R = Z[[y, x]].to_numpy()
+    C = Z.drop(columns=[y, x]).to_numpy()
+    R = R - C @ np.linalg.lstsq(C, R, rcond=None)[0]
+    res = sm.OLS(R[:, 0], R[:, 1]).fit(cov_type="cluster", cov_kwds={"groups": pd.factorize(d.series)[0]})
+    lo, hi = res.conf_int()[0]
+    return dict(measure=x, outcome=y, estimate=res.params[0], lo=lo, hi=hi, p=res.pvalues[0], episodes=len(d),
                 series=d.series.nunique(), measure_mean=d[x].mean())
 
 
@@ -121,10 +133,12 @@ rows = []
 for x in ["cast_women_share", "guest_women_share", "summary_women_active", "summary_women_looks",
           "summary_women_victim", "group_stereotype", "offensive_stereotype", "slur", "social_named",
           "social_stereotype", "social_pejorative", "social_label"]:
-    for y in ["rating", "log_votes"]:
-        if ep[x].notna().sum() > 1000:
-            rows.append(within(ep, y, x, LENGTH if x in FROM_SUMMARY else ()))
-            print(rows[-1], flush=True)
+    for y in ["rating", "log_votes"] + (["log_viewers"] if "log_viewers" in ep.columns else []):
+        if ep[[x, y]].notna().all(axis=1).sum() > 1000:  # enough episodes with both
+            r = within(ep, y, x, LENGTH if x in FROM_SUMMARY else ())
+            if r is not None:
+                rows.append(r)
+                print(r, flush=True)
 models = pd.DataFrame(rows)
 models.to_csv(OUT / "models.csv", index=False)
 pd.set_option("display.width", 200)

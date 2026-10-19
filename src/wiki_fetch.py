@@ -8,11 +8,17 @@
    within the season, and ShortSummary.
 4. Joins to IMDb episodes on (series, season, episode) and keeps only series whose episode titles agree with IMDb's
    for at least 70% of comparable episodes (the same check used for TMDb).
-Output: DERIVED/wiki_episodes.parquet (tconst, series, season, episode, title, summary).
+5. The same for each entry's viewer count ("Viewers", in millions: Nielsen for US series, BARB for British ones), kept
+   whether or not the entry has a summary.
+The Wikidata and Wikipedia lookups of step 2 are cached (DATA/wikipedia/lookups.json.gz), so reruns are offline.
+Usage: wiki_fetch.py [--viewers-only]   (--viewers-only leaves the summary table as it was built)
+Outputs: DERIVED/wiki_episodes.parquet (tconst, series, season, episode, title, summary) and
+DERIVED/wiki_viewers.parquet (tconst, series, season, episode, viewers).
 """
 import gzip
 import json
 import re
+import sys
 import time
 import unicodedata
 
@@ -89,7 +95,9 @@ def series_title(title):
     return (m.group("series") or m.group("series2")) if m else t
 
 
-claims = {}
+LOOKUPS = W / "lookups.json.gz"
+cached = json.load(gzip.open(LOOKUPS, "rt")) if LOOKUPS.exists() else {"claims": {}, "article_item": {}}
+claims = cached["claims"]
 
 
 def fetch_claims(ids):
@@ -121,8 +129,8 @@ def imdb_of(q):
 
 
 page_imdb = {p["title"]: imdb_of(p["item"]) for p in pages}
-missing = sorted({series_title(t) for t, v in page_imdb.items() if not v})
-article_item = {}
+article_item = cached["article_item"]
+missing = sorted({series_title(t) for t, v in page_imdb.items() if not v} - set(article_item) - set(cached.get("no_item", [])))
 for i in range(0, len(missing), 50):
     d = get(API, action="query", prop="pageprops", ppprop="wikibase_item", titles="|".join(missing[i:i + 50]), redirects=1)
     back = {r["to"]: r["from"] for r in d["query"].get("redirects", [])}
@@ -132,6 +140,8 @@ for i in range(0, len(missing), 50):
             article_item[back.get(p["title"], p["title"])] = q
     time.sleep(0.5)
 fetch_claims(list(article_item.values()))
+cached["no_item"] = sorted(set(cached.get("no_item", [])) | (set(missing) - set(article_item)))
+json.dump(cached, gzip.open(LOOKUPS, "wt"))
 for t, v in page_imdb.items():
     if not v:
         page_imdb[t] = imdb_of(article_item.get(series_title(t)))
@@ -139,7 +149,8 @@ print(f"pages traced to a series IMDb id: {sum(bool(v) for v in page_imdb.values
 
 # 3. parse entries with their season
 HEADING = re.compile(r"(?:season|series|book|volume|chapter|part|cycle)\s+(\d+)", re.I)
-rows = []
+VIEWERS = re.compile(r"^\s*([0-9]+(?:\.[0-9]+)?)")
+rows, viewer_rows = [], []
 for p in pages:
     imdb = page_imdb.get(p["title"])
     if not imdb:
@@ -158,7 +169,12 @@ for p in pages:
             num2, num = re.match(r"\d+", val("EpisodeNumber2")), re.match(r"\d+", val("EpisodeNumber"))
             episode = int(num2.group()) if num2 else (int(num.group()) if num and page_season else None)
             summary = val("ShortSummary")
-            if season is None or episode is None or len(summary.split()) < 5:
+            if season is None or episode is None:
+                continue
+            v = VIEWERS.match(val("Viewers"))
+            if v and 0 < float(v.group(1)) < 100:  # millions; a stray year or rating share falls outside
+                viewer_rows.append((imdb, season, episode, val("Title").strip('"'), float(v.group(1))))
+            if len(summary.split()) < 5:
                 continue
             rows.append((imdb, season, episode, val("Title").strip('"'), summary, p["title"]))
 wk = pd.DataFrame(rows, columns=["series", "season", "episode", "title", "summary", "page"])
@@ -176,14 +192,31 @@ ep = con.execute(f"""SELECT e.tconst, e.parentTconst AS series, TRY_CAST(e.seaso
     JOIN read_csv('{IMDB / "title.basics.tsv.gz"}', delim='\\t', header=true, quote='', escape='', nullstr='\\N',
                   columns={cols(['tconst', 'titleType', 'primaryTitle', 'originalTitle', 'isAdult', 'startYear',
                                  'endYear', 'runtimeMinutes', 'genres'])}) b USING (tconst)""").df()
-j = wk.merge(ep, on=["series", "season", "episode"])
-a, t = j.primaryTitle.map(norm), j.title.map(norm)
 generic = re.compile(r"^(episode|part|chapter)\s*\d+$|^\d+$")
-j["comparable"] = ~a.str.match(generic) & ~t.str.match(generic) & (a != "") & (t != "")
-j["ok"] = j.comparable & ((a == t) | np.array([x in y or y in x for x, y in zip(a, t)]))
-agree = j.groupby("series").agg(n=("comparable", "sum"), ok=("ok", "sum"))
-good = set(agree[(agree.n >= 3) & (agree.ok / agree.n.clip(lower=1) >= 0.7)].index)
-out = j[j.series.isin(good)][["tconst", "series", "season", "episode", "title", "summary", "words"]]
-out.to_parquet(DERIVED / "wiki_episodes.parquet", index=False)
+
+
+def aligned(d):
+    """d joined to IMDb episodes, and the part in series whose episode titles agree with IMDb's."""
+    j = d.merge(ep, on=["series", "season", "episode"])
+    a, t = j.primaryTitle.map(norm), j.title.map(norm)
+    j["comparable"] = ~a.str.match(generic) & ~t.str.match(generic) & (a != "") & (t != "")
+    j["ok"] = j.comparable & ((a == t) | np.array([x in y or y in x for x, y in zip(a, t)]))
+    agree = j.groupby("series").agg(n=("comparable", "sum"), ok=("ok", "sum"))
+    good = set(agree[(agree.n >= 3) & (agree.ok / agree.n.clip(lower=1) >= 0.7)].index)
+    return j, j[j.series.isin(good)]
+
+
+j, out = aligned(wk)
+out = out[["tconst", "series", "season", "episode", "title", "summary", "words"]]
+if "--viewers-only" not in sys.argv:
+    out.to_parquet(DERIVED / "wiki_episodes.parquet", index=False)
 print(f"joined to IMDb episodes: {len(j):,}; in series whose titles agree: {len(out):,} ({out.series.nunique():,} series); "
       f"median {out.words.median():.0f} words", flush=True)
+
+# 5. viewer counts, through the same alignment
+wv = pd.DataFrame(viewer_rows, columns=["series", "season", "episode", "title", "viewers"]).drop_duplicates(
+    ["series", "season", "episode"])
+_, vout = aligned(wv)
+vout[["tconst", "series", "season", "episode", "viewers"]].to_parquet(DERIVED / "wiki_viewers.parquet", index=False)
+print(f"episodes with a viewer count: {len(wv):,}; matched to IMDb in series whose titles agree: {len(vout):,} "
+      f"({vout.series.nunique():,} series)", flush=True)

@@ -26,6 +26,7 @@ measure them. Slurs and insulting labels are counted but left out of every publi
 | [9. A classifier trained on careful labels](#9-a-classifier-trained-on-careful-labels) | Trained on those labels, EmbeddingGemma-2 recognises stereotyped portrayals (AUC 0.86–0.90); on 37,049 fresh summaries, film portrayals fall from 22% in the 1930s to 8% now, and Westerns and romances lead. |
 | [10. Behind the camera, leads and ages](#10-behind-the-camera-leads-and-ages) | Women went from 3% to 16% of film directors and 6% to 23% of TV directors; they still hold only 38% of first-listed film roles, and the first-listed man is about 6 years older than the first-listed woman (9 in the 1940s). |
 | [11. Six more groups](#11-six-more-groups-immigrants-disability-mental-illness-age-class-and-homelessness) | Films stereotype immigrants, disabled and mentally ill, older, poor and homeless people in a steady 5–6% of summaries since the 1930s, unlike gender and ethnicity; mental illness appears three times as often as then, and horror stereotypes these groups most. |
+| [12. Money, critics and awards](#12-money-critics-and-awards) | Stereotyped portrayals cost box office (23% less than the same director's other films at the same budget) and Oscar nominations, and critics and audiences mark them down alike. Casts with more women return more per dollar; audiences rate them lower, critics do not. |
 
 ## 1. Who plays whom
 
@@ -398,6 +399,46 @@ inside the labels' 95% intervals.
 Tables: [`results/groups_social/`](results/groups_social/), [`results/groups_offensive_social/`](results/groups_offensive_social/),
 [`results/labels_social/`](results/labels_social/), [`results/label_classifier_social/`](results/label_classifier_social/).
 
+## 12. Money, critics and awards
+
+Do box office, critics and the Academy treat stereotyped films and women on screen the way IMDb voters do (study 4)?
+Budgets and worldwide box office from TMDb (11,929 films with both, in 2025 dollars); critic and audience scores
+from the films' own Rotten Tomatoes and Metacritic pages, and from Wikidata for films beyond them (the Tomatometer
+for 23,083 films, the Metascore for 11,542, audience scores for 16,242 and 10,541); Academy Award nominations from
+Wikidata; and US viewer counts for 50,127 TV episodes from Wikipedia's episode tables (Nielsen). Compared as in
+study 4.
+
+![Box office and Oscar nominations](results/reception/money_and_oscars.png)
+
+- Stereotyped portrayals cost money and awards. A film whose summary the study 9 classifier is sure portrays a
+  stereotype takes 23% less at the box office than its director's other films with the same budget, genres and
+  release year, and is 2.2 points less likely to be nominated for an Oscar (about 1 rated film in 85 is nominated).
+- Films featuring study 11's six groups take 21% less at the box office, although IMDb voters rate them higher; also
+  stereotyping them costs about a third more, a loose estimate.
+- Stories about prejudice are what the Academy rewards: 1.2 points more likely to be nominated than the director's
+  other films, and 4.5 points higher on the Tomatometer.
+- Films with more women on screen make more money for their budget (30% more for an all-female against an all-male
+  cast among a director's films, 38% across similar films). Critics do not mark them down, but audiences on all
+  three sites do: a woman in the first-listed role costs 1.7 points of Rotten Tomatoes audience score and 0.15 of
+  Metacritic's user score among a director's films, as she costs 0.06 on IMDb.
+- No sign of "Oscar bait": films featuring disabled people or people with a mental illness are no more likely than
+  comparable films to earn an acting nomination. This is measured for the film, not the role.
+
+![How critics and audiences rate stereotyped portrayals](results/reception/critics_vs_audiences.png)
+
+- Critics and audiences penalise stereotyped portrayals alike: on the same films, among a director's films, a
+  stereotyped portrayal lowers the Tomatometer by 0.23 standard deviations and the Metascore by 0.20, against
+  0.25–0.29 for the three audiences (IMDb, Rotten Tomatoes and Metacritic users); across similar films, all of them
+  by 0.36–0.42.
+- TV viewers do not tune in or out over any of these: within a series, no measure moves an episode's US audience by
+  more than a few percent, and none clearly.
+- The critic and audience scores were read from the films' own pages in October 2026 for the 17,569 (Rotten
+  Tomatoes) and 11,482 (Metacritic) films with at least 5,000 IMDb votes, and taken from Wikidata's copies for the
+  rest (retrieved 2021–26), so the comparison with audiences concerns films with a real audience. TMDb's budgets and
+  box office are entered by contributors and cover mostly US and studio films.
+
+Tables: [`results/reception/`](results/reception/).
+
 ## How it was measured
 
 - **Gender** comes from IMDb's actor/actress credit category, TMDb's gender field and, in summaries, from pronouns,
@@ -437,6 +478,11 @@ Tables: [`results/groups_social/`](results/groups_social/), [`results/groups_off
   insulting labels, like the slur lists, are kept out of the repository; the labels pruned 12 that were mostly
   surnames, other uses or outdated descriptions, and the pruned list is right about 80% of the time (out-of-sample
   estimate).
+- **Critics, money and awards** (study 12): Wikidata's review scores and Academy Award records, TMDb's budgets and
+  box office in 2025 dollars (US consumer price index), and the films' own Rotten Tomatoes and Metacritic pages,
+  fetched slowly and openly for the films with at least 5,000 IMDb votes: one request every 2–4 seconds, a User-Agent
+  that names this project, film pages only (as both sites' robots.txt allow), and a stop if a site refuses. TV viewer counts come from the "Viewers" column of
+  the same Wikipedia episode tables as the summaries.
 - **Wikipedia episode summaries** come from season and episode-list pages ({{Episode list}}), traced to the series'
   IMDb id through Wikidata and kept only for series whose episode titles agree with IMDb's.
 
@@ -469,7 +515,8 @@ on a CPU) and `src/score_sample.py` (about two hours) run separately; the labels
 ages (studies 2 and 10) and the films half of study 4; `src/label_sample_social.py`,
 `src/validate_labels_social.py` and `src/social_classifier.py` (about 50 minutes on a CPU) draw, score and model
 study 11's labelling sample; `src/score_films.py` (about ten hours on a CPU, resumable) scores every rated film with
-both label-trained classifiers for study 4. No raw data is stored in this repository.
+both label-trained classifiers for study 4. Study 12 runs `src/wikidata_reception.py`, `src/reception_fetch.py rt|mc`
+(about a day at its pace, resumable), `src/wiki_fetch.py --viewers-only` and `src/reception.py`. No raw data is stored in this repository.
 
 ## Data and terms
 
@@ -489,6 +536,9 @@ both label-trained classifiers for study 4. No raw data is stored in this reposi
   religious slurs (CC BY-SA 4.0). The lexicon built from them is not included; it keeps their licences.
 - BBQ (Parrish et al. 2022, CC BY 4.0) for the age, disability and class stereotypes of study 11, and HolisticBias
   (Smith et al. 2022, dataset CC BY-SA 4.0) for its identity terms.
+- Wikidata review scores and award records (CC0); Rotten Tomatoes and Metacritic scores read from their public film
+  pages for non-commercial research (the pages are not republished); the US consumer price index (BLS, public
+  domain, via FRED).
 
 ## Licence
 
