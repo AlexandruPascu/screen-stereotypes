@@ -1,6 +1,7 @@
 """TMDb facts that IMDb lacks, per IMDb title: original language, origin country, TMDb genres and type, and for films
 the franchise (TMDb collection), budget and worldwide box office (US dollars as entered, 0 = unknown), release date
-and runtime.
+and runtime; for both, the production companies; for series, the networks, status, seasons and episodes, first air
+date, and how many of the creators TMDb records as women and as men.
 
 Series get their IMDb id from external_ids or, failing that, from the /find lookups. Output: DERIVED/tmdb_titles.parquet.
 """
@@ -26,10 +27,17 @@ for path, body in db.execute("SELECT path, body FROM responses WHERE status = 20
                  d.get("popularity"), d.get("vote_count"),
                  None if series else (d.get("belongs_to_collection") or {}).get("id"),
                  None if series else d.get("budget"), None if series else d.get("revenue"),
-                 None if series else d.get("release_date"), None if series else d.get("runtime")))
+                 None if series else d.get("release_date"), None if series else d.get("runtime"),
+                 "|".join(c["name"] for c in d.get("production_companies") or []),
+                 "|".join(n["name"] for n in d.get("networks") or []) if series else None,
+                 d.get("status"), d.get("number_of_seasons") if series else None,
+                 d.get("number_of_episodes") if series else None, d.get("first_air_date") if series else None,
+                 sum(c.get("gender") == 1 for c in d.get("created_by") or []) if series else None,
+                 sum(c.get("gender") == 2 for c in d.get("created_by") or []) if series else None))
 t = pd.DataFrame(rows, columns=["kind", "tmdb_id", "imdb", "language", "country", "countries", "tmdb_genres", "tv_type",
                                 "popularity", "tmdb_votes", "collection", "budget", "revenue", "release_date",
-                                "runtime"])
+                                "runtime", "companies", "networks", "status", "seasons", "episodes", "first_air_date",
+                                "creators_women", "creators_men"])
 found = []
 for path, body in db.execute("SELECT path, body FROM responses WHERE path LIKE '/find/%' AND status = 200"):
     hits = json.loads(zlib.decompress(body)).get("tv_results") or []

@@ -10,7 +10,7 @@ Outcomes:
               (reception_fetch.py) where fetched, else Wikidata's latest score (wikidata_reception.py)
   audiences   Rotten Tomatoes audience score and Metacritic user score (fetched pages), and the IMDb rating
   awards      the Academy Awards (Wikidata): a nomination of any kind for the film, and an acting nomination for a
-              performance in it
+              performance in it; Golden Globe and BAFTA nominations (Wikipedia's category pages, wiki_awards.py)
 Measures: as in study 4 (women on screen, the two label-trained classifiers, a story about prejudice), and for the
 "Oscar bait" question the six-groups classifier's probability that a disabled person or a person with a mental illness
 appears.
@@ -75,7 +75,10 @@ acting = aw.category.str.contains("Actor|Actress", case=False)
 f["oscar_nominated"] = f.tconst.isin(aw.film).astype(float)
 f["oscar_acting"] = f.tconst.isin(aw[acting].film).astype(float)
 f["oscar_won"] = f.tconst.isin(aw[aw.outcome == "won"].film).astype(float)
-for c in ["oscar_nominated", "oscar_acting", "oscar_won"]:
+wa = pd.read_parquet(DERIVED / "wikipedia_awards.parquet").dropna(subset=["imdb"])
+f["globe_nominated"] = f.tconst.isin(wa[wa.award == "Golden Globes (film)"].imdb).astype(float)
+f["bafta_nominated"] = f.tconst.isin(wa[wa.award == "BAFTA (film)"].imdb).astype(float)
+for c in ["oscar_nominated", "oscar_acting", "oscar_won", "globe_nominated", "bafta_nominated"]:
     f.loc[f.year > 2025, c] = np.nan  # 2026 releases have not had their ceremony
 
 fs = pd.read_parquet(DERIVED / "film_classifier_scores.parquet",
@@ -87,7 +90,8 @@ OUTCOMES = {"log_box_office": "box office (log, budget held fixed)", "log_return
             "metascore": "Metascore (0–100)", "rt_audience": "Rotten Tomatoes audience score (0–100)",
             "mc_user": "Metacritic user score (0–10)", "rating": "IMDb rating (1–10)",
             "oscar_nominated": "any Oscar nomination", "oscar_acting": "an Oscar acting nomination",
-            "oscar_won": "any Oscar win"}
+            "oscar_won": "any Oscar win", "globe_nominated": "a Golden Globe nomination",
+            "bafta_nominated": "a BAFTA nomination"}
 MEASURES = ["cast_women", "first_woman", "stereotyped_portrayal", "social_presence", "social_portrayal",
             "prejudice_story", "social_m_disability", "social_m_mental_illness"]
 FROM_SUMMARY = {"stereotyped_portrayal", "social_presence", "social_portrayal", "prejudice_story",

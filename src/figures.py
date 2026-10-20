@@ -722,3 +722,72 @@ fig.tight_layout()
 fig.savefig(RC / "money_and_oscars.png")
 plt.close(fig)
 print("study 12 figures written")
+
+# ---- study 13: who makes stereotyped films, and where ----
+MK = RESULTS / "makers"
+who = pd.read_csv(MK / "who.csv")
+ROWS13 = [("any_stereotype", "any stereotyped portrayal"),
+          ("gender_any", "a gender stereotype (women's share of the cast held fixed)"),
+          ("group_stereotyped", "a group stereotype"),
+          ("social_any_stereotyped", "one of study 11's six groups stereotyped")]
+SERIES13 = [("film", "director_women", "same genre and language", "film: a woman director (0→1)", SLOTS[0]),
+            ("film", "writers_women", "same genre and language", "film: women's share of the writers (0→100%)", SLOTS[1]),
+            ("film", "writers_women", "same director", "film: women writers, a director's own films", SLOTS[2]),
+            ("series", "creators_women_share", "same genre and language",
+             "series: women's share of the creators (0→100%)", SLOTS[3])]
+fig, ax = plt.subplots(figsize=(10, 5))
+for k, (medium, measure, base, label, colour) in enumerate(SERIES13):
+    rows13 = []
+    for outcome, _ in ROWS13:
+        design = base + (", cast held fixed" if outcome == "gender_any" else "")
+        r = who[(who.medium == medium) & (who.outcome == outcome) & (who.measure == measure) & (who.design == design)]
+        rows13.append((r.estimate.iloc[0], r.lo.iloc[0], r.hi.iloc[0]) if len(r) else (np.nan, np.nan, np.nan))
+    if np.isnan([e for e, _, _ in rows13]).all():
+        continue
+    est, lo, hi = (np.array(v) * 100 for v in zip(*rows13))
+    yv = np.arange(len(ROWS13))[::-1] + 0.27 - 0.18 * k
+    ax.errorbar(est, yv, xerr=[est - lo, hi - est], fmt="o", ms=5, color=colour, ecolor=RULE, capsize=3, label=label)
+ax.axvline(0, color=RULE, lw=1)
+ax.set_yticks(np.arange(len(ROWS13))[::-1])
+ax.set_yticklabels([r[1] for r in ROWS13], fontsize=9)
+ax.set_xlabel("difference in the probability of the portrayal, percentage points (95% intervals)\n"
+              "against titles of the same genre, decade and language unless noted", color=MUTED, fontsize=8)
+ax.set_title("Women behind the camera and stereotyped portrayals", fontsize=10, color=INK)
+fig.legend(*ax.get_legend_handles_labels(), loc="lower center", ncol=2, frameon=False, fontsize=8)
+fig.tight_layout(rect=(0, 0.12, 1, 1))
+fig.savefig(MK / "who.png")
+plt.close(fig)
+
+where = pd.read_csv(MK / "where.csv")
+NAMES = {"US": "United States", "GB": "United Kingdom", "FR": "France", "DE": "Germany", "IT": "Italy", "JP": "Japan",
+         "IN": "India", "ES": "Spain", "CA": "Canada", "SU": "Soviet Union", "KR": "South Korea", "CN": "China",
+         "HK": "Hong Kong", "TR": "Turkey", "MX": "Mexico", "BR": "Brazil", "PH": "Philippines", "RU": "Russia",
+         "IR": "Iran", "GR": "Greece", "SE": "Sweden", "AU": "Australia", "AR": "Argentina", "DK": "Denmark"}
+fig, axes = plt.subplots(1, 3, figsize=(16, 6.6), gridspec_kw={"width_ratios": [1.3, 1, 1.2]})
+d = where[(where.medium == "film") & (where.grouping == "country_top") & (where.outcome == "any_stereotype")].sort_values("rate")
+axes[0].barh(range(len(d)), d.rate * 100, color=SLOTS[0], height=0.65)
+axes[0].set_yticks(range(len(d)))
+axes[0].set_yticklabels([NAMES.get(v, v) for v in d.value], fontsize=8)
+axes[0].set_title("Films by production country", fontsize=10, color=INK)
+b = where[(where.medium == "film") & (where.grouping == "budget_band") & (where.outcome == "any_stereotype")]
+order = ["under $1m", "$1–10m", "$10–50m", "$50–100m", "over $100m"]
+b = b.set_index("value").reindex(order)
+axes[1].barh(range(len(b)), b.rate * 100, xerr=[(b.rate - b.lo) * 100, (b.hi - b.rate) * 100], color=SLOTS[0],
+             ecolor=RULE, height=0.6)
+axes[1].set_yticks(range(len(b)))
+axes[1].set_yticklabels([f"{v} ({int(n):,})" for v, n in zip(b.index, b.titles)], fontsize=8)
+axes[1].set_title("Films by budget (2025 dollars)", fontsize=10, color=INK)
+n = where[(where.medium == "series") & (where.grouping == "network_top") & (where.outcome == "any_stereotype")]
+n = n.sort_values("rate")
+axes[2].barh(range(len(n)), n.rate * 100, xerr=[(n.rate - n.lo) * 100, (n.hi - n.rate) * 100], color=SLOTS[3],
+             ecolor=RULE, height=0.65)
+axes[2].set_yticks(range(len(n)))
+axes[2].set_yticklabels([f"{v} ({int(t):,})" for v, t in zip(n.value, n.titles)], fontsize=8)
+axes[2].set_title("Series by network (first seasons)", fontsize=10, color=INK)
+for ax in axes:
+    ax.set_xlabel("% of summaries portraying a stereotype (genre and decade held fixed)", color=MUTED, fontsize=8)
+fig.suptitle("Where stereotyped portrayals are made", fontsize=11, color=INK)
+fig.tight_layout()
+fig.savefig(MK / "where.png")
+plt.close(fig)
+print("study 13 figures written")

@@ -6,7 +6,7 @@ TMDb's TV and film records and three million plot summaries (IMDb, TMDb and Wiki
 This expands [Stefano Li Pira](https://github.com/stefanolipira)'s 2022 initiative to measure stereotypes in TV
 series, which he and Alexandru Pascu first explored with a BERT classifier (kept in [`2022-bert/`](2022-bert/), tag
 `v2022`). The follow-up replaces the classifier with measures that can be checked against the data, then rebuilds the
-classifier properly and adds the word-embedding method from the project's original reading list.
+classifier properly and adds the word-embedding method from the project's [original reading list](#references).
 
 *Content note: the word lists and result tables contain stereotypes about groups of people, collected in order to
 measure them. Slurs and insulting labels are counted but left out of every published table.*
@@ -26,7 +26,8 @@ measure them. Slurs and insulting labels are counted but left out of every publi
 | [9. A classifier trained on careful labels](#9-a-classifier-trained-on-careful-labels) | Trained on those labels, EmbeddingGemma-2 recognises stereotyped portrayals (AUC 0.86–0.90); on 37,049 fresh summaries, film portrayals fall from 22% in the 1930s to 8% now, and Westerns and romances lead. |
 | [10. Behind the camera, leads and ages](#10-behind-the-camera-leads-and-ages) | Women went from 3% to 16% of film directors and 6% to 23% of TV directors; they still hold only 38% of first-listed film roles, and the first-listed man is about 6 years older than the first-listed woman (9 in the 1940s). |
 | [11. Six more groups](#11-six-more-groups-immigrants-disability-mental-illness-age-class-and-homelessness) | Films stereotype immigrants, disabled and mentally ill, older, poor and homeless people in a steady 5–6% of summaries since the 1930s, unlike gender and ethnicity; mental illness appears three times as often as then, and horror stereotypes these groups most. |
-| [12. Money, critics and awards](#12-money-critics-and-awards) | Stereotyped portrayals cost box office (23% less than the same director's other films at the same budget) and Oscar nominations, and critics and audiences mark them down alike. Casts with more women return more per dollar; audiences rate them lower, critics do not. |
+| [12. Money, critics and awards](#12-money-critics-and-awards) | Stereotyped portrayals cost box office (23% less than the same director's other films at the same budget) and Oscar nominations, and critics and audiences mark them down alike. Casts with more women return more per dollar; audiences rate them lower, critics do not. Series that open with stereotyped portrayals are renewed less often (a loose estimate). |
+| [13. Who makes stereotyped films, and where](#13-who-makes-stereotyped-films-and-where) | Films and series made by women contain 15–34% fewer group stereotypes and, once their casts are compared, no more gender stereotypes. Big-budget films stereotype a little less (18% over $100 million against 21–22%), and production countries (16–26%) differ far more than TV networks (10–13%). |
 
 ## 1. Who plays whom
 
@@ -405,8 +406,9 @@ Do box office, critics and the Academy treat stereotyped films and women on scre
 Budgets and worldwide box office from TMDb (11,929 films with both, in 2025 dollars); critic and audience scores
 from the films' own Rotten Tomatoes and Metacritic pages, and from Wikidata for films beyond them (the Tomatometer
 for 23,083 films, the Metascore for 11,542, audience scores for 16,242 and 10,541); Academy Award nominations from
-Wikidata; and US viewer counts for 50,127 TV episodes from Wikipedia's episode tables (Nielsen). Compared as in
-study 4.
+Wikidata, and Golden Globe, BAFTA and Primetime Emmy nominations from Wikipedia's award pages (11,708 nominations);
+US viewer counts for 50,127 TV episodes from Wikipedia's episode tables (Nielsen); and, for TV, the first season of
+6,639 finished scripted series scored by both classifiers. Compared as in study 4.
 
 ![Box office and Oscar nominations](results/reception/money_and_oscars.png)
 
@@ -417,6 +419,10 @@ study 4.
   stereotyping them costs about a third more, a loose estimate.
 - Stories about prejudice are what the Academy rewards: 1.2 points more likely to be nominated than the director's
   other films, and 4.5 points higher on the Tomatometer.
+- The Golden Globes and the BAFTAs agree (they nominate 0.8% and 0.6% of rated films): a stereotyped portrayal makes a
+  nomination 1.1 and 1.3 points less likely, a story about prejudice 0.8 and 0.7 points more. The Globes, with
+  separate actress categories for drama and comedy, also nominate films with more women in the cast more often (0.7
+  points for an all-female against an all-male cast).
 - Films with more women on screen make more money for their budget (30% more for an all-female against an all-male
   cast among a director's films, 38% across similar films). Critics do not mark them down, but audiences on all
   three sites do: a woman in the first-listed role costs 1.7 points of Rotten Tomatoes audience score and 0.15 of
@@ -432,12 +438,59 @@ study 4.
   by 0.36–0.42.
 - TV viewers do not tune in or out over any of these: within a series, no measure moves an episode's US audience by
   more than a few percent, and none clearly.
+- But series that open with stereotyped portrayals are renewed less often: a series whose first season the classifier
+  is sure portrays a stereotype throughout is 19 points less likely to get a second season than series that started
+  the same year on the same network (57% of these 6,639 series do), and as much less likely across similar series, and
+  it runs about a quarter fewer seasons; loose estimates, whose intervals end close to zero. Series that feature study
+  11's six groups are renewed as often or more.
+- Emmy and Golden Globe nominations (3.0% and 3.5% of these series) show no clear penalty for stereotyped portrayals.
+  They favour series that feature the six groups: a first season the classifier is sure features them is 12–15 points
+  more likely to earn a Golden Globe nomination and 10–12 more an Emmy (one of the two comparisons only borderline).
+  Stereotyping those groups earns nothing extra (among a network's series of the same year, fewer Golden Globes).
 - The critic and audience scores were read from the films' own pages in October 2026 for the 17,569 (Rotten
   Tomatoes) and 11,482 (Metacritic) films with at least 5,000 IMDb votes, and taken from Wikidata's copies for the
   rest (retrieved 2021–26), so the comparison with audiences concerns films with a real audience. TMDb's budgets and
   box office are entered by contributors and cover mostly US and studio films.
 
 Tables: [`results/reception/`](results/reception/).
+
+## 13. Who makes stereotyped films, and where
+
+With every rated film scored (study 4) and the gender of its director and writers known (study 10), the question can
+be turned around: who makes stereotyped films? Series are scored on their first season (study 12) and TMDb records
+the gender of their creators. Compared like for like, as in study 4.
+
+![Women behind the camera and stereotyped portrayals](results/makers/who.png)
+
+- Films directed or written by women contain no fewer stereotyped portrayals overall, but fewer group stereotypes:
+  0.4 points fewer with a woman director and 0.6 fewer with an all-women writing team, against a base rate of about
+  3%, and as many fewer among a director's own films; and fewer stereotyped portrayals of study 11's six groups (0.7
+  and 0.9 points).
+- At first sight they carry more gender stereotypes (1.6 points more with women writers), but only because they
+  centre more on women: with the share of women in the cast held fixed, the difference disappears.
+- Series created by women show the same pattern in their first season: with an all-women team of creators, 0.7
+  points fewer group stereotypes (against 2.1%, a third fewer), 0.7 fewer stereotyped portrayals of the six groups
+  (against 4.1%) and no more gender stereotypes (+0.4 points, not significant; −0.2 with the cast held fixed). Unlike
+  films, they also carry fewer stereotyped portrayals overall (0.8 points fewer, against 11.6%), a loose estimate. TMDb
+  records the creators' gender for 4,368 of the 6,639 series, 2,803 of which can be compared like for like.
+
+![Where stereotyped portrayals are made](results/makers/where.png)
+
+- Bigger films stereotype a little less: 18% of the summaries of films that cost over $100 million, against 21–22%
+  for films of $1–50 million, with genre and decade held fixed.
+- By production country the share runs from 16–18% (Iran, the Soviet Union, the UK, Germany) to 24–26% (Mexico, the
+  Philippines, Russia), with the US at 20%. These are English-language summaries, so the comparison partly reflects
+  how each country's films are described in English.
+- Hollywood's majors range from 18.6% (Warner Bros.) to 23% (MGM); the extremes are East Germany's DEFA (15.5%) and
+  Japan's Nikkatsu (33%; three in four of its films since 1970 date from 1971–88, the years of its erotic "Roman Porno"
+  line). Streaming originals since 2015 stereotype about as often as other films of those years (13% against 14%, a
+  gap within the noise of only 228 films).
+- TV networks differ less than film studios: with genre and decade held fixed, 10% of first-season summaries portray a
+  stereotype on Cartoon Network, HBO and Disney Channel, against 13% on FOX, TBS and The WB; Netflix sits at the
+  average (11.6%, 504 series). Study 11's six groups are stereotyped most on Comedy Central and FOX (5.7% and 5.1%,
+  against 4.1% overall).
+
+Tables: [`results/makers/`](results/makers/).
 
 ## How it was measured
 
@@ -483,6 +536,13 @@ Tables: [`results/reception/`](results/reception/).
   fetched slowly and openly for the films with at least 5,000 IMDb votes: one request every 2–4 seconds, a User-Agent
   that names this project, film pages only (as both sites' robots.txt allow), and a stop if a site refuses. TV viewer counts come from the "Viewers" column of
   the same Wikipedia episode tables as the summaries.
+- **Award nominations** (study 12): the Academy Awards from Wikidata; the Golden Globes, the BAFTA film awards and the
+  Primetime Emmys from Wikipedia's category pages (each year's nominees, the winner highlighted), traced to IMDb
+  through Wikidata (97%).
+- **Series' first seasons** (studies 12 and 13): up to six first-season episodes of each finished scripted series
+  (first aired 1990–2022, at least 500 IMDb votes), scored by both label-trained classifiers and averaged; compared at
+  the same mean summary length, and for gender stereotypes also with the women's share of those episodes' credited
+  cast held fixed. Clustered by network.
 - **Wikipedia episode summaries** come from season and episode-list pages ({{Episode list}}), traced to the series'
   IMDb id through Wikidata and kept only for series whose episode titles agree with IMDb's.
 
@@ -516,7 +576,8 @@ ages (studies 2 and 10) and the films half of study 4; `src/label_sample_social.
 `src/validate_labels_social.py` and `src/social_classifier.py` (about 50 minutes on a CPU) draw, score and model
 study 11's labelling sample; `src/score_films.py` (about ten hours on a CPU, resumable) scores every rated film with
 both label-trained classifiers for study 4. Study 12 runs `src/wikidata_reception.py`, `src/reception_fetch.py rt|mc`
-(about a day at its pace, resumable), `src/wiki_fetch.py --viewers-only` and `src/reception.py`. No raw data is stored in this repository.
+(about a day at its pace, resumable), `src/wiki_fetch.py --viewers-only`, `src/wiki_awards.py`, `src/reception.py`,
+`src/score_series.py` (about three hours) and `src/series_reception.py`; study 13 runs `src/makers.py`. No raw data is stored in this repository.
 
 ## Data and terms
 
@@ -536,9 +597,111 @@ both label-trained classifiers for study 4. Study 12 runs `src/wikidata_receptio
   religious slurs (CC BY-SA 4.0). The lexicon built from them is not included; it keeps their licences.
 - BBQ (Parrish et al. 2022, CC BY 4.0) for the age, disability and class stereotypes of study 11, and HolisticBias
   (Smith et al. 2022, dataset CC BY-SA 4.0) for its identity terms.
-- Wikidata review scores and award records (CC0); Rotten Tomatoes and Metacritic scores read from their public film
+- Wikidata review scores and award records (CC0); Wikipedia's Golden Globe, BAFTA and Emmy pages (CC BY-SA 4.0); Rotten Tomatoes and Metacritic scores read from their public film
   pages for non-commercial research (the pages are not republished); the US consumer price index (BLS, public
   domain, via FRED).
+
+## References
+
+The project's original reading list, gathered with Stefano Li Pira in 2022 (the
+[`references`](https://github.com/stefanolipira/stereotypes_tvseries/tree/main/references) folder of the 2022
+repository):
+
+- Charlesworth, T. E. S., Yang, V., Mann, T. C., Kurdi, B., & Banaji, M. R. (2021). Gender stereotypes in natural
+  language: Word embeddings show robust consistency across child and adult language corpora of more than 65 million
+  words. *Psychological Science*, 32(2), 218–240. <https://doi.org/10.1177/0956797620963619>
+- Garg, N., Schiebinger, L., Jurafsky, D., & Zou, J. (2018). Word embeddings quantify 100 years of gender and ethnic
+  stereotypes. *Proceedings of the National Academy of Sciences*, 115(16), E3635–E3644.
+  <https://doi.org/10.1073/pnas.1720347115> (the method of study 6)
+- Kagan, D., Chesney, T., & Fire, M. (2020). Using data science to understand the film industry's gender gap.
+  *Palgrave Communications*, 6, 92. <https://doi.org/10.1057/s41599-020-0436-1>
+- Vicinanza, P., Goldberg, A., & Srivastava, S. B. (2023). A deep-learning model of prescient ideas demonstrates that
+  they emerge from the periphery. *PNAS Nexus*, 2(1), pgac275. <https://doi.org/10.1093/pnasnexus/pgac275> (read in
+  2022 as the working paper "Quantifying vision through language demonstrates that visionary ideas come from the
+  periphery")
+
+Word lists and benchmarks:
+
+- Bassignana, E., Basile, V., & Patti, V. (2018). Hurtlex: A multilingual lexicon of words to hurt. *Proceedings of
+  the Fifth Italian Conference on Computational Linguistics (CLiC-it 2018)*, CEUR Workshop Proceedings 2253.
+  <https://ceur-ws.org/Vol-2253/paper49.pdf>
+- Jha, A., Davani, A., Reddy, C. K., Dave, S., Prabhakaran, V., & Dev, S. (2023). SeeGULL: A stereotype benchmark with
+  broad geo-cultural coverage leveraging generative models. *Proceedings of ACL 2023*.
+  <https://doi.org/10.18653/v1/2023.acl-long.548>
+- Nadeem, M., Bethke, A., & Reddy, S. (2021). StereoSet: Measuring stereotypical bias in pretrained language models.
+  *Proceedings of ACL-IJCNLP 2021*. <https://doi.org/10.18653/v1/2021.acl-long.416>
+- Parrish, A., Chen, A., Nangia, N., Padmakumar, V., Phang, J., Thompson, J., Htut, P. M., & Bowman, S. R. (2022). BBQ:
+  A hand-built bias benchmark for question answering. *Findings of ACL 2022*.
+  <https://doi.org/10.18653/v1/2022.findings-acl.165>
+- Smith, E. M., Hall, M., Kambadur, M., Presani, E., & Williams, A. (2022). "I'm sorry to hear that": Finding new
+  biases in language models with a holistic descriptor dataset. *Proceedings of EMNLP 2022*.
+  <https://doi.org/10.18653/v1/2022.emnlp-main.625>
+- Speer, R. (2022). rspeer/wordfreq: v3.0 (v3.0.2). Zenodo. <https://doi.org/10.5281/zenodo.7199437>
+
+Word embeddings and language models:
+
+- Devlin, J., Chang, M.-W., Lee, K., & Toutanova, K. (2019). BERT: Pre-training of deep bidirectional transformers for
+  language understanding. *Proceedings of NAACL-HLT 2019*. <https://doi.org/10.18653/v1/N19-1423>
+- Dubossarsky, H., Hengchen, S., Tahmasebi, N., & Schlechtweg, D. (2019). Time-Out: Temporal referencing for robust
+  modeling of lexical semantic change. *Proceedings of ACL 2019*. <https://doi.org/10.18653/v1/P19-1044>
+- Google DeepMind. EmbeddingGemma 2 (model card). <https://huggingface.co/google/embeddinggemma-2>
+- Mikolov, T., Sutskever, I., Chen, K., Corrado, G., & Dean, J. (2013). Distributed representations of words and
+  phrases and their compositionality. *Advances in Neural Information Processing Systems 26*. arXiv:1310.4546
+- Pennington, J., Socher, R., & Manning, C. D. (2014). GloVe: Global vectors for word representation. *Proceedings of
+  EMNLP 2014*. <https://doi.org/10.3115/v1/D14-1162>
+- Reimers, N., & Gurevych, I. (2019). Sentence-BERT: Sentence embeddings using Siamese BERT-networks. *Proceedings of
+  EMNLP-IJCNLP 2019*. <https://doi.org/10.18653/v1/D19-1410>
+- Song, K., Tan, X., Qin, T., Lu, J., & Liu, T.-Y. (2020). MPNet: Masked and permuted pre-training for language
+  understanding. *Advances in Neural Information Processing Systems 33*. arXiv:2004.09297
+- Wang, W., Wei, F., Dong, L., Bao, H., Yang, N., & Zhou, M. (2020). MiniLM: Deep self-attention distillation for
+  task-agnostic compression of pre-trained transformers. *Advances in Neural Information Processing Systems 33*.
+  arXiv:2002.10957
+- Zhang, Y., Li, M., Long, D., Zhang, X., Lin, H., Yang, B., Xie, P., Yang, A., Liu, D., Lin, J., Huang, F., & Zhou, J.
+  (2025). Qwen3 Embedding: Advancing text embedding and reranking through foundation models. arXiv:2506.05176
+
+Statistical methods:
+
+- Cameron, A. C., & Miller, D. L. (2015). A practitioner's guide to cluster-robust inference. *Journal of Human
+  Resources*, 50(2), 317–372. <https://doi.org/10.3368/jhr.50.2.317>
+- Cohen, J. (1960). A coefficient of agreement for nominal scales. *Educational and Psychological Measurement*, 20(1),
+  37–46. <https://doi.org/10.1177/001316446002000104>
+- Frisch, R., & Waugh, F. V. (1933). Partial time regressions as compared with individual trends. *Econometrica*, 1(4),
+  387–401. <https://doi.org/10.2307/1907330>
+- Greenland, S., & Robins, J. M. (1985). Estimation of a common effect parameter from sparse follow-up data.
+  *Biometrics*, 41(1), 55–68. <https://doi.org/10.2307/2530643>
+- Guimarães, P., & Portugal, P. (2010). A simple feasible procedure to fit models with high-dimensional fixed effects.
+  *The Stata Journal*, 10(4), 628–649. <https://doi.org/10.1177/1536867X1001000406>
+- Lovell, M. C. (1963). Seasonal adjustment of economic time series and multiple regression analysis. *Journal of the
+  American Statistical Association*, 58(304), 993–1010. <https://doi.org/10.1080/01621459.1963.10480682>
+- Mantel, N., & Haenszel, W. (1959). Statistical aspects of the analysis of data from retrospective studies of disease.
+  *Journal of the National Cancer Institute*, 22(4), 719–748. <https://doi.org/10.1093/jnci/22.4.719>
+- Monroe, B. L., Colaresi, M. P., & Quinn, K. M. (2008). Fightin' words: Lexical feature selection and evaluation for
+  identifying the content of political conflict. *Political Analysis*, 16(4), 372–403.
+  <https://doi.org/10.1093/pan/mpn018>
+- Platt, J. C. (1999). Probabilistic outputs for support vector machines and comparisons to regularized likelihood
+  methods. In A. J. Smola, P. Bartlett, B. Schölkopf, & D. Schuurmans (Eds.), *Advances in Large Margin Classifiers*
+  (pp. 61–74). MIT Press.
+- Wilson, E. B. (1927). Probable inference, the law of succession, and statistical inference. *Journal of the American
+  Statistical Association*, 22(158), 209–212. <https://doi.org/10.1080/01621459.1927.10502953>
+- Zadrozny, B., & Elkan, C. (2002). Transforming classifier scores into accurate multiclass probability estimates.
+  *Proceedings of KDD 2002*, 694–699. <https://doi.org/10.1145/775047.775151>
+
+Data and software (the data sources and their terms are listed under [Data and terms](#data-and-terms)):
+
+- Vrandečić, D., & Krötzsch, M. (2014). Wikidata: A free collaborative knowledgebase. *Communications of the ACM*,
+  57(10), 78–85. <https://doi.org/10.1145/2629489>
+- U.S. Bureau of Labor Statistics. Consumer Price Index for All Urban Consumers: All Items in U.S. City Average
+  [CPIAUCNS], retrieved from FRED, Federal Reserve Bank of St. Louis, 2026-10-19.
+  <https://fred.stlouisfed.org/series/CPIAUCNS>
+- Honnibal, M., Montani, I., Van Landeghem, S., & Boyd, A. (2020). spaCy: Industrial-strength natural language
+  processing in Python. Zenodo. <https://doi.org/10.5281/zenodo.1212303>
+- Pedregosa, F., Varoquaux, G., Gramfort, A., Michel, V., Thirion, B., Grisel, O., Blondel, M., Prettenhofer, P.,
+  Weiss, R., Dubourg, V., Vanderplas, J., Passos, A., Cournapeau, D., Brucher, M., Perrot, M., & Duchesnay, É. (2011).
+  Scikit-learn: Machine learning in Python. *Journal of Machine Learning Research*, 12, 2825–2830.
+- Řehůřek, R., & Sojka, P. (2010). Software framework for topic modelling with large corpora. *Proceedings of the LREC
+  2010 Workshop on New Challenges for NLP Frameworks*, 45–50.
+- Seabold, S., & Perktold, J. (2010). statsmodels: Econometric and statistical modeling with Python. *Proceedings of
+  the 9th Python in Science Conference*.
 
 ## Licence
 
