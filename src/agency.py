@@ -97,7 +97,9 @@ con.execute(f"""CREATE TEMP TABLE mentions AS
 cov = con.execute("""SELECT mention_kind, COUNT(*) n, COUNT(female) gendered, AVG(female::INT) women
     FROM mentions GROUP BY ALL ORDER BY 1""").df()
 print(cov.to_string(index=False), flush=True)
-con.execute("""CREATE TEMP TABLE g AS SELECT *, CASE WHEN year < 1950 THEN 1940 ELSE CAST(floor(year / 10) * 10 AS INT) END AS decade,
+# spaCy lemmatises "raped" as "rap" (a passive "rape" is never parsed), so "rap" is read as "rape"
+con.execute("""CREATE TEMP TABLE g AS SELECT * REPLACE (CASE WHEN lemma = 'rap' THEN 'rape' ELSE lemma END AS lemma),
+    CASE WHEN year < 1950 THEN 1940 ELSE CAST(floor(year / 10) * 10 AS INT) END AS decade,
     CASE WHEN year < 1980 THEN '1920-79' WHEN year < 2000 THEN '1980-99' WHEN year < 2010 THEN '2000-09' ELSE '2010-26' END
     AS era, CASE WHEN titleType IN ('movie', 'tvMovie') THEN 'film' ELSE 'tv' END AS medium
     FROM mentions WHERE female IS NOT NULL AND year BETWEEN 1920 AND 2026""")
@@ -152,7 +154,8 @@ for role in ["subj", "pass", "obj", "desc"]:
         c["role"], c["era"] = role, era
         rows.append(c)
 words = pd.concat(rows)
-without_slurs(words, "lemma").to_csv(OUT / "distinctive_words.csv", index=False)
+without_slurs(words, "lemma").sort_values(["role", "era", "lemma"]).to_csv(OUT / "distinctive_words.csv",
+                                                                     index=False)
 for role in ["subj", "pass", "desc"]:
     d = words[(words.role == role) & (words.era == "all")].sort_values("z")
     print(f"{role}: most women-associated: " + ", ".join(d.tail(20).lemma[::-1]) + "\n      most men-associated: "

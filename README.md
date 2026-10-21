@@ -18,16 +18,16 @@ measure them. Slurs and insulting labels are counted but left out of every publi
 | [1. Who plays whom](#1-who-plays-whom) | Detectives, judges and lawyers went from almost never women to 20–30% women; nurses, nannies and receptionists are still 83–90% women. |
 | [2. Who writes the film or episode](#2-who-writes-the-film-or-episode) | Films written by women cast 11 points more women than comparable films written by men (8 points even for films by the same director) and far more often give a woman the first-listed role; within a TV series the gap is about 3 points. |
 | [3. What characters do in plot summaries](#3-what-characters-do-in-plot-summaries) | Women went from 28% to 46% of the people summaries talk about, but are still described by their looks 1.5 times as often as their share. |
-| [4. Do audiences care?](#4-do-audiences-care) | Within a TV series, hardly: no measure moves an episode's IMDb rating by more than 0.04 points. Films whose summary portrays a stereotype rate about 0.3 points lower than the same director's other films, and films with more women on screen slightly lower (0.12 points for an all-female against an all-male cast). |
+| [4. Do audiences care?](#4-do-audiences-care) | Within a TV series, the word-list and casting measures go with less than 0.04 points of an episode's IMDb rating, though noisy measures understate such differences. Films whose summary the study 9 classifier reads as a stereotyped portrayal rate about 0.3 points lower than the same director's other films, and films with more women on screen slightly lower (0.12 points for an all-female against an all-male cast). |
 | [5. Groups, stereotype words and slurs](#5-groups-stereotype-words-and-slurs) | Slurs in character names fell ninefold, but pejorative stereotype words still cluster around group mentions as much as in the 1950s. |
 | [6. The language of plot summaries](#6-the-language-of-plot-summaries) | Word embeddings trained on the summaries track the census and on-screen casting; gender-coded wording has halved since the 1950s, while terrorism words moved back towards Islam after 2001. |
 | [7. A classifier, done properly](#7-a-classifier-done-properly) | Without the 2022 length shortcut it reaches AUC 0.71–0.76, not 0.95 — and what it detects is stories *about* prejudice, not stereotyped portrayals. |
 | [8. Checking the measures](#8-checking-the-measures) | A careful reading of 3,000 summaries confirms the measures: stereotyped portrayals fell from 25% of pre-1970 film summaries to 9% today, and from 16% to 5% on TV. |
 | [9. A classifier trained on careful labels](#9-a-classifier-trained-on-careful-labels) | Trained on those labels, EmbeddingGemma-2 recognises stereotyped portrayals (AUC 0.86–0.90); on 37,049 fresh summaries, film portrayals fall from 22% in the 1930s to 8% now, and Westerns and romances lead. |
-| [10. Behind the camera, leads and ages](#10-behind-the-camera-leads-and-ages) | Women went from 3% to 16% of film directors and 6% to 23% of TV directors; they still hold only 38% of first-listed film roles, and the first-listed man is about 6 years older than the first-listed woman (9 in the 1940s). |
-| [11. Six more groups](#11-six-more-groups-immigrants-disability-mental-illness-age-class-and-homelessness) | Films stereotype immigrants, disabled and mentally ill, older, poor and homeless people in a steady 5–6% of summaries since the 1930s, unlike gender and ethnicity; mental illness appears three times as often as then, and horror stereotypes these groups most. |
-| [12. Money, critics and awards](#12-money-critics-and-awards) | Stereotyped portrayals cost box office (23% less than the same director's other films at the same budget) and Oscar nominations, and critics and audiences mark them down alike. Casts with more women return more per dollar; audiences rate them lower, critics do not. Series that open with stereotyped portrayals are renewed less often (a loose estimate). |
-| [13. Who makes stereotyped films, and where](#13-who-makes-stereotyped-films-and-where) | Films and series made by women contain 15–34% fewer group stereotypes and, once their casts are compared, no more gender stereotypes. Big-budget films stereotype a little less (18% over $100 million against 21–22%), and production countries (16–26%) differ far more than TV networks (10–13%). |
+| [10. Behind the camera, leads and ages](#10-behind-the-camera-leads-and-ages) | Women went from 3% (before 1950) to 16% of film directors and 5% to 23% of TV directors; they still hold only 38% of first-listed film roles, and the first-listed man is about 6 years older than the first-listed woman (9 before 1950). |
+| [11. Six more groups](#11-six-more-groups-immigrants-disability-mental-illness-age-class-and-homelessness) | Films stereotype immigrants, disabled and mentally ill, older, poor and homeless people in a steady 5–6% of summaries from the 1930s to the 2010s (4.5% in the 2020s), unlike gender and the groups of study 5; mental illness appears three times as often as then, and horror stereotypes these groups most. |
+| [12. Money, critics and awards](#12-money-critics-and-awards) | Films with stereotyped portrayals take less at the box office (23% less than the same director's other films at the same budget) and get fewer Oscar nominations, and critics and audiences mark them down alike. Casts with more women return more per dollar (a loose estimate); audiences rate them lower, critics barely. Series that open with stereotyped portrayals are renewed a little less often (a loose estimate). |
+| [13. Who makes stereotyped films, and where](#13-who-makes-stereotyped-films-and-where) | Films and series made by women contain 15–34% fewer group stereotypes in the main comparisons and, once their casts are compared, no more gender stereotypes. Big-budget films stereotype a little less (18% over $100 million against 21–22%, at the same summary length), and countries of origin (16–26%) differ far more than TV networks (10–13%). |
 
 ## 1. Who plays whom
 
@@ -49,7 +49,8 @@ Tables: [`results/occupations/`](results/occupations/).
 
 ## 2. Who writes the film or episode
 
-TMDb lists writers, directors and guest cast, each with a gender, for 118,128 episodes of 8,156 scripted series.
+TMDb gives the gender of every credited writer and of at least two guest stars (and of the director for most) for
+118,128 episodes of 8,156 scripted series.
 Guest stars are cast per episode, which is where an episode's writers have most say.
 
 ![Guest casting by writers' gender](results/writers/guest_share_by_writers.png)
@@ -57,11 +58,11 @@ Guest stars are cast per episode, which is where an episode's writers have most 
 - Comparing episodes of the same series, those written only by women cast 2.9 percentage points more women among
   guest stars than those written only by men (95% interval 2.5–3.3); mixed teams 1.1 points more. The gap holds for
   English-language series (3.1) and for episodes aired since 2010 (2.6).
-- A woman director adds 0.6 points on top of the writers.
-- Between shows the gap is larger: series created only by women average 43% women among guest stars, those created
-  only by men 35%, though such shows differ in many other ways too.
-- Writers' gender makes no clear difference to whether guests get counter-stereotypical jobs (a woman detective, a
-  male nurse).
+- Episodes directed by a woman have 0.6 points more women among guest stars, on top of the writers.
+- Between shows the gap is larger: episodes of series created only by women average 43% women among guest stars,
+  those of series created only by men 35%, though such shows differ in many other ways too.
+- Episodes written only by women are no more likely to give guests counter-stereotypical jobs (a woman detective, a
+  male nurse): +0.6 points, 95% interval −0.2 to 1.5. Mixed teams are slightly more likely (+1.7 points, 0.5 to 2.9).
 
 IMDb lists the writers and directors of every film and episode too, without gender; gender then comes from performer
 credits or, for everyone else, from the first name (see [How it was measured](#how-it-was-measured)). That extends the
@@ -70,11 +71,13 @@ study to 266,053 films and checks it on 2.4 million TV episodes.
 ![Writer effects on casting, films and TV](results/behind_camera/writer_effects.png)
 
 - Films written by women only cast 10.7 percentage points more women than films of the same genre and decade written
-  by men only, and 8.3 points more than films by the **same director** with an all-male writing team. Their top three
+  by men only, and 8.2 points more than films by the **same director** with an all-male writing team. Their top three
   roles are 11–14 points more often women's, and the first-listed role is a woman's 22–24 points more often.
-- A woman director adds 3 points to the cast and 9 points to the chance of a woman in the first-listed role.
-- In TV episodes the IMDb version finds 3.5 points within the same series, matching the TMDb result above (2.9) from a
-  different source and a different way of knowing gender. Film writers shape the whole story and cast; an episode's
+- Films by a woman director have 3 points more women in the cast and a woman in the first-listed role 9 points more
+  often.
+- In TV episodes the IMDb version finds 3.5 points within the same series, consistent with the TMDb result above (2.9) from a
+  different source, a different way of knowing gender and a different outcome (the episode's whole listed cast,
+  regulars included, rather than guest stars). Film writers shape the whole story and cast; an episode's
   writers work inside a series' fixed cast, which fits the smaller effect.
 - These are comparisons, not experiments: women writers may be hired for women-centred projects, which comparing
   films by the same director narrows but cannot rule out.
@@ -84,7 +87,8 @@ Tables: [`results/writers/`](results/writers/), [`results/behind_camera/writer_m
 ## 3. What characters do in plot summaries
 
 Three million English summaries (IMDb, TMDb and Wikipedia) parsed into who-does-what. A character's gender comes from pronouns,
-gendered words, or the title's own cast list.
+gendered words, or the title's own cast list. Ratios compare women's share of one kind of mention with their share of
+all gendered mentions, descriptions included.
 
 ![How summaries write about women vs men](results/agency/categories_by_decade.png)
 
@@ -94,8 +98,9 @@ gendered words, or the title's own cast list.
   subject of the action as often as their share would predict.
 - Appearance is the most persistent gap: women are described by their looks ("beautiful", "pretty", "attractive",
   "sexy") 3 times as often as their share in the 1950s and still 1.5 times today.
-- Investigating, rescuing and committing violence started far below women's share (0.4–0.6) and are now close to it
-  (0.8–1.0); romance-driven verbs fell from 1.4 to parity; emotional verbs ("cry", "worry", "panic") stay at 1.2.
+- Investigating or discovering, rescuing and committing violence started far below women's share (0.4–0.6) and are
+  now close to it (0.8–1.0); romance-driven verbs fell from 1.4 to parity; emotional verbs ("cry", "worry",
+  "panic") fell from about 1.5 in the 1960s–70s to 1.2, still above parity.
 - What happens to characters differs sharply: women are kidnapped, raped, abducted, assaulted and stalked; men are
   arrested, shot, wounded, convicted and jailed.
 
@@ -110,41 +115,45 @@ more detailed summaries, in which any word is more likely to turn up.
 **TV episodes.** Each measure compared across episodes of the same series, with air-year effects, for 887,000 rated
 IMDb episodes.
 
-![Effects on ratings and votes](results/ratings/effects.png)
+![Ratings and votes compared within series](results/ratings/effects.png)
 
-- Ratings barely move: no measure shifts an episode's rating by more than 0.04 points out of 10. The largest is for
-  summaries that pair a group with pejorative stereotype words, 0.04 points below other episodes of the same series;
-  casting more women, or writing women as the ones who act, moves ratings by 0.02 points at most.
+- Ratings barely differ: no estimate exceeds 0.04 points out of 10, and the 95% intervals stay within about ±0.06
+  (the rare slurs excepted). The largest is for summaries that pair a group with pejorative stereotype words, 0.04
+  points below other episodes of the same series; casting more women, or writing women as the ones who act, goes with
+  0.02 points at most.
 - Some get more attention: episodes whose summary describes a woman by her looks get 4% more votes, those with a woman
   as a victim 1% more. Without the length control, group stereotypes also seemed to draw 3% more votes; that came
   from popular episodes having longer summaries.
-- The 2022 null result therefore stands, now with measures that do capture what they claim to.
+- These episode measures are word lists and casting shares; the study 9 classifier was not run on episodes. The word
+  lists hold up as trends but are noisy title by title (right 22–67% of the time, study 8), which pulls these
+  estimates toward zero: small differences here do not show that audiences do not care.
 
 **Films.** A film has no other episodes of the same show, so each measure is compared three ways across 210,000 rated
-feature films (1950–2026): among a director's own films, with release year and genres held fixed; among the films of
+feature films with at least 20 IMDb votes (1950–2026; documentaries and reality formats left out): among a director's own films, with release year and genres held fixed; among the films of
 one franchise (TMDb collections); and among films of the same genre combination, decade and original language.
 
-![Effects on film ratings and votes](results/ratings/film_effects.png)
+![Film ratings and votes compared](results/ratings/film_effects.png)
 
 - Films with more women on screen are rated a little lower, also among a director's own films: an all-female
   credited cast rates 0.12 points below an all-male one and gets 9% fewer votes, and a woman in the first-listed role
   0.06 points lower with 6% fewer votes. Franchises offer too few comparisons to confirm or rule this out. IMDb does
   not say who rated, so this cannot separate how the films differ from who votes on them.
-- Who wrote or directed the film barely matters for its rating: 0.03 points at most for an all-women writing team,
+- Who wrote or directed the film barely goes with its rating: 0.03 points at most for an all-women writing team,
   nothing measurable for a woman director.
 - Films whose summary study 9's classifier reads as a stereotyped portrayal rate lower. Scored on all 188,049 films
-  with a summary, a film the classifier is sure about rates 0.31 points below the same director's other films of the
-  same genres (0.56 below similar films; 0.08 within a franchise, too few films to be sure) and draws 6% fewer
-  votes. Stories about prejudice rate slightly higher (0.07 points) and draw 17% more votes.
+  with a summary of at least 15 words, a film the classifier is sure about rates 0.31 points below the same director's
+  other films, with genres held fixed (0.56 below similar films; 0.08 within a franchise, too few films to be sure) and draws 6% fewer
+  votes. Stories about prejudice (study 7's classifier, top 2%) rate slightly higher (0.07 points) and draw 17% more votes.
 - Films that feature one of study 11's six groups (immigrants, disability, mental illness, old age, poverty,
   homelessness) rate higher, among a director's own films too: 0.13 points when the summary names the group, 0.22
-  when study 11's classifier reads one as present. Portraying them through a stereotype pulls the other way: with
+  when study 11's classifier reads one as present. Portraying them through a stereotype goes the other way: with
   their presence held fixed, a stereotyped portrayal goes with 0.26 points less across similar films and 0.06 less
   among a director's own films. Stereotype words next to a mention add nothing beyond naming the group, and insulting
-  labels make no clear difference. Within a TV series, none of these moves an episode's rating by more than 0.03
-  points.
+  labels make no clear difference. Within a TV series, none of the word-list measures (naming, stereotype words,
+  pejorative words, insulting labels) goes with more than 0.03 points; the classifiers were not run on episodes.
 - Group stereotype words show no consistent link with ratings among a director's own films. Across similar films
-  they go with 18–29% more votes, a gap that looked like 70% before summary length was held fixed. Slurs are too rare
+  they rate 0.08–0.10 points higher and draw 18–29% more votes, a gap that looked like 70–100% before summary length
+  was held fixed. Slurs are too rare
   in film summaries to tell.
 
 Tables: [`results/ratings/models.csv`](results/ratings/models.csv) (episodes),
@@ -276,21 +285,24 @@ cross-validation, repeated three times, and the fair test is the 1,400 random su
 
 - The newest open embedding models do best. EmbeddingGemma-2 (Google, 2026) recognises stereotyped portrayals with
   AUC 0.86 and gender stereotypes with 0.89; Qwen3-Embedding-0.6B (2025) does best on group stereotypes (0.85, from
-  only 33 random positives) and both reach 0.90 on stories about prejudice. A 2021 model (mpnet) is 0.02–0.04 behind,
-  GloVe word vectors (2014) 0.09–0.18, and this project's hand-built measures add at most 0.005 once a good embedding
-  is in.
-- In practice: of the 5% of random summaries EmbeddingGemma-2 ranks highest, 79% carry a stereotyped portrayal (64% of
-  the top 10%), against 13.5% overall. Group stereotypes are rare enough (2.4%) that no model flags them precisely yet.
+  only 33 random positives) and both reach 0.90 on stories about prejudice. A 2021 model (mpnet) is 0.02–0.04 behind
+  the best model for each target (and ahead of EmbeddingGemma-2 on group stereotypes), GloVe word vectors (2014)
+  0.09–0.18, and this project's hand-built measures add about 0.005 once a good embedding is in.
+- In practice: of the 5% of random summaries that EmbeddingGemma-2 with the hand-built measures ranks highest, 79%
+  carry a stereotyped portrayal (64% of the top 10%; 60% for the embedding alone), against 13.5% overall. Group stereotypes are rare enough (2.4%) that no model flags them precisely yet.
 
 ![Stereotypes by decade in a fresh sample of 37,049 summaries](results/label_classifier/sample_trends.png)
 
 - Applied to a fresh random sample (up to 2,000 summaries per decade and medium, none of them labelled), with
-  probabilities calibrated on the random labelled items: stereotyped portrayals fall from 22% of 1930s film summaries
+  EmbeddingGemma-2 and the hand-built measures for all four targets (for group stereotypes the weaker encoder:
+  random-item AUC 0.79 against Qwen3's 0.85) and probabilities calibrated on the random labelled items: stereotyped portrayals fall from 22% of 1930s film summaries
   to 8% in the 2020s, and on TV from 15% in the 1950s to 5%. Almost all of the fall is in gender stereotypes; group
   stereotypes drift down slowly (about 3% of film summaries in the 1930s–90s, 1.5% now).
-- Stories about prejudice move the other way in film: 3% of 1930s summaries, 5% since the 1990s.
-- All 24 era-level estimates fall inside the 95% intervals of the labelled sample; the classifier's trend is slightly
-  flatter than the labels', so if anything it understates the decline.
+- The classifier puts stories about prejudice at 3% of 1930s film summaries and 5% since the 1990s; the labels (4–6%
+  in every era, study 8) neither confirm nor rule out that rise.
+- All 24 era-level estimates fall inside the 95% intervals of the labelled sample; the classifier's trend is flatter
+  than the labels' (about 40–65% of the labelled fall from before 1970 to 2000+), so if anything it understates the
+  decline. The labels' "before 1970" also includes some films from before 1930, which the sample does not.
 
 ![Stereotyped portrayals by genre](results/label_classifier/sample_by_genre.png)
 
@@ -307,26 +319,27 @@ years IMDb holds for 683,000 people.
 
 ![Women's share of jobs behind the camera](results/behind_camera/jobs_by_decade.png)
 
-- Women went from 3% of film directors in the 1940s to 16% in the 2020s, and from 6% to 23% in TV; from 12% of film
-  writers (falling to 8% in the 1960s) to 22%, and from 17% to 34% of TV writers; from about 5% of producers to 26%
-  (film) and 34% (TV).
-- Production design rose from 3% to 42%; cinematography and music scoring are still 10–13% women. Editing is the
-  exception that fell: a quarter of film editors were women in the 1980s, 17% now.
-- Casting is the one job women dominate: 55–65% since the 1980s.
+- Women went from 3% of film directors before 1950 (the first bin pools 1920–49) to 16% in the 2020s, and from 5% to
+  23% in TV; from 12% of film writers (falling to 8% in the 1960s) to 22%, and from 17% to 34% of TV writers; from
+  about 5% of producers to 26% (film) and 34% (TV).
+- Production design rose from 3% to 42%; cinematography and music scoring are still 10–13% women. Editing and
+  casting are the jobs whose shares fell: film editors from 25% in the 1980s to 17%, casting directors from 63% (film)
+  and 66% (TV) in the 1990s to 55% and 59% now.
+- Casting is still the one job women dominate: 55–66% since the 1980s.
 
 ![Women in leading roles](results/behind_camera/leads_by_decade.png)
 
-- In films, women have held about a third of first-listed roles since the 1940s, and 38% in the 2020s, but 39–44% of
+- In films, women have held about a third of first-listed roles since before 1950, and 38% in the 2020s, but 39–44% of
   second and third places: the woman's part is the second lead. In TV series women went from a quarter of first-listed
   roles in the 1950s to 43% now, ahead of film.
 
 ![Ages of leading actors](results/behind_camera/ages_by_decade.png)
 
-- Women in the top three film roles were about ten years younger than the men in the 1940s (29 against 39). Within the
-  same film, the first-listed man was 9.4 years older than the first-listed woman in the 1940s and about 6 years older
-  since 2000.
-- Average ages for the 2010s and 2020s are likely too high: IMDb has birth years for 98% of 1940s leads but only 54%
-  of 2020s leads, mostly the better-known (older) ones. The within-film gap is less affected.
+- Women in the top three film roles were about ten years younger than the men in 1930–49 (29 against 39). Within the
+  same film, the first-listed man was 9.4 years older than the first-listed woman in 1930–49 and about 6 years older
+  since 2000, in films where both birth years are known.
+- Average ages for the 2010s and 2020s are likely too high: IMDb has birth years for 98% of leads before 1950 but
+  only 54% of 2020s leads, mostly the better-known (older) ones.
 
 Tables: [`results/behind_camera/`](results/behind_camera/).
 
@@ -351,7 +364,7 @@ same 1,400 random summaries as study 8.
 | People with a mental illness | 47% | dangerous (17 of 43), pitiable, a burden |
 | Disabled people | 47% | a burden (8 of 35), an inspiration, pitiable, only a victim |
 | Homeless people | 40% | only a victim (16 of 37), a moral failing, pitiable, comic |
-| Older people | 36% | comic (10 of 34), only a victim, the wise elder, declining |
+| Older people | 36% | comic and only a victim (10 each of 34), the wise elder, declining |
 | Poor and working-class people | 27% | criminal, a moral failing, the noble poor, pitiable (5 each of 25) |
 | Immigrants and refugees | 17% | only a victim (7 of 15) |
 
@@ -359,34 +372,37 @@ same 1,400 random summaries as study 8.
 
 - Films name these groups explicitly more than they used to: immigrants and refugees three times as often as in the
   1920s (4 → 13 per 1,000 film summaries), people with a mental illness about three times (3 → 8–10) and disabled
-  people almost twice (8 → 12–17); older people steadily (12–17). Poor and working-class people are the exception,
-  named a quarter as often (23 → 6). TV episodes name all six less over time (older people from 20 to 4 per 1,000
-  since the 1950s).
+  people one and a half to two times (8.5 → 12–17); older people steadily (12–17), homeless people about as often as
+  in the 1920s (4–7). Poor and working-class people are the exception, named a quarter as often (23 → 6). TV episodes
+  name all six less over time (older people from 20 to 4 per 1,000 since the 1950s). These are rates per summary, and
+  2020s summaries are 30–40% shorter than those of the 2000s, so part of any fall to the 2020s is shorter summaries.
 - Where they are named, stereotype words cling more tightly to immigrants (1.7 → 2.7 times as often as elsewhere in
-  film summaries), homeless people (1.5 → 2.5), poor people (0.7 → 2.1) and older people (about 2.5 → 4 since the
-  1950s), and less tightly to disabled people (2.3 → 1.5) and people with a mental illness (4.0 in the 1950s → 2.2),
-  comparing summaries of the same length. TV shows the same directions.
-- Insulting labels faded for homeless and poor people (in films from 513 and 187–283 per 100,000 summaries in the
+  film summaries), homeless people (1.5 → 2.5), poor people (0.7 → 2.1) and older people (about 2.3–2.9 in the 1950s–80s →
+  4.1), and less tightly to disabled people (2.3 → 1.5) and people with a mental illness (4.0 in the 1950s → 2.2),
+  comparing summaries of the same length. TV shows the same directions, though for older people and mental illness
+  only as point estimates, and the 1920s starting points for immigrants and homeless people rest on few summaries.
+- Insulting labels faded for homeless and poor people (in films from 513 and 187–289 per 100,000 summaries in the
   1920s–30s to 14 and 27) and for disabled people (about 100–150 → 11). Labels for mental illness are the exception:
-  in films they rose from about 130 per 100,000 summaries in the 1920s to 600 in the 1990s, and are still 200.
+  in films they rose from about 130 per 100,000 summaries in the 1920s to 600 in the 1990s, and are still 200. Like
+  the naming rates, these are per summary, so the 2020s values are partly lower because summaries are shorter.
 - Checking the measures: the mention lists are right 89–95% of the time (disability 74%) but catch only about a
   third of the people the labelling model finds, so the decade chart follows explicit naming while the labels above
-  give prevalence. A group named next to a pejorative stereotype word is stereotyped 36–76% of the time, against
-  15–43% for a plain mention; insulting labels are right about 80% of the time after pruning (out-of-sample
-  estimate); titles viewers tagged with a theme name its group 38–168 times as often as other titles. The two
+  give prevalence. A group named in the same summary as a pejorative stereotype word is stereotyped 36–76% of the
+  time, against 15–43% of flagged summaries for a plain mention; insulting labels are right about 80% of the time
+  after pruning (out-of-sample estimate; in-sample by group, 60% for disability labels and 76–96% for the others); titles viewers tagged with a theme name its group 38–168 times as often as other titles. The two
   labelling passes agree closely (kappa 0.81–1.00), but the second was a reread in the same session.
 
 **Reading whole summaries.** A classifier trained on the 2,685 labels (EmbeddingGemma-2 and the measures above, as
 in study 9) also counts people who are described rather than named. On the 1,400 random labelled summaries it scores
 AUC 0.89 for whether one of the six groups appears, 0.87 for a stereotyped portrayal and 0.83 for a story about
 discrimination (0.85–0.96 for each group's presence); on study 9's fresh sample, 17 of its 18 era estimates fall
-inside the labels' 95% intervals.
+inside the labels' 95% intervals (a consistency check, since the probabilities are calibrated on the same labels).
 
 ![The six groups in a fresh sample of 37,016 summaries](results/label_classifier_social/sample_trends.png)
 
 - Films portray these groups through a stereotype in a steady 5–6% of summaries from the 1930s to the 2010s, and
-  4.5% in the 2020s; on TV the share fell from 5% in the 1950s to under 2%. The labels' 8% for films since 2000 is the
-  one era estimate the classifier puts lower (5.2%).
+  4.5% in the 2020s; on TV the share fell from 5% in the 1950s to under 2%. For films since 2000 the classifier's 5.2% falls
+  just below the labels' interval (8%, 5.3–12.3%), the one era estimate outside it.
 
 ![How often each group appears, named or not](results/label_classifier_social/groups_by_decade.png)
 
@@ -395,7 +411,7 @@ inside the labels' 95% intervals.
   (0.9% → 2.9%), poor people half as often (8.8% → 4.0%) and older people steadily (about 3%). TV episodes feature
   older people a fifth as often as in the 1940s (4.4% → 0.9%).
 - Horror (8.5% of summaries), Westerns (7.4%), thrillers and mysteries stereotype these groups most; sport, reality
-  TV, music and documentaries least (under 3%) ([chart](results/label_classifier_social/sample_by_genre.png)).
+  TV, music, documentaries and history least (under 3%) ([chart](results/label_classifier_social/sample_by_genre.png)).
 
 Tables: [`results/groups_social/`](results/groups_social/), [`results/groups_offensive_social/`](results/groups_offensive_social/),
 [`results/labels_social/`](results/labels_social/), [`results/label_classifier_social/`](results/label_classifier_social/).
@@ -407,46 +423,53 @@ Budgets and worldwide box office from TMDb (11,929 films with both, in 2025 doll
 from the films' own Rotten Tomatoes and Metacritic pages, and from Wikidata for films beyond them (the Tomatometer
 for 23,083 films, the Metascore for 11,542, audience scores for 16,242 and 10,541); Academy Award nominations from
 Wikidata, and Golden Globe, BAFTA and Primetime Emmy nominations from Wikipedia's award pages (11,708 nominations);
-US viewer counts for 50,127 TV episodes from Wikipedia's episode tables (Nielsen); and, for TV, the first season of
+viewer counts for 50,127 TV episodes from Wikipedia's episode tables (mostly US Nielsen figures; about 13% from British
+BARB and other national ratings); and, for TV, the first season of
 6,639 finished scripted series scored by both classifiers. Compared as in study 4.
 
 ![Box office and Oscar nominations](results/reception/money_and_oscars.png)
 
-- Stereotyped portrayals cost money and awards. A film whose summary the study 9 classifier is sure portrays a
-  stereotype takes 23% less at the box office than its director's other films with the same budget, genres and
-  release year, and is 2.2 points less likely to be nominated for an Oscar (about 1 rated film in 85 is nominated).
-- Films featuring study 11's six groups take 21% less at the box office, although IMDb voters rate them higher; also
-  stereotyping them costs about a third more, a loose estimate.
-- Stories about prejudice are what the Academy rewards: 1.2 points more likely to be nominated than the director's
+- Stereotyped portrayals go with less money and fewer awards. A film whose summary the study 9 classifier is sure
+  portrays a stereotype takes 23% less at the box office than its director's other films, with budget, genres and
+  release year held fixed, and is 2.2 points less likely to be nominated for an Oscar (about 1 rated film in 85 is
+  nominated).
+- Films featuring study 11's six groups take 21% less at the box office, although IMDb voters rate them higher, and
+  stereotyping them goes with a further third less (32%), a loose estimate.
+- Stories about prejudice fare better with the Academy: 1.2 points more likely to be nominated than the director's
   other films, and 4.5 points higher on the Tomatometer.
-- The Golden Globes and the BAFTAs agree (they nominate 0.8% and 0.6% of rated films): a stereotyped portrayal makes a
+- The Golden Globes and the BAFTAs agree (they nominate 0.8% and 0.6% of rated films): a stereotyped portrayal goes with a
   nomination 1.1 and 1.3 points less likely, a story about prejudice 0.8 and 0.7 points more. The Globes, with
-  separate actress categories for drama and comedy, also nominate films with more women in the cast more often (0.7
-  points for an all-female against an all-male cast).
-- Films with more women on screen make more money for their budget (30% more for an all-female against an all-male
-  cast among a director's films, 38% across similar films). Critics do not mark them down, but audiences on all
-  three sites do: a woman in the first-listed role costs 1.7 points of Rotten Tomatoes audience score and 0.15 of
-  Metacritic's user score among a director's films, as she costs 0.06 on IMDb.
-- No sign of "Oscar bait": films featuring disabled people or people with a mental illness are no more likely than
-  comparable films to earn an acting nomination. This is measured for the film, not the role.
+  separate actress categories for drama and comedy, also nominate films with more women in the cast more often among
+  a director's films (0.7 points for an all-female against an all-male cast; not across similar films).
+- Films with more women on screen return more on their budget (box office divided by budget: 30% more for an
+  all-female against an all-male cast among a director's films, a loose estimate, and 38% across similar films; with
+  budget as a control instead, the director comparison gives 23% and is not clear). Critics mark them down little or
+  not at all (only the Rotten Tomatoes critics' average, by 0.06 of 10 for a woman in the first-listed role), while
+  audiences on all three sites do: a woman in the first-listed role goes with 1.7 points less Rotten Tomatoes audience
+  score and 0.15 less Metacritic user score among a director's films, as with 0.06 less on IMDb.
+- No clear sign of "Oscar bait": films featuring disabled people or people with a mental illness are not clearly more
+  likely than comparable films to earn an acting nomination, though the intervals cannot rule out up to about 1
+  point on a 0.5% base. This is measured for the film, not the role.
 
 ![How critics and audiences rate stereotyped portrayals](results/reception/critics_vs_audiences.png)
 
-- Critics and audiences penalise stereotyped portrayals alike: on the same films, among a director's films, a
-  stereotyped portrayal lowers the Tomatometer by 0.23 standard deviations and the Metascore by 0.20, against
+- Critics and audiences mark stereotyped portrayals down alike: on the same films, among a director's films, a
+  stereotyped portrayal goes with a Tomatometer 0.23 standard deviations lower and a Metascore 0.20 lower, against
   0.25–0.29 for the three audiences (IMDb, Rotten Tomatoes and Metacritic users); across similar films, all of them
-  by 0.36–0.42.
-- TV viewers do not tune in or out over any of these: within a series, no measure moves an episode's US audience by
-  more than a few percent, and none clearly.
-- But series that open with stereotyped portrayals are renewed less often: a series whose first season the classifier
-  is sure portrays a stereotype throughout is 19 points less likely to get a second season than series that started
-  the same year on the same network (57% of these 6,639 series do), and as much less likely across similar series, and
-  it runs about a quarter fewer seasons; loose estimates, whose intervals end close to zero. Series that feature study
-  11's six groups are renewed as often or more.
+  are 0.36–0.42 lower.
+- TV audiences: within a series, none of study 4's word-list and casting measures goes with an episode's viewer count
+  by more than a few percent, and none clearly; the classifiers were not run on these episodes.
+- Series that open with stereotyped portrayals are renewed a little less often. From a first season among the tenth
+  least stereotyped to one among the tenth most (a mean probability of 3% against 24%), a series is about 4 points
+  less likely to get a second season (57% of these 6,639 series do), compared within network and start year or across
+  similar series; a loose estimate, whose intervals end close to zero. Across similar series such series also run
+  about 6% fewer seasons over the same range; within network and start year that interval includes zero. Series that
+  feature study 11's six groups are renewed as often or more.
 - Emmy and Golden Globe nominations (3.0% and 3.5% of these series) show no clear penalty for stereotyped portrayals.
-  They favour series that feature the six groups: a first season the classifier is sure features them is 12–15 points
-  more likely to earn a Golden Globe nomination and 10–12 more an Emmy (one of the two comparisons only borderline).
-  Stereotyping those groups earns nothing extra (among a network's series of the same year, fewer Golden Globes).
+  Series that feature the six groups are nominated more often: from the tenth of series least likely to feature them
+  to the tenth most likely (2% against 25%), about 3 points more often for a Golden Globe and 2–3 points more often
+  for an Emmy (one of the two Emmy comparisons only borderline). Stereotyping those groups goes with no more
+  nominations (among a network's series of the same year, fewer Golden Globes).
 - The critic and audience scores were read from the films' own pages in October 2026 for the 17,569 (Rotten
   Tomatoes) and 11,482 (Metacritic) films with at least 5,000 IMDb votes, and taken from Wikidata's copies for the
   rest (retrieved 2021–26), so the comparison with audiences concerns films with a real audience. TMDb's budgets and
@@ -456,8 +479,8 @@ Tables: [`results/reception/`](results/reception/).
 
 ## 13. Who makes stereotyped films, and where
 
-With every rated film scored (study 4) and the gender of its director and writers known (study 10), the question can
-be turned around: who makes stereotyped films? Series are scored on their first season (study 12) and TMDb records
+With the 188,049 rated films that have a summary scored (study 4) and the expected gender of their directors and
+writers (study 10), the question can be turned around: who makes stereotyped films? Series are scored on their first season (study 12) and TMDb records
 the gender of their creators. Compared like for like, as in study 4.
 
 ![Women behind the camera and stereotyped portrayals](results/makers/who.png)
@@ -465,30 +488,34 @@ the gender of their creators. Compared like for like, as in study 4.
 - Films directed or written by women contain no fewer stereotyped portrayals overall, but fewer group stereotypes:
   0.4 points fewer with a woman director and 0.6 fewer with an all-women writing team, against a base rate of about
   3%, and as many fewer among a director's own films; and fewer stereotyped portrayals of study 11's six groups (0.7
-  and 0.9 points).
+  and 0.9 points). Within franchises the estimates are noisier (women writers 1.4 points fewer group stereotypes,
+  women directors 0.2 more, not significant).
 - At first sight they carry more gender stereotypes (1.6 points more with women writers), but only because they
   centre more on women: with the share of women in the cast held fixed, the difference disappears.
 - Series created by women show the same pattern in their first season: with an all-women team of creators, 0.7
   points fewer group stereotypes (against 2.1%, a third fewer), 0.7 fewer stereotyped portrayals of the six groups
   (against 4.1%) and no more gender stereotypes (+0.4 points, not significant; −0.2 with the cast held fixed). Unlike
   films, they also carry fewer stereotyped portrayals overall (0.8 points fewer, against 11.6%), a loose estimate. TMDb
-  records the creators' gender for 4,368 of the 6,639 series, 2,803 of which can be compared like for like.
+  records at least one creator's gender for 4,368 of the 6,639 series (all of them for 3,920), and 2,803 can be
+  compared like for like.
 
 ![Where stereotyped portrayals are made](results/makers/where.png)
 
 - Bigger films stereotype a little less: 18% of the summaries of films that cost over $100 million, against 21–22%
-  for films of $1–50 million, with genre and decade held fixed.
-- By production country the share runs from 16–18% (Iran, the Soviet Union, the UK, Germany) to 24–26% (Mexico, the
-  Philippines, Russia), with the US at 20%. These are English-language summaries, so the comparison partly reflects
+  for films of $1–50 million, with genre, decade and summary length (and source) held fixed. Bigger films get longer
+  summaries; without the length control the gap is about 1 point.
+- By country of origin (TMDb) the share runs from 16–18% (Iran, the Soviet Union, the UK, Germany, Turkey) to 24–26%
+  (Mexico, the Philippines, Russia), with the US at 20%. These are English-language summaries, so the comparison partly reflects
   how each country's films are described in English.
-- Hollywood's majors range from 18.6% (Warner Bros.) to 23% (MGM); the extremes are East Germany's DEFA (15.5%) and
-  Japan's Nikkatsu (33%; three in four of its films since 1970 date from 1971–88, the years of its erotic "Roman Porno"
+- Among films since 1970, by first-listed production company, Hollywood's majors range from 18.6% (Warner Bros.) to
+  23% (MGM); the extremes are East Germany's DEFA (15.5%) and
+  Japan's Nikkatsu (33%; nearly three in four of its films since 1970 date from 1971–88, the years of its erotic "Roman Porno"
   line). Streaming originals since 2015 stereotype about as often as other films of those years (13% against 14%, a
   gap within the noise of only 228 films).
-- TV networks differ less than film studios: with genre and decade held fixed, 10% of first-season summaries portray a
-  stereotype on Cartoon Network, HBO and Disney Channel, against 13% on FOX, TBS and The WB; Netflix sits at the
-  average (11.6%, 504 series). Study 11's six groups are stereotyped most on Comedy Central and FOX (5.7% and 5.1%,
-  against 4.1% overall).
+- TV networks differ less than film studios: with genre, decade and summary length held fixed, 10% of first-season
+  summaries portray a stereotype on Cartoon Network, HBO and Disney Channel, against 13% on FOX, TBS, The WB and
+  Channel 4; Netflix sits at the average (11.6%, 504 series; 10% without the length control). Study 11's six groups
+  are stereotyped most on Comedy Central and FOX (5.7% and 5.1%, against 4.3% across these networks).
 
 Tables: [`results/makers/`](results/makers/).
 
@@ -526,7 +553,8 @@ Tables: [`results/makers/`](results/makers/).
   mention the group with summaries that do not, within bands of summary length (a Mantel–Haenszel ratio over
   length deciles): longer summaries are likelier both to mention a group and to contain any given word, which
   inflates the plain ratio.
-- **The six groups of study 11** are named by identity terms cross-checked against HolisticBias's descriptors
+- **The six groups of study 11** are named by identity terms (and a few condition and institution words, such as
+  "psychiatric hospital") cross-checked against HolisticBias's descriptors
   (numeric ages count from 65), with idioms removed ("blind date", "fell on deaf ears", "disabled the alarm"). Their
   insulting labels, like the slur lists, are kept out of the repository; the labels pruned 12 that were mostly
   surnames, other uses or outdated descriptions, and the pruned list is right about 80% of the time (out-of-sample
@@ -540,7 +568,8 @@ Tables: [`results/makers/`](results/makers/).
   Primetime Emmys from Wikipedia's category pages (each year's nominees, the winner highlighted), traced to IMDb
   through Wikidata (97%).
 - **Series' first seasons** (studies 12 and 13): up to six first-season episodes of each finished scripted series
-  (first aired 1990–2022, at least 500 IMDb votes), scored by both label-trained classifiers and averaged; compared at
+  (first aired 1990–2022, at least 500 IMDb votes, at least three first-season summaries of 15–350 words: 6,639 of
+  8,521 series), scored by both label-trained classifiers and averaged; compared at
   the same mean summary length, and for gender stereotypes also with the women's share of those episodes' credited
   cast held fixed. Clustered by network.
 - **Wikipedia episode summaries** come from season and episode-list pages ({{Episode list}}), traced to the series'
@@ -563,21 +592,29 @@ Tables: [`results/makers/`](results/makers/).
   even looser upper bound than study 8's.
 - Garg et al.'s Black surname list overlaps heavily with common White surnames, so the embeddings give no usable
   Black–White contrast; surnames also stand in for groups only roughly.
+- Every comparison is observational: fixed effects hold fixed what titles share within a series, director,
+  franchise, network or year, not every other difference between them, so the results are associations, not effects.
+- The "woman as victim" flag now also counts passive "raped" (spaCy lemmatises it as "rap"). The classifiers'
+  hand-built features were computed before that fix; those features add at most 0.006 AUC, so the scores were not
+  recomputed.
 
 ## Reproduce
 
 Set `STEREOTYPES_DATA` to a local folder holding the sources below and `PYTHON` to an environment with pandas, pyarrow,
 duckdb, statsmodels, scikit-learn, gensim, spacy (`en_core_web_sm`), torch, torchvision, sentence-transformers,
 transformers, mwparserfromhell, matplotlib, lxml, jsonschema and wordfreq, then run `bash src/run_all.sh` (or
-`bash src/run_all.sh <step>` to start from a step). `src/transformer.py`, `src/label_classifier.py` (about four hours
-on a CPU) and `src/score_sample.py` (about two hours) run separately; the labels themselves come from `labelling/`.
+`bash src/run_all.sh <step>` to start from a step). `src/transformer.py` runs separately, as does the chain of studies 8 and 9:
+`src/label_sample.py`, the labelling run (`labelling/`), `src/validate_labels.py labels.jsonl labels_second.jsonl`,
+`src/label_classifier.py` (about four hours on a CPU), `src/score_sample.py` (about two hours) and
+`src/calibration_check.py`.
 `src/imdb_people.py`, `src/behind_camera.py`, `src/film_writers.py` and `src/ratings_films.py` add the crew, leads and
 ages (studies 2 and 10) and the films half of study 4; `src/label_sample_social.py`,
 `src/validate_labels_social.py` and `src/social_classifier.py` (about 50 minutes on a CPU) draw, score and model
 study 11's labelling sample; `src/score_films.py` (about ten hours on a CPU, resumable) scores every rated film with
 both label-trained classifiers for study 4. Study 12 runs `src/wikidata_reception.py`, `src/reception_fetch.py rt|mc`
 (about a day at its pace, resumable), `src/wiki_fetch.py --viewers-only`, `src/wiki_awards.py`, `src/reception.py`,
-`src/score_series.py` (about three hours) and `src/series_reception.py`; study 13 runs `src/makers.py`. No raw data is stored in this repository.
+`src/score_series.py` (about three hours) and `src/series_reception.py`; study 13 runs `src/makers.py`. Run `src/figures.py` again at the end to redraw the charts from the separately run
+scripts. No raw data is stored in this repository.
 
 ## Data and terms
 

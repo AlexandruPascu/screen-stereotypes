@@ -32,7 +32,7 @@ for ax, (role, title) in zip(axes, [("subj", "what they do"), ("pass", "what is 
     colours = [WOMEN if z > 0 else MEN for z in d.z]
     ax.barh(range(len(d)), d.z, color=colours)
     ax.set_yticks(range(len(d)))
-    ax.set_yticklabels(d.lemma.replace({"rap": "rape"}))
+    ax.set_yticklabels(d.lemma)
     ax.axvline(0, color="black", lw=0.8)
     ax.set_title(title)
     ax.set_xlabel("← men    association (z)    women →")
@@ -71,7 +71,7 @@ for ax, (outcome, title, scale) in zip(axes, [("rating", "change in IMDb rating 
     ax.set_yticklabels([labels[i] for i in d.index])
     ax.set_title(title, fontsize=10)
 axes[0].set_xlim(-0.15, 0.15)
-fig.suptitle("Episodes compared within the same series: effects are tiny (95% intervals)", fontsize=12)
+fig.suptitle("Episodes compared within the same series: the differences are tiny (95% intervals)", fontsize=12)
 fig.tight_layout()
 fig.savefig(RESULTS / "ratings/effects.png")
 plt.close(fig)
@@ -262,7 +262,7 @@ ERAS = ["before 1970", "1970-99", "2000+"]
 show = [("any_stereotype", "any stereotyped portrayal"), ("gender_any", "gender stereotype"),
         ("group_stereotyped", "group stereotype"), ("prejudice_theme", "story about prejudice")]
 fig, axes = plt.subplots(1, 2, figsize=(12, 4.8), sharey=True)
-for ax, (medium, title) in zip(axes, [("film", "Films"), ("tv", "TV episodes")]):
+for ax, (medium, title) in zip(axes, [("film", "Films"), ("tv", "TV")]):
     ends = []
     for (label, name), colour in zip(show, SLOTS):
         d = prev[(prev.medium == medium) & (prev.label == label)].set_index("era").reindex(ERAS)
@@ -354,7 +354,7 @@ print("label classifier figure written")
 # ---- label-trained classifier applied to a fresh random sample: trends by decade and genre ----
 sp = pd.read_csv(RESULTS / "label_classifier/sample_prevalence_by_decade.csv")
 fig, axes = plt.subplots(1, 2, figsize=(12, 4.8), sharey=True)
-for ax, (medium, title) in zip(axes, [("film", "Films"), ("tv", "TV episodes")]):
+for ax, (medium, title) in zip(axes, [("film", "Films"), ("tv", "TV")]):
     d = sp[(sp.medium == medium) & (sp.summaries >= 500)].sort_values("decade")
     ends = []
     for (target, name), colour in zip(TNAMES.items(), SLOTS):
@@ -419,7 +419,7 @@ for ax in axes[:, 0]:
     ax.set_ylabel("% women", color=MUTED)
 axes[0, 0].legend(fontsize=8, frameon=False, loc="upper left")
 fig.suptitle("Women's share of jobs behind the camera, fiction film and TV (IMDb credits; gender from credits or first "
-             "name)", fontsize=12, color=INK)
+             "name; the first point pools 1920–49)", fontsize=12, color=INK)
 fig.tight_layout()
 fig.savefig(BC / "jobs_by_decade.png")
 plt.close(fig)
@@ -443,6 +443,7 @@ for ax, (medium, title) in zip(axes, [("film", "Films"), ("tv", "TV series")]):
         ax.annotate(name, (xv, yv), xytext=(xv + 2, y_text), textcoords="data", va="center", fontsize=8, color=INK)
     ax.set_xlim(1935, 2048)
     ax.set_xticks(range(1940, 2030, 20))
+    ax.set_xticklabels(["1920–49", "1960s", "1980s", "2000s", "2020s"])
     ax.set_title(title, fontsize=10, color=INK)
 axes[0].set_ylabel("% of acting credits held by women", color=MUTED)
 axes[0].legend(fontsize=8, frameon=False, loc="lower left")
@@ -465,16 +466,19 @@ for (female, name), colour in zip([(False, "men in top-3 roles"), (True, "women 
                      fontsize=8, color=INK)
 axes[0].set_xlim(1935, 2045)
 axes[0].set_xticks(range(1940, 2030, 20))
+axes[0].set_xticklabels(["1930–49", "1960s", "1980s", "2000s", "2020s"])
 axes[0].set_ylabel("average age at release", color=MUTED)
-axes[0].set_title("Ages of the top-3 cast (films with 100+ votes); birth years known for\n98% of 1940s leads but 54% of "
+axes[0].set_title("Ages of the top-3 cast (films with 100+ votes); birth years known for\n98% of leads before 1950 but 54% of "
                   "2020s leads, so recent ages are likely too high", fontsize=10, color=INK)
 axes[0].legend(fontsize=8, frameon=False, loc="upper left")
 axes[1].plot(gp.decade, gp.gap, color=SLOTS[0], lw=2, marker="o", ms=4)
 axes[1].axhline(0, color=RULE, lw=1)
 axes[1].set_ylim(0, None)
+axes[1].set_xticks(range(1940, 2030, 20))
+axes[1].set_xticklabels(["1930–49", "1960s", "1980s", "2000s", "2020s"])
 axes[1].set_ylabel("years", color=MUTED)
-axes[1].set_title("How much older the first-listed man is than the first-listed woman\n(same film, so less affected "
-                  "by missing birth years)", fontsize=10, color=INK)
+axes[1].set_title("How much older the first-listed man is than the first-listed woman\n(same film; films where both "
+                  "birth years are known)", fontsize=10, color=INK)
 fig.tight_layout()
 fig.savefig(BC / "ages_by_decade.png")
 plt.close(fig)
@@ -494,7 +498,7 @@ ax.axvline(0, color=RULE, lw=1)
 ax.set_yticks(range(len(designs)))
 ax.set_yticklabels(designs, fontsize=9)
 ax.set_xlabel("difference in percentage points, all-women vs all-men writing team (95% intervals)", color=MUTED)
-ax.set_title("Who writes changes who is cast — strongly in films, modestly in TV episodes", fontsize=10, color=INK)
+ax.set_title("Casting differs with who writes — strongly in films, modestly in TV episodes", fontsize=10, color=INK)
 ax.legend(fontsize=8, frameon=False, loc="lower right")
 fig.tight_layout()
 fig.savefig(BC / "writer_effects.png")
@@ -558,7 +562,7 @@ sprev = sprev[sprev.labels_used == "all labels"]
 show = [("any_group", "one of the six groups appears"), ("any_stereotyped", "portrayed through a stereotype"),
         ("discrimination", "a story about discrimination against them"), ("pejorative_label", "an insulting label")]
 fig, axes = plt.subplots(1, 2, figsize=(12, 4.8), sharey=True)
-for ax, (medium, title) in zip(axes, [("film", "Films"), ("tv", "TV episodes")]):
+for ax, (medium, title) in zip(axes, [("film", "Films"), ("tv", "TV")]):
     ends = []
     for (label, name), colour in zip(show, SLOTS):
         d = sprev[(sprev.medium == medium) & (sprev.label == label)].set_index("era").reindex(ERAS)
@@ -686,7 +690,7 @@ for ax, site in zip(axes, ["Rotten Tomatoes", "Metacritic"]):
     ax.axvline(0, color=RULE, lw=1)
     ax.set_yticks(np.arange(len(order))[::-1])
     ax.set_yticklabels([RNAMES[r] for r in order], fontsize=9)
-    ax.set_title(f"Films with a {site} score ({int(d.films.max()):,})", fontsize=10, color=INK)
+    ax.set_title(f"Films with all {site} and IMDb ratings ({int(d.films.max()):,})", fontsize=10, color=INK)
     ax.set_xlabel("change in the rating, in standard deviations (95% intervals)", color=MUTED)
 fig.legend(*axes[0].get_legend_handles_labels(), loc="lower center", ncol=2, frameon=False, fontsize=9)
 fig.suptitle("A summary the classifier reads as a stereotyped portrayal: how critics and audiences rate the film",
@@ -768,7 +772,7 @@ d = where[(where.medium == "film") & (where.grouping == "country_top") & (where.
 axes[0].barh(range(len(d)), d.rate * 100, color=SLOTS[0], height=0.65)
 axes[0].set_yticks(range(len(d)))
 axes[0].set_yticklabels([NAMES.get(v, v) for v in d.value], fontsize=8)
-axes[0].set_title("Films by production country", fontsize=10, color=INK)
+axes[0].set_title("Films by country of origin", fontsize=10, color=INK)
 b = where[(where.medium == "film") & (where.grouping == "budget_band") & (where.outcome == "any_stereotype")]
 order = ["under $1m", "$1–10m", "$10–50m", "$50–100m", "over $100m"]
 b = b.set_index("value").reindex(order)
@@ -784,8 +788,8 @@ axes[2].barh(range(len(n)), n.rate * 100, xerr=[(n.rate - n.lo) * 100, (n.hi - n
 axes[2].set_yticks(range(len(n)))
 axes[2].set_yticklabels([f"{v} ({int(t):,})" for v, t in zip(n.value, n.titles)], fontsize=8)
 axes[2].set_title("Series by network (first seasons)", fontsize=10, color=INK)
-for ax in axes:
-    ax.set_xlabel("% of summaries portraying a stereotype (genre and decade held fixed)", color=MUTED, fontsize=8)
+fig.supxlabel("% of summaries portraying a stereotype (genre, decade and summary length held fixed)", color=MUTED,
+              fontsize=9)
 fig.suptitle("Where stereotyped portrayals are made", fontsize=11, color=INK)
 fig.tight_layout()
 fig.savefig(MK / "where.png")

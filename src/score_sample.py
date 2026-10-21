@@ -3,7 +3,8 @@
 Sample: up to 2,000 summaries per decade (1930s–2020s) and medium (film/TV), 15–350 words like the labelled ones, none
 of them among the 3,000 labelled items. Features: EmbeddingGemma-2 (text encoder, "Classification" prompt) plus this
 project's hand-built measures, the best combination for portrayals in label_classifier.py; one encoder for all targets
-(Qwen3 is 3x slower on a CPU and only ties or edges it on themes and group stereotypes).
+(Qwen3 takes about twice as long on a CPU; it is better on group stereotypes, random-item AUC 0.85 against 0.79, so
+that trend rests on the weaker encoder).
 Probabilities: a logistic regression per target trained on all 3,000 labels, then mapped to population rates with a
 calibration fitted on the out-of-fold scores of the 1,400 random labelled items.
 Outputs: results/label_classifier/sample_*.csv; DERIVED/label_classifier_sample_scores.parquet (private).

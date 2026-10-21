@@ -35,20 +35,20 @@ print(f"episodes in the comparison: {len(ep):,} from {ep.series.nunique():,} ser
       + ", ".join(f"{k} {v:,}" for k, v in ep.team.value_counts().items()))
 
 
-def within_series(d, y, x_cols, label):
-    """OLS of y on x with series and year fixed effects (two-way demeaning), SE clustered by series."""
+def within_series(d, y, x_cols, label, unit="episodes"):
+    """OLS of y on x with series fixed effects (series means removed) and year fixed effects (dummies), SE clustered by
+    series; `unit` names what the rows are."""
     d = d.copy()
     X = pd.get_dummies(d[x_cols], drop_first=False).astype(float)
     X = X[[c for c in X.columns if c not in ("team_men only", "director_man")]]
     X = X.join(pd.get_dummies(d.year, prefix="y", drop_first=True).astype(float))
     Z = X.join(d[[y]])
-    for _ in range(10):  # alternating projections: remove series means and year means
-        Z = Z - Z.groupby(d.series).transform("mean")
+    Z = Z - Z.groupby(d.series).transform("mean")  # the year dummies are demeaned too (Frisch–Waugh)
     res = sm.OLS(Z[y], Z.drop(columns=[y])).fit(cov_type="cluster", cov_kwds={"groups": d.series})
     keep = [c for c in X.columns if not c.startswith("y_")]
     out = pd.DataFrame({"estimate": res.params[keep], "lo": res.conf_int()[0][keep], "hi": res.conf_int()[1][keep],
                         "p": res.pvalues[keep]})
-    out["model"], out["episodes"], out["series"] = label, len(d), d.series.nunique()
+    out["model"], out[unit], out["series"] = label, len(d), d.series.nunique()
     return out
 
 
@@ -94,8 +94,10 @@ g["counter"] = ((g.typed < 0) & (g.gender == 1)) | ((g.typed > 0) & (g.gender ==
 g = g.merge(ep[["series", "season", "episode", "team", "director", "year", "english"]], on=["series", "season", "episode"])
 print(f"guest roles with a gender-typed job, in comparison episodes: {len(g):,}; counter-stereotypical {g.counter.mean():.1%}")
 cm = pd.concat([
-    within_series(g.assign(counter=g.counter.astype(float)), "counter", ["team"], "counter-stereotypical job casting"),
-    within_series(g[g.english].assign(counter=g.counter.astype(float)), "counter", ["team"], "same, English-language"),
+    within_series(g.assign(counter=g.counter.astype(float)), "counter", ["team"], "counter-stereotypical job casting",
+                  unit="roles"),
+    within_series(g[g.english].assign(counter=g.counter.astype(float)), "counter", ["team"], "same, English-language",
+                  unit="roles"),
 ])
 cm.to_csv(OUT / "counter_stereotype_models.csv")
 print(cm.round(4).to_string())

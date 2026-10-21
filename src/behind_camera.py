@@ -92,14 +92,16 @@ ages = con.execute(f"""
            AVG((age >= 40)::INT) FILTER (WHERE age BETWEEN 5 AND 100) AS share_40_plus
     FROM top GROUP BY ALL ORDER BY ALL""").df()
 ages.to_csv(OUT / "ages_by_decade.csv", index=False)
+# the first-listed woman and man themselves: arg_min_null keeps a missing birth year missing, so the film drops
+# out, where arg_min would skip to the next-listed
 gap = con.execute(f"""
     WITH r AS (SELECT tconst FROM {tsv('title.ratings.tsv.gz', ['tconst', 'averageRating', 'numVotes'])}
                WHERE CAST(numVotes AS INT) >= 100),
     top AS (SELECT c.*, c.year - p.birth_year AS age FROM cast_ranked c JOIN r USING (tconst)
             LEFT JOIN people p USING (nconst) WHERE c.medium = 'film' AND c.rank <= 3 AND c.year >= 1930),
     firsts AS (SELECT tconst, any_value(year) AS year, any_value(english) AS english,
-                      arg_min(age, rank) FILTER (WHERE female) AS woman_age,
-                      arg_min(age, rank) FILTER (WHERE NOT female) AS man_age
+                      arg_min_null(age, rank) FILTER (WHERE female) AS woman_age,
+                      arg_min_null(age, rank) FILTER (WHERE NOT female) AS man_age
                FROM top GROUP BY tconst)
     SELECT CASE WHEN year < 1950 THEN 1940 ELSE year // 10 * 10 END AS decade, english, COUNT(*) AS films,
            AVG(man_age - woman_age) AS mean_gap, MEDIAN(man_age - woman_age) AS median_gap,

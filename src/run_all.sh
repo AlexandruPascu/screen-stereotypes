@@ -8,9 +8,10 @@ PY=${PYTHON:-python3}
 LOGS="$STEREOTYPES_DATA/logs"
 mkdir -p "$LOGS"
 
+# agency filters its word table against both lexicons, so it runs after stereotype_lexicon and social_lexicon
 STEPS=(build_roles tmdb_titles occupation_gender tmdb_episode_credits writer_gender wiki_fetch build_texts parse_texts
-       agency stereotype_lexicon group_stereotypes group_stereotypes_offensive social_lexicon group_stereotypes_social
-       group_stereotypes_social_offensive ratings embeddings plot_scores classifier figures)
+       stereotype_lexicon group_stereotypes group_stereotypes_offensive social_lexicon group_stereotypes_social
+       group_stereotypes_social_offensive agency ratings embeddings plot_scores classifier figures)
 start=${1:-${STEPS[0]}}
 running=false
 for step in "${STEPS[@]}"; do
