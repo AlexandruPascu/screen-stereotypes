@@ -21,7 +21,7 @@ measure them. Slurs and insulting labels are counted but left out of every publi
 | [4. Do audiences care?](#4-do-audiences-care) | Within a TV series, the word-list and casting measures go with less than 0.04 points of an episode's IMDb rating, though noisy measures understate such differences. Films whose summary the study 9 classifier reads as a stereotyped portrayal rate about 0.3 points lower than the same director's other films, and films with more women on screen slightly lower (0.12 points for an all-female against an all-male cast). |
 | [5. Groups, stereotype words and slurs](#5-groups-stereotype-words-and-slurs) | Slurs in character names fell ninefold, but pejorative stereotype words still cluster around group mentions as much as in the 1950s. |
 | [6. The language of plot summaries](#6-the-language-of-plot-summaries) | Word embeddings trained on the summaries track the census and on-screen casting; gender-coded wording has halved since the 1950s, while terrorism words moved back towards Islam after 2001. |
-| [7. A classifier, done properly](#7-a-classifier-done-properly) | Without the 2022 length shortcut it reaches AUC 0.71–0.76, not 0.95 — and what it detects is stories *about* prejudice, not stereotyped portrayals. |
+| [7. A classifier, done properly](#7-a-classifier-done-properly) | Without the 2022 length shortcut it reaches AUC 0.71–0.76, not the 0.95 reported in 2022 — and what it detects is stories *about* prejudice, not stereotyped portrayals. |
 | [8. Checking the measures](#8-checking-the-measures) | A careful reading of 3,000 summaries confirms the measures: stereotyped portrayals fell from 25% of pre-1970 film summaries to 9% today, and from 16% to 5% on TV. |
 | [9. A classifier trained on careful labels](#9-a-classifier-trained-on-careful-labels) | Trained on those labels, EmbeddingGemma-2 recognises stereotyped portrayals (AUC 0.86–0.90); on 37,049 fresh summaries, film portrayals fall from 22% in the 1930s to 8% now, and Westerns and romances lead. |
 | [10. Behind the camera, leads and ages](#10-behind-the-camera-leads-and-ages) | Women went from 3% (before 1950) to 16% of film directors and 5% to 23% of TV directors; they still hold only 38% of first-listed film roles, and the first-listed man is about 6 years older than the first-listed woman (9 before 1950). |
@@ -39,7 +39,7 @@ played them. English-language film and TV: 2.5 million named fictional roles (of
 - In 2010–26 women play 90% of nannies, 87% of nurses, 83% of receptionists and 74% of secretaries, but 26% of doctors,
   20% of detectives, 15% of police officers, 7% of soldiers and 3% of gangsters, against 39% of all named roles.
 - The biggest changes are in professional and authority jobs: before 1970 women played 0–2% of detectives, judges,
-  lawyers, doctors and professors; now they play 19–30%. Reporters went from 6% to 49%, bartenders from 0% to 28%.
+  lawyers, doctors and professors; now they play 20–30%. Reporters went from 6% to 49%, bartenders from 0% to 28%.
 - Jobs coded female barely moved: nurses are 87% women today (98% before 1970). Change came from women entering male
   roles on screen, not men entering female ones.
 
@@ -191,7 +191,7 @@ Tables: [`results/groups/`](results/groups/), [`results/groups_offensive/`](resu
 ## 6. The language of plot summaries
 
 The method from the project's original reading list (Garg et al. 2018, *PNAS*): word embeddings trained on the
-summaries themselves (198 million words), with Garg et al.'s published word lists for women and men, occupations,
+summaries themselves (2.5 million summaries, one per title, 149 million words), with Garg et al.'s published word lists for women and men, occupations,
 adjectives, surnames by group, and religion and terrorism words. Early decades are small, so one model is trained on all
 text with every job and adjective word tagged by decade ("nurse_1960s"), and the gender and group words shared across
 decades (temporal referencing); three training runs, averaged.
@@ -237,7 +237,8 @@ them with such a keyword.
 - **What it detects is stories about prejudice, not stereotyped portrayals.** Against the careful reading in study 8,
   a third of its top 2% are stories about racism, sexism or homophobia (ten times the rate among random summaries,
   AUC 0.75), but they are *less* likely than average to portray a stereotype. Viewer tags behave the same way: they
-  mark the theme. The 2022 model's 0.95 came mostly from text length, and the construct it chased was this theme.
+  mark the theme. The 2022 notebook's 0.95 rested on a comparison that text length alone could separate (its negatives were short
+  episode plots, its positives long film synopses), and the construct it chased was this theme.
 - Calibrated on held-out folds and applied to every summary (with the word-vector model), the share likely to be a
   story about prejudice peaks for 1970s films and falls slowly after; for TV it falls from 5.3% in the 1950s to 4.1%.
 - The words that weigh most are the expected ones ("racist", "racism", "discrimination", "homophobic", "sexist",
