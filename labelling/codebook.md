@@ -1,5 +1,7 @@
 # Labelling codebook (v1.3)
 
+> Slurs and insulting labels are masked in this public copy (first letter, then asterisks). The labelling model read the unmasked text, which is kept with the private lexicons.
+
 Labels for a sample of film and TV plot summaries, used to check every measure in this project against a careful
 reading (studies 3, 5, 6 and 7) and to train better models later. One label record per summary.
 
@@ -106,7 +108,7 @@ the slur anywhere in the record.
 ### Added in v1.2 (from the first 1,000 labels)
 
 - **Insults mixing race and class.** An insult that names or targets a racial or ethnic group counts as a slur even when
-  it also carries a class meaning ("white trash"). An insult about class alone ("redneck", "hillbilly", "trailer
+  it also carries a class meaning ("w**** t****"). An insult about class alone ("r******", "h********", "trailer
   trash") is not a slur for this project: set `slur_present` to `false` and write "class insult" in `notes`.
 
 ### Added in v1.3 (from the first 1,500 labels)

@@ -1,5 +1,7 @@
 # Labelling codebook: social groups (v2.0)
 
+> Slurs and insulting labels are masked in this public copy (first letter, then asterisks). The labelling model read the unmasked text, which is kept with the private lexicons.
+
 A second, separate pass over film and TV plot summaries, for six groups the first codebook ([`codebook.md`](codebook.md))
 left out: **immigrants and refugees, disabled people, people with a mental illness, older people, poor and
 working-class people, and homeless people.** Gender, nationality, ethnicity, religion and sexuality are not labelled
@@ -50,7 +52,7 @@ One entry per group even if several of its members appear.
 | `villain_marker` | a disability, disfigurement or mental illness marks or explains a villain |
 | `decline_incompetence` | older or disabled people framed as senile, frail, forgetful, confused, incapable or out of touch |
 | `moral_failing` | poverty or homelessness framed as laziness, drunkenness, addiction, dirt or ignorance |
-| `comic_figure` | a stock comic type: the grumpy old man, the pot-smoking granny, the comic tramp, the hillbilly fool |
+| `comic_figure` | a stock comic type: the grumpy old man, the pot-smoking granny, the comic t****, the h******** fool |
 | `wise_or_noble` | a positive stock type: the wise old mentor, the noble poor, the magical homeless sage, the savant |
 | `victim_only` | the group exists in the plot only to suffer, with no aims of its own |
 | `other` | another stereotype; explain in `notes` |
@@ -61,11 +63,11 @@ One entry per group even if several of its members appear.
 ### 2. `pejorative_label`
 
 `true` when the summary itself calls a member of these groups by an insulting label: for example the common slurs
-for disabled people (named in the copy given to the labelling model, left out of this public copy), "lunatic",
-"madman", "maniac", "psycho", "nutcase", "psychopath" or "sociopath" used as a label,
-"geezer", "old hag", "bum", "tramp" or "wino" for a homeless person, "white trash", "trailer trash", "redneck",
-"hillbilly", "illegal alien" or "illegals". Words that brand a person as mad and menacing in one go (lunatic,
-madman, maniac, psycho, psychopath) count whether or not the summary says anything else about mental illness. Never
+for disabled people (named in the copy given to the labelling model, left out of this public copy), "l******",
+"m*****", "m*****", "p*****", "n******", "p*********" or "s********" used as a label,
+"g*****", "o** h**", "b**", "t****" or "w***" for a homeless person, "w**** t****", "t****** t****", "r******",
+"h********", "i****** a****" or "i*******". Words that brand a person as mad and menacing in one go (l******,
+m*****, m*****, p*****, p*********) count whether or not the summary says anything else about mental illness. Never
 repeat the label anywhere in the record; write "pejorative: <group>" in `notes` instead (for example
 "pejorative: mental_illness").
 
@@ -93,9 +95,9 @@ These are settled in advance; apply them without stopping to ask.
   "a woman committed to an asylum", "refugees in the camp").
 - **Individual versus group.** One member of a group doing something bad is not a stereotype by itself. Mark
   `stereotyped` when the summary attaches the group or the condition to the trait ("a schizophrenic killer", "a
-  senile old fool", "drunken bums", "illegal immigrants smuggling drugs") or when the condition is offered as the
+  senile old fool", "drunken b***", "illegal immigrants smuggling drugs") or when the condition is offered as the
   explanation of the behaviour.
-- **Villains labelled mad.** A killer described as a maniac, madman or psycho: set `pejorative_label` to `true`. Add
+- **Villains labelled mad.** A killer described as a m*****, m***** or p*****: set `pejorative_label` to `true`. Add
   a `mental_illness` entry (stereotyped, `danger_threat`) only when the summary presents the killer as mentally ill
   (a diagnosis, an escape from a psychiatric hospital, "psychotic", "deranged by illness").
 - **Mad scientists, fools and eccentrics** are stock characters, not mental illness, unless the summary says

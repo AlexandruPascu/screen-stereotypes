@@ -557,7 +557,9 @@ Tables: [`results/makers/`](results/makers/).
 - **The six groups of study 11** are named by identity terms (and a few condition and institution words, such as
   "psychiatric hospital") cross-checked against HolisticBias's descriptors
   (numeric ages count from 65), with idioms removed ("blind date", "fell on deaf ears", "disabled the alarm"). Their
-  insulting labels, like the slur lists, are kept out of the repository; the labels pruned 12 that were mostly
+  insulting labels, like the slur lists and the everyday words excluded from them, are kept with the private lexicons
+  (the codebooks show them masked, and a few that also name a group, such as words for poor white people, are among
+  study 5's mention words); the labels pruned 12 that were mostly
   surnames, other uses or outdated descriptions, and the pruned list is right about 80% of the time (out-of-sample
   estimate).
 - **Critics, money and awards** (study 12): Wikidata's review scores and Academy Award records, TMDb's budgets and
@@ -605,7 +607,7 @@ Set `STEREOTYPES_DATA` to a local folder holding the sources below and `PYTHON` 
 duckdb, statsmodels, scikit-learn, gensim, spacy (`en_core_web_sm`), torch, torchvision, sentence-transformers,
 transformers, mwparserfromhell, matplotlib, lxml, jsonschema and wordfreq, then run `bash src/run_all.sh` (or
 `bash src/run_all.sh <step>` to start from a step). `src/transformer.py` runs separately, as does the chain of studies 8 and 9:
-`src/label_sample.py`, the labelling run (`labelling/`), `src/validate_labels.py labels.jsonl labels_second.jsonl`,
+`src/label_sample.py`, the labelling run (`labelling/`; the unmasked codebooks are kept with the private lexicons), `src/validate_labels.py labels.jsonl labels_second.jsonl`,
 `src/label_classifier.py` (about four hours on a CPU), `src/score_sample.py` (about two hours) and
 `src/calibration_check.py`.
 `src/imdb_people.py`, `src/behind_camera.py`, `src/film_writers.py` and `src/ratings_films.py` add the crew, leads and

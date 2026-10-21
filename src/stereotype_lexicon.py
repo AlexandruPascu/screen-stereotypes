@@ -22,12 +22,7 @@ SLUR_ZIPF_MAX = 3.0
 NAME_TOKEN_MAX = 20  # a "slur" that is a given name or surname of >= 20 people on IMDb is a name in credits and plots
 # Everyday words, places, products, characters or non-slurs that pass the two filters above (checked by hand on the
 # terms that matched most often in summaries and character names, 2026-10-12).
-EXCLUDE_SLURS = {"kimchi", "jaffa", "teapot", "baboon", "tonk", "spook", "skippy", "bimbo", "child molester", "jim crow",
-                 "tonto", "pancho", "abbie", "timur", "haji", "kala", "jeet", "dogan", "gora", "mangal", "miya", "vanja",
-                 "indio", "moro", "nance", "kaew", "abid", "zang", "polak", "froggy", "pansy", "sooty", "queers",
-                 "nigar", "cholo", "blackie", "gringo", "aunt mary", "aunt jane", "aunt sally", "pocahontas", "ali baba",
-                 "buckwheat", "vrindavan", "kaliya", "teabag", "gayest", "eight ball", "off the boat", "orangie",
-                 "twinkie", "mullah", "coreano", "baluba", "greaser", "greasers"}
+EXCLUDE_SLURS = set(json.load(open(LEXICONS / "slur_exclusions.json"))["everyday_words"])  # private lexicons folder
 TARGET_TO_GROUP = [  # (regex on Wikipedia's target text, group); first match wins
     (r"african american|black", "black"), (r"italian", "italian"), (r"irish", "irish"), (r"mexican", "mexican"),
     (r"russian", "russian"), (r"german", "german"), (r"french", "french"), (r"british|english", "british"),
@@ -125,8 +120,7 @@ name_tokens = dict(duckdb.connect().execute(f"""SELECT token, COUNT(*) FROM (
 
 # Terms pruned with the labelled sample (names, places, foods, descriptive terms in this corpus); kept in a private
 # file next to the source lexicons because it holds the terms themselves.
-_pruned = LEXICONS / "slur_exclusions.json"
-PRUNED = set(json.load(open(_pruned))["drop_terms"]) if _pruned.exists() else set()
+PRUNED = set(json.load(open(LEXICONS / "slur_exclusions.json"))["drop_terms"])
 
 
 def keep_slur(term):
